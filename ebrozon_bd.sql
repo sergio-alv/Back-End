@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-03-2019 a las 13:31:31
+-- Tiempo de generación: 15-03-2019 a las 17:19:12
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -21,6 +21,32 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `ebrozon_bd`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `archivosopinion`
+--
+
+CREATE TABLE `archivosopinion` (
+  `archivo` int(11) NOT NULL,
+  `emisor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `receptor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `fecha` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `archivosreport`
+--
+
+CREATE TABLE `archivosreport` (
+  `archivo` int(11) NOT NULL,
+  `emisor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `receptor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `fecha` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
@@ -87,10 +113,10 @@ CREATE TABLE `etiquetaventaverant` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `imagen`
+-- Estructura de tabla para la tabla `archivo`
 --
 
-CREATE TABLE `imagen` (
+CREATE TABLE `archivo` (
   `identificador` int(11) NOT NULL,
   `url` varchar(200) COLLATE utf8_spanish_ci NOT NULL,
   `borrada` tinyint(1) NOT NULL DEFAULT '0'
@@ -139,12 +165,58 @@ CREATE TABLE `oferta` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `opinion`
+--
+
+CREATE TABLE `opinion` (
+  `emisor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `receptor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `contenido` int(11) NOT NULL,
+  `estrellas` int(11) NOT NULL DEFAULT '1',
+  `tienearchivo` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `puja`
+--
+
+CREATE TABLE `puja` (
+  `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `vendedor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `fechaventa` datetime NOT NULL,
+  `fecha` datetime NOT NULL,
+  `cantidad` double NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `registrologins`
 --
 
 CREATE TABLE `registrologins` (
   `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `report`
+--
+
+CREATE TABLE `report` (
+  `emisor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `receptor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `contenido` text COLLATE utf8_spanish_ci NOT NULL,
+  `vendedor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `fechaventa` datetime NOT NULL,
+  `motivo` int(11) NOT NULL,
+  `tienearchivo` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
@@ -157,6 +229,20 @@ CREATE TABLE `seguimiento` (
   `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `vendedor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `fechaventa` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `subasta`
+--
+
+CREATE TABLE `subasta` (
+  `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `fechainicio` datetime NOT NULL,
+  `fechafin` datetime NOT NULL,
+  `precioinicial` double NOT NULL DEFAULT '0',
+  `pujaactual` double NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
@@ -176,7 +262,7 @@ CREATE TABLE `usuario` (
   `ciudad` varchar(70) COLLATE utf8_spanish_ci NOT NULL,
   `latitud` double DEFAULT NULL,
   `longitud` double DEFAULT NULL,
-  `imagen` int(11) NOT NULL DEFAULT '0',
+  `archivo` int(11) NOT NULL DEFAULT '0',
   `activo` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
@@ -196,7 +282,7 @@ CREATE TABLE `usuarioverant` (
   `ciudad` varchar(70) COLLATE utf8_spanish_ci NOT NULL,
   `latitud` double DEFAULT NULL,
   `longitud` double DEFAULT NULL,
-  `imagen` int(11) NOT NULL DEFAULT '0',
+  `archivo` int(11) NOT NULL DEFAULT '0',
   `activo` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
@@ -212,12 +298,13 @@ CREATE TABLE `venta` (
   `fechafin` datetime DEFAULT NULL,
   `producto` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
   `descripcion` text COLLATE utf8_spanish_ci NOT NULL,
-  `precio` double NOT NULL DEFAULT '0',
+  `precio` double DEFAULT '0',
   `preciofinal` double DEFAULT NULL,
   `comprador` varchar(30) COLLATE utf8_spanish_ci DEFAULT NULL,
   `fechapago` int(11) DEFAULT NULL,
   `tienevideo` tinyint(1) NOT NULL DEFAULT '0',
-  `activa` int(11) NOT NULL DEFAULT '1'
+  `activa` int(11) NOT NULL DEFAULT '1',
+  `esSubasta` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
@@ -240,6 +327,22 @@ CREATE TABLE `ventaverant` (
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `archivosopinion`
+--
+ALTER TABLE `archivosopinion`
+  ADD PRIMARY KEY (`archivo`,`emisor`,`receptor`,`fecha`),
+  ADD KEY `emisor` (`emisor`),
+  ADD KEY `receptor` (`receptor`);
+
+--
+-- Indices de la tabla `archivosreport`
+--
+ALTER TABLE `archivosreport`
+  ADD PRIMARY KEY (`archivo`,`emisor`,`receptor`,`fecha`),
+  ADD KEY `emisor` (`emisor`),
+  ADD KEY `receptor` (`receptor`);
 
 --
 -- Indices de la tabla `archivosventa`
@@ -284,9 +387,9 @@ ALTER TABLE `etiquetaventaverant`
   ADD KEY `etiquetaventaverant_ibfk_4` (`etiqueta`);
 
 --
--- Indices de la tabla `imagen`
+-- Indices de la tabla `archivo`
 --
-ALTER TABLE `imagen`
+ALTER TABLE `archivo`
   ADD PRIMARY KEY (`identificador`);
 
 --
@@ -311,18 +414,49 @@ ALTER TABLE `oferta`
   ADD KEY `fechaventa` (`fechaventa`);
 
 --
+-- Indices de la tabla `opinion`
+--
+ALTER TABLE `opinion`
+  ADD PRIMARY KEY (`emisor`,`receptor`,`fecha`),
+  ADD KEY `receptor` (`receptor`);
+
+--
+-- Indices de la tabla `puja`
+--
+ALTER TABLE `puja`
+  ADD PRIMARY KEY (`usuario`,`vendedor`,`fechaventa`,`fecha`),
+  ADD KEY `vendedor` (`vendedor`),
+  ADD KEY `fechaventa` (`fechaventa`);
+
+--
 -- Indices de la tabla `registrologins`
 --
 ALTER TABLE `registrologins`
   ADD PRIMARY KEY (`usuario`,`fecha`);
 
 --
+-- Indices de la tabla `report`
+--
+ALTER TABLE `report`
+  ADD PRIMARY KEY (`emisor`,`receptor`,`fecha`),
+  ADD KEY `report_ibfk_2` (`receptor`),
+  ADD KEY `motivo` (`motivo`);
+
+--
 -- Indices de la tabla `seguimiento`
 --
 ALTER TABLE `seguimiento`
+  ADD PRIMARY KEY (`usuario`,`vendedor`,`fechaventa`),
   ADD KEY `seguimiento_ibfk_1` (`fechaventa`),
   ADD KEY `seguimiento_ibfk_2` (`vendedor`),
   ADD KEY `seguimiento_ibfk_3` (`usuario`);
+
+--
+-- Indices de la tabla `subasta`
+--
+ALTER TABLE `subasta`
+  ADD PRIMARY KEY (`usuario`,`fechainicio`),
+  ADD KEY `fechainicio` (`fechainicio`);
 
 --
 -- Indices de la tabla `usuario`
@@ -331,7 +465,7 @@ ALTER TABLE `usuario`
   ADD PRIMARY KEY (`nombreusuario`),
   ADD UNIQUE KEY `Correos` (`correo`),
   ADD UNIQUE KEY `Telefonos` (`telefono`),
-  ADD KEY `usuario_ibfk_1` (`imagen`);
+  ADD KEY `usuario_ibfk_1` (`archivo`);
 
 --
 -- Indices de la tabla `usuarioverant`
@@ -359,9 +493,9 @@ ALTER TABLE `ventaverant`
 --
 
 --
--- AUTO_INCREMENT de la tabla `imagen`
+-- AUTO_INCREMENT de la tabla `archivo`
 --
-ALTER TABLE `imagen`
+ALTER TABLE `archivo`
   MODIFY `identificador` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -375,12 +509,28 @@ ALTER TABLE `motivo`
 --
 
 --
+-- Filtros para la tabla `archivosopinion`
+--
+ALTER TABLE `archivosopinion`
+  ADD CONSTRAINT `archivosopinion_ibfk_1` FOREIGN KEY (`archivo`) REFERENCES `archivo` (`identificador`),
+  ADD CONSTRAINT `archivosopinion_ibfk_2` FOREIGN KEY (`emisor`) REFERENCES `opinion` (`emisor`),
+  ADD CONSTRAINT `archivosopinion_ibfk_3` FOREIGN KEY (`receptor`) REFERENCES `opinion` (`receptor`);
+
+--
+-- Filtros para la tabla `archivosreport`
+--
+ALTER TABLE `archivosreport`
+  ADD CONSTRAINT `archivosreport_ibfk_1` FOREIGN KEY (`archivo`) REFERENCES `archivo` (`identificador`),
+  ADD CONSTRAINT `archivosreport_ibfk_2` FOREIGN KEY (`emisor`) REFERENCES `report` (`emisor`),
+  ADD CONSTRAINT `archivosreport_ibfk_3` FOREIGN KEY (`receptor`) REFERENCES `report` (`receptor`);
+
+--
 -- Filtros para la tabla `archivosventa`
 --
 ALTER TABLE `archivosventa`
   ADD CONSTRAINT `archivosventa_ibfk_1` FOREIGN KEY (`usuarioventa`) REFERENCES `venta` (`usuario`),
   ADD CONSTRAINT `archivosventa_ibfk_2` FOREIGN KEY (`fechaventa`) REFERENCES `venta` (`fechainicio`),
-  ADD CONSTRAINT `archivosventa_ibfk_3` FOREIGN KEY (`archivo`) REFERENCES `imagen` (`identificador`);
+  ADD CONSTRAINT `archivosventa_ibfk_3` FOREIGN KEY (`archivo`) REFERENCES `archivo` (`identificador`);
 
 --
 -- Filtros para la tabla `archivoventaverant`
@@ -388,7 +538,7 @@ ALTER TABLE `archivosventa`
 ALTER TABLE `archivoventaverant`
   ADD CONSTRAINT `archivoventaverant_ibfk_1` FOREIGN KEY (`usuarioventa`) REFERENCES `ventaverant` (`usuario`),
   ADD CONSTRAINT `archivoventaverant_ibfk_2` FOREIGN KEY (`fechaventa`) REFERENCES `ventaverant` (`fechainicio`),
-  ADD CONSTRAINT `archivoventaverant_ibfk_3` FOREIGN KEY (`archivo`) REFERENCES `imagen` (`identificador`);
+  ADD CONSTRAINT `archivoventaverant_ibfk_3` FOREIGN KEY (`archivo`) REFERENCES `archivo` (`identificador`);
 
 --
 -- Filtros para la tabla `etiqueta`
@@ -428,10 +578,33 @@ ALTER TABLE `oferta`
   ADD CONSTRAINT `oferta_ibfk_3` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`nombreusuario`);
 
 --
+-- Filtros para la tabla `opinion`
+--
+ALTER TABLE `opinion`
+  ADD CONSTRAINT `opinion_ibfk_1` FOREIGN KEY (`emisor`) REFERENCES `usuario` (`nombreusuario`),
+  ADD CONSTRAINT `opinion_ibfk_2` FOREIGN KEY (`receptor`) REFERENCES `usuario` (`nombreusuario`);
+
+--
+-- Filtros para la tabla `puja`
+--
+ALTER TABLE `puja`
+  ADD CONSTRAINT `puja_ibfk_1` FOREIGN KEY (`vendedor`) REFERENCES `subasta` (`usuario`),
+  ADD CONSTRAINT `puja_ibfk_2` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`nombreusuario`),
+  ADD CONSTRAINT `puja_ibfk_3` FOREIGN KEY (`fechaventa`) REFERENCES `subasta` (`fechainicio`);
+
+--
 -- Filtros para la tabla `registrologins`
 --
 ALTER TABLE `registrologins`
   ADD CONSTRAINT `registrologins_ibfk_1` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`nombreusuario`);
+
+--
+-- Filtros para la tabla `report`
+--
+ALTER TABLE `report`
+  ADD CONSTRAINT `report_ibfk_1` FOREIGN KEY (`emisor`) REFERENCES `usuario` (`nombreusuario`),
+  ADD CONSTRAINT `report_ibfk_2` FOREIGN KEY (`receptor`) REFERENCES `usuario` (`nombreusuario`),
+  ADD CONSTRAINT `report_ibfk_3` FOREIGN KEY (`motivo`) REFERENCES `motivo` (`identificador`);
 
 --
 -- Filtros para la tabla `seguimiento`
@@ -442,10 +615,17 @@ ALTER TABLE `seguimiento`
   ADD CONSTRAINT `seguimiento_ibfk_3` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`nombreusuario`);
 
 --
+-- Filtros para la tabla `subasta`
+--
+ALTER TABLE `subasta`
+  ADD CONSTRAINT `subasta_ibfk_1` FOREIGN KEY (`usuario`) REFERENCES `venta` (`usuario`),
+  ADD CONSTRAINT `subasta_ibfk_2` FOREIGN KEY (`fechainicio`) REFERENCES `venta` (`fechainicio`);
+
+--
 -- Filtros para la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  ADD CONSTRAINT `usaurio_ibfk_1` FOREIGN KEY (`imagen`) REFERENCES `imagen` (`identificador`);
+  ADD CONSTRAINT `usaurio_ibfk_1` FOREIGN KEY (`archivo`) REFERENCES `archivo` (`identificador`);
 
 --
 -- Filtros para la tabla `usuarioverant`
