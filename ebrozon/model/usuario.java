@@ -26,13 +26,12 @@ public class usuario {
 	 
 	 @Column(name = "correo")
 	 @Size(min = 3, max = 100, message="El correo tiene que tener entre 3 y 100 caracteres")
-	 @Pattern(regexp = "[A-z,0-9,_,-]+@[A-z]+.[A-z]+", message="El correo solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -")
 	 private String correo;
 	 
 	 @Column(name = "contrasena")
 	 @Size(min = 8, max = 100, message="La contraseña tiene que tener entre 8 y 100 caracteres")
 	 @Pattern(regexp = "[A-z,0-9,_,-]+", message="La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -")
-	 private String contrena;
+	 private String contrasena;
 	 
 	 @Column(name = "telefono")
 	 @Min(100000000)
@@ -56,6 +55,10 @@ public class usuario {
 	 @NotNull
 	 private String ciudad;
 	 
+	 @Column(name = "provincia")
+	 @NotNull
+	 private String provincia;
+	 
 	 @Column(name = "latitud")
 	 private float latitud;
 	 
@@ -72,36 +75,38 @@ public class usuario {
 	 public usuario(
 				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String nombreusuario,
 				@Size(min = 3, max = 10, message = "El correo tiene que tener entre 3 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+@[A-z]+.[A-z]+", message = "El correo solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String correo,
-				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String contrena,
+				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String contrasena,
 				@Min(100000000) @Max(999999999) int telefono, @NotNull String nombre, @NotNull String apellidos,
-				@Min(1) @Max(99999) int codigopostal, @NotNull String ciudad) {
+				@Min(1) @Max(99999) int codigopostal, @NotNull String ciudad, @NotNull String provincia) {
 			super();
 			this.nombreusuario = nombreusuario;
 			this.correo = correo;
-			this.contrena = contrena;
+			this.contrasena = contrasena;
 			this.telefono = telefono;
 			this.nombre = nombre;
 			this.apellidos = apellidos;
 			this.codigopostal = codigopostal;
 			this.ciudad = ciudad;
+			this.provincia = provincia;
 		}
 
 		public usuario(
 				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String nombreusuario,
 				@Size(min = 3, max = 10, message = "El correo tiene que tener entre 3 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+@[A-z]+.[A-z]+", message = "El correo solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String correo,
-				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String contrena,
+				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String contrasena,
 				@Min(100000000) @Max(999999999) int telefono, @NotNull String nombre, @NotNull String apellidos,
-				@Min(1) @Max(99999) int codigopostal, @NotNull String ciudad, float latitud, float longitud,
-				@Min(0) int archivo) {
+				@Min(1) @Max(99999) int codigopostal, @NotNull String ciudad,@NotNull String provincia,
+				float latitud, float longitud, @Min(0) int archivo) {
 			super();
 			this.nombreusuario = nombreusuario;
 			this.correo = correo;
-			this.contrena = contrena;
+			this.contrasena = contrasena;
 			this.telefono = telefono;
 			this.nombre = nombre;
 			this.apellidos = apellidos;
 			this.codigopostal = codigopostal;
 			this.ciudad = ciudad;
+			this.provincia = provincia;
 			this.latitud = latitud;
 			this.longitud = longitud;
 			this.archivo = archivo;
@@ -124,12 +129,12 @@ public class usuario {
 		this.correo = correo;
 	}
 
-	public String getContrena() {
-		return contrena;
+	public String getContrasena() {
+		return contrasena;
 	}
 
-	public void setContrena(String contrena) {
-		this.contrena = contrena;
+	public void setContrasena(String contrasena) {
+		this.contrasena = contrasena;
 	}
 
 	public int getTelefono() {
@@ -170,6 +175,14 @@ public class usuario {
 
 	public void setCiudad(String ciudad) {
 		this.ciudad = ciudad;
+	}
+	
+	public String getProvincia() {
+		return provincia;
+	}
+
+	public void setProvincia(String provincia) {
+		this.provincia = provincia;
 	}
 
 	public float getLatitud() {
