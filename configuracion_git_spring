@@ -1,0 +1,22 @@
+Configurar Git-Spring Boot
+1- Crear directorio donde se quiera guardar todo el proyecto
+2- Hacer git init en ese directorio
+3- Hacer git clone https://github.com/unizar-30226-2019-02/Back-End a dicho directorio
+4- Abrir Spring Boot -> File -> Open projects form file system
+5- Seleccionar el directorio entero, no solo el proyecto eclipse
+6- Window -> Preferences -> Team -> Git -> Configuration -> Add entry si no están ya registrados los datos de Git
+7- Esquina superior derecha -> Open Perspective -> Team Synchronizing
+8- Cuadro inferior izquierda:
+	- Unstaged Changes: ficheros modificados que pueden ser subidos, pulsar cruz verde para añadir a Staged
+	- Staged Changes: ficheros modificados listos para subir
+	- Añadir Commit Message
+	- Commit and Push: publicar cambios en local y remoto
+
+Como usar
+1- Modificar los ficheros que se desee
+2- Guardar cambios
+3- Ir a la pestaña de Team Synchronizing
+4- Descargar primero posibles cambios (Pull) -> ventana Synchronize -> nube con flecha verde
+(Rezar para que no haya conflictos porque dos personas hayan modificado lo mismo)
+5- Pulsar cruz verde para pasar cambios de Unstaged a Staged
+6- Pulsar Commit and Push 
