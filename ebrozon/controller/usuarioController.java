@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.security.MessageDigest;
 
-import com.ebrozon.model.Customer;
 import com.ebrozon.model.usuario;
 import com.ebrozon.repository.usuarioRepository;
 
@@ -19,11 +20,14 @@ public class usuarioController {
 	@Autowired
     usuarioRepository repository;
 	
+	@Autowired
+    archivoController archiver;
+	
 	@RequestMapping("/registrar")
     public String registrar(@RequestParam("un") String un, @RequestParam("cor") String cor, @RequestParam("pass") String pass,
     						@RequestParam("tel") int tel, @RequestParam("name") String na, @RequestParam("lna") String lna,
     						@RequestParam("cp") int cp, @RequestParam("ci") String ci, @RequestParam("pr") String pr,
-    						@RequestParam("lat") String lat, @RequestParam("lon") String lon, @RequestParam("im") String im
+    						@RequestParam("lat") String lat, @RequestParam("lon") String lon, @RequestParam("im") MultipartFile im
     						){
 		
 		if(repository.existsBynombreusuario(un)) {
@@ -52,14 +56,56 @@ public class usuarioController {
 		
 		try {
 	        user = new usuario(un, cor, sb.toString(), tel, na, lna, cp, ci, pr);
-	        user.setActivo(true);
+	        user.setActivo(1);
 	        
 	        if ((lat != null) && (!lat.trim().equals("")) && (lon != null) && (!lon.trim().equals(""))){ 
 	        	user.setLatitud(Float.parseFloat(lat));
 	        	user.setLongitud(Float.parseFloat(lon));
 	        }
-	        if ((im != null) && (!im.trim().equals(""))){ 
+	        if (!im.isEmpty()){ 
+	        	int idIm = archiver.uploadFile(im);
+	        	user.setArchivo(idIm);
+	        }
+	        else {
 	        	user.setArchivo(0);
+	        }
+		}
+		catch(Exception e){
+			return e.getMessage();
+		}
+        
+        repository.save(user);
+        
+        return "Ok";
+    }
+	
+	@RequestMapping("/actualizarUsuario")
+    public String actualizarUsuario(@RequestParam("un") String un,
+    						@RequestParam("tel") int tel, @RequestParam("name") String na, @RequestParam("lna") String lna,
+    						@RequestParam("cp") int cp, @RequestParam("ci") String ci, @RequestParam("pr") String pr,
+    						@RequestParam("lat") String lat, @RequestParam("lon") String lon, @RequestParam("im") MultipartFile im
+    						){
+		
+		if(!repository.existsBynombreusuario(un)) {
+			return "El nombre de usuario no exite.";
+		}
+		
+		usuario user = repository.findBynombreusuario(un).get();
+		
+		try {
+			user.setTelefono(tel);
+			user.setNombre(na);
+	        user.setApellidos(lna);
+	        user.setProvincia(pr);
+	        user.setCodigopostal(cp);
+	        user.setCiudad(ci);
+	        if ((lat != null) && (!lat.trim().equals("")) && (lon != null) && (!lon.trim().equals(""))){ 
+	        	user.setLatitud(Float.parseFloat(lat));
+	        	user.setLongitud(Float.parseFloat(lon));
+	        }
+	        if (!im.isEmpty()){ 
+	        	int idIm = archiver.uploadFile(im);
+	        	user.setArchivo(idIm);
 	        }
 		}
 		catch(Exception e){
@@ -107,11 +153,40 @@ public class usuarioController {
 	public usuario recuperarUsuario(@RequestParam("un") String un) {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
 		if(aux.isPresent()) {
-			return aux.get();
+			usuario user = aux.get();
+			user.setUrlArchivo(archiver.loadFile(user.getArchivo()));
+			return user;
 		}
 		else {
 			return null;
 		}
 	}
 	
+	@RequestMapping("/banearUsuario")
+	public String banearUsuario(@RequestParam("un") String un) {
+		Optional<usuario> aux = repository.findBynombreusuario(un);
+		if(aux.isPresent()) {
+			usuario user = aux.get();
+			user.setActivo(0);
+			repository.save(user);
+			return "Ok";
+		}
+		else {
+			return "No se ha encontrado el usuario";
+		}
+	}
+	
+	@RequestMapping("/desbanearUsuario")
+	public String desbanearUsuario(@RequestParam("un") String un) {
+		Optional<usuario> aux = repository.findBynombreusuario(un);
+		if(aux.isPresent()) {
+			usuario user = aux.get();
+			user.setActivo(1);
+			repository.save(user);
+			return "Ok";
+		}
+		else {
+			return "No se ha encontrado el usuario";
+		}
+	}
 }
