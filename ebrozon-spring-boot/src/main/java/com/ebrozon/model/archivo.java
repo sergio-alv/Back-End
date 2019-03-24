@@ -23,7 +23,7 @@ public class archivo {
 		this.borrada = borrada;
 	}
 
-	@Id
+	 @Id
 	 @Column(name = "identificador")
 	 private int identificador;
 	 
