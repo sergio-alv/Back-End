@@ -211,7 +211,7 @@ public class usuario {
 		this.archivo = archivo;
 	}
 
-	public int isActivo() {
+	public int getActivo() {
 		return activo;
 	}
 

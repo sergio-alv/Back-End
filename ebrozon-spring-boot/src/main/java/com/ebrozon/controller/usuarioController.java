@@ -162,4 +162,31 @@ public class usuarioController {
 		}
 	}
 	
+	@RequestMapping("/banearUsuario")
+	public String banearUsuario(@RequestParam("un") String un) {
+		Optional<usuario> aux = repository.findBynombreusuario(un);
+		if(aux.isPresent()) {
+			usuario user = aux.get();
+			user.setActivo(0);
+			repository.save(user);
+			return "Ok";
+		}
+		else {
+			return "No se ha encontrado el usuario";
+		}
+	}
+	
+	@RequestMapping("/desbanearUsuario")
+	public String desbanearUsuario(@RequestParam("un") String un) {
+		Optional<usuario> aux = repository.findBynombreusuario(un);
+		if(aux.isPresent()) {
+			usuario user = aux.get();
+			user.setActivo(1);
+			repository.save(user);
+			return "Ok";
+		}
+		else {
+			return "No se ha encontrado el usuario";
+		}
+	}
 }

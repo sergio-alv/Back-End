@@ -28,9 +28,6 @@ public class archivoController {
 	@Autowired
     archivoRepository repository;
 	
-	@Autowired
-	archivoController archiver;
-	
 	private String upload_folder = ".//src//main//resources//files";
 	
 	@RequestMapping("/uploadFile")
