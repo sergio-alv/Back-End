@@ -70,7 +70,9 @@ public class usuario {
 	 private int archivo;
 	 
 	 @Column(name = "activo")
-	 private boolean activo;
+	 private int activo;
+	 
+	 private String urlArchivo;
 
 	 public usuario(
 				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String nombreusuario,
@@ -209,12 +211,20 @@ public class usuario {
 		this.archivo = archivo;
 	}
 
-	public boolean isActivo() {
+	public int getActivo() {
 		return activo;
 	}
 
-	public void setActivo(boolean activo) {
+	public void setActivo(int activo) {
 		this.activo = activo;
+	}
+	
+	public void setUrlArchivo(String url) {
+		this.urlArchivo = url;
+	}
+	
+	public String getUrlArchivo() {
+		return this.urlArchivo;
 	}
 	 
 	/*
