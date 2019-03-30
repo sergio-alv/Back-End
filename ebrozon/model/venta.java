@@ -1,40 +1,21 @@
 package com.ebrozon.model;
 
-import java.sql.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.Date;
+import java.io.Serializable;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "venta")
-public class venta {
+@IdClass(venta.class)
+public class venta implements Serializable{
 
-	public venta(
-			@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String usuario,
-			Date fechaventa,
-			@Size(min = 3, max = 100, message = "El nombre del producto tiene que tener entre 3 y 100 caracteres") String producto,
-			@Size(min = 10, message = "La descripción del producto tiene que tener mínimo 10 caracteres") String descripcion,
-			@Min(0) double precio, int tienevideo, int activa, int esSubasta) {
-		super();
-		this.usuario = usuario;
-		this.fechaventa = fechaventa;
-		this.producto = producto;
-		this.descripcion = descripcion;
-		this.precio = precio;
-		this.tienevideo = tienevideo;
-		this.activa = activa;
-		this.esSubasta = esSubasta;
-	}
-
+	private static final long serialVersionUID = 1L;
+	 
 	@Id
 	@Column(name = "usuario")
 	@Size(min = 3, max = 30, message="El nombre tiene que tener entre 3 y 30 caracteres")
@@ -70,15 +51,36 @@ public class venta {
 	@Column(name = "fechapago")
 	private Date fechapago;
 	
-	@Column(name = "tienevideo")
-	private int tienevideo;
+	@Column(name = "tienearchivo")
+	private int tienearchivo;
 	
 	@Column(name = "activa")
 	private int activa;
 	
 	@Column(name = "esSubasta")
 	private int  esSubasta;
+	
+	@Transient
+	private usuario user;
 
+	public venta(
+			@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String usuario,
+			@Size(min = 3, max = 100, message = "El nombre del producto tiene que tener entre 3 y 100 caracteres") String producto,
+			@Size(min = 10, message = "La descripción del producto tiene que tener mínimo 10 caracteres") String descripcion,
+			@Min(0) double precio, int tienearchivo, int activa) {
+		super();
+		this.usuario = usuario;
+		this.fechainicio = new Date();
+		this.producto = producto;
+		this.descripcion = descripcion;
+		this.precio = precio;
+		this.tienearchivo = tienearchivo;
+		this.activa = activa;
+		this.esSubasta = 0;
+	}
+	
+	public venta() {}
+	
 	public String getUsuario() {
 		return usuario;
 	}
@@ -151,12 +153,12 @@ public class venta {
 		this.fechapago = fechapago;
 	}
 
-	public int getTienevideo() {
-		return tienevideo;
+	public int getTienearchivo() {
+		return tienearchivo;
 	}
 
-	public void setTienevideo(int tienevideo) {
-		this.tienevideo = tienevideo;
+	public void setTienearchivo(int tienearchivo) {
+		this.tienearchivo = tienearchivo;
 	}
 
 	public int getActiva() {
@@ -173,6 +175,14 @@ public class venta {
 
 	public void setEsSubasta(int esSubasta) {
 		this.esSubasta = esSubasta;
+	}
+	
+	public usuario getUser() {
+		return this.user;
+	}
+
+	public void setUser(usuario us) {
+		this.user = us;
 	}
 	
 }

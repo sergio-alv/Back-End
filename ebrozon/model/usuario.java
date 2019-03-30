@@ -2,17 +2,13 @@ package com.ebrozon.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "usuario")
@@ -34,9 +30,7 @@ public class usuario {
 	 private String contrasena;
 	 
 	 @Column(name = "telefono")
-	 @Min(100000000)
-	 @Max(999999999)
-	 private int telefono;
+	 private Integer telefono;
 	 
 	 @Column(name = "nombre")
 	 @NotNull
@@ -47,23 +41,19 @@ public class usuario {
 	 private String apellidos;
 	 
 	 @Column(name = "codigopostal")
-	 @Min(00001)
-	 @Max(99999)
-	 private int codigopostal;
+	 private Integer codigopostal;
 	 
 	 @Column(name = "ciudad")
-	 @NotNull
 	 private String ciudad;
 	 
 	 @Column(name = "provincia")
-	 @NotNull
 	 private String provincia;
 	 
 	 @Column(name = "latitud")
-	 private float latitud;
+	 private Float latitud;
 	 
 	 @Column(name = "longitud")
-	 private float longitud;
+	 private Float longitud;
 	 
 	 @Column(name = "archivo")
 	 @Min(0)
@@ -72,8 +62,22 @@ public class usuario {
 	 @Column(name = "activo")
 	 private int activo;
 	 
+	 @Transient
 	 private String urlArchivo;
 
+	 public usuario(
+				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String nombreusuario,
+				@Size(min = 3, max = 10, message = "El correo tiene que tener entre 3 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+@[A-z]+.[A-z]+", message = "El correo solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String correo,
+				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String contrasena,
+				@NotNull String nombre, @NotNull String apellidos) {
+			super();
+			this.nombreusuario = nombreusuario;
+			this.correo = correo;
+			this.contrasena = contrasena;
+			this.nombre = nombre;
+			this.apellidos = apellidos;
+		}
+	 
 	 public usuario(
 				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String nombreusuario,
 				@Size(min = 3, max = 10, message = "El correo tiene que tener entre 3 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+@[A-z]+.[A-z]+", message = "El correo solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String correo,
@@ -143,7 +147,7 @@ public class usuario {
 		return telefono;
 	}
 
-	public void setTelefono(int telefono) {
+	public void setTelefono(@Min(100000000) @Max(999999999) int telefono) {
 		this.telefono = telefono;
 	}
 
@@ -167,7 +171,7 @@ public class usuario {
 		return codigopostal;
 	}
 
-	public void setCodigopostal(int codigopostal) {
+	public void setCodigopostal(@Min(0) @Max(99999)int codigopostal) {
 		this.codigopostal = codigopostal;
 	}
 
