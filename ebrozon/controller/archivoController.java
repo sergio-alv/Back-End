@@ -30,13 +30,6 @@ public class archivoController {
 	
 	private String upload_folder = ".//src//main//resources//files";
 	
-	@RequestMapping("/prueba")
-	public String prueba() {
-		archivo aux = new archivo("cwecewcec", 0);
-		repository.save(aux);
-		return "oK";
-	}
-	
 	@RequestMapping("/uploadFile")
 	public int uploadFile(@RequestParam("file") MultipartFile file) {
 		if(!file.isEmpty()) {
@@ -63,6 +56,20 @@ public class archivoController {
 			return aux.get().getUrl();
 		}
 		return "Ha habido un problema con el archivo";
+	}
+	
+	@RequestMapping("/deleteFile")
+	public String deleteFile(int id) {
+		Optional<archivo> aux = repository.findByidentificador(id);
+		try {
+			archivo arc = aux.get();
+			arc.setBorrada(1);
+			repository.save(arc);
+		}
+		catch(Exception e) {
+			return "Ha habido un problema al borrar el archivo.";
+		}
+		return "Ok";
 	}
 	
 	private void saveFile(MultipartFile file, String filename) throws IOException {
