@@ -58,6 +58,20 @@ public class archivoController {
 		return "Ha habido un problema con el archivo";
 	}
 	
+	@RequestMapping("/deleteFile")
+	public String deleteFile(int id) {
+		Optional<archivo> aux = repository.findByidentificador(id);
+		try {
+			archivo arc = aux.get();
+			arc.setBorrada(1);
+			repository.save(arc);
+		}
+		catch(Exception e) {
+			return "Ha habido un problema al borrar el archivo.";
+		}
+		return "Ok";
+	}
+	
 	private void saveFile(MultipartFile file, String filename) throws IOException {
 		if(!file.isEmpty()) {
 			byte[] bytes = file.getBytes();
