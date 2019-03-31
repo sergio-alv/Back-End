@@ -69,22 +69,111 @@ public class usuarioverant implements Serializable{
 	 
 	 @Column(name = "activo")
 	 private int activo;
-
+	 
 	public usuarioverant(usuario u) {
 		super();
 		this.nombreusuario = u.getNombreusuario();
-		this.telefono = u.getTelefono();
 		this.nombre = u.getNombre();
 		this.apellidos = u.getApellidos();
-		this.codigopostal = u.getCodigopostal();
-		this.ciudad = u.getCiudad();
-		this.provincia = u.getProvincia();
-		this.latitud = u.getLatitud();
-		this.longitud = u.getLongitud();
-		this.imagen = u.getArchivo();
 		this.activo = u.getActivo();
 	}
 	
 	public usuarioverant() {}
+
+	public String getNombreusuario() {
+		return nombreusuario;
+	}
+
+	public void setNombreusuario(String nombreusuario) {
+		this.nombreusuario = nombreusuario;
+	}
+
+	public Date getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
+	}
+
+	public int getTelefono() {
+		return telefono;
+	}
+
+	public void setTelefono(@Min(100000000) @Max(999999999)int telefono) {
+		this.telefono = telefono;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getApellidos() {
+		return apellidos;
+	}
+
+	public void setApellidos(String apellidos) {
+		this.apellidos = apellidos;
+	}
+
+	public int getCodigopostal() {
+		return codigopostal;
+	}
+
+	public void setCodigopostal(@Min(0) @Max(99999)int codigopostal) {
+		this.codigopostal = codigopostal;
+	}
+
+	public String getCiudad() {
+		return ciudad;
+	}
+
+	public void setCiudad(String ciudad) {
+		this.ciudad = ciudad;
+	}
+
+	public String getProvincia() {
+		return provincia;
+	}
+
+	public void setProvincia(String provincia) {
+		this.provincia = provincia;
+	}
+
+	public float getLatitud() {
+		return latitud;
+	}
+
+	public void setLatitud(float latitud) {
+		this.latitud = latitud;
+	}
+
+	public float getLongitud() {
+		return longitud;
+	}
+
+	public void setLongitud(float longitud) {
+		this.longitud = longitud;
+	}
+
+	public int getImagen() {
+		return imagen;
+	}
+
+	public void setImagen(int imagen) {
+		this.imagen = imagen;
+	}
+
+	public int getActivo() {
+		return activo;
+	}
+
+	public void setActivo(int activo) {
+		this.activo = activo;
+	}
 	
 }
