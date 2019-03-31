@@ -12,7 +12,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.ebrozon.model.etiqueta;
 
 public interface etiquetaRepository extends CrudRepository<etiqueta, Long>{
-	boolean existsBynombreetiqueta(String nombreetiqueta);
+	boolean existsBynombre(String nombreetiqueta);
 	
 	Optional<etiqueta> findBynombre(String nombre);
 }
