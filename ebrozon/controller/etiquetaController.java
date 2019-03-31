@@ -31,7 +31,7 @@ public class etiquetaController {
 	//http://localhost:8080/guardar?un=karny2&pass=caca&cor=cececw@gmail.com&na=saul&lna=alarcon
 	@RequestMapping("/guardar")
 	public String guardar(@RequestParam("tn") String tn, @RequestParam("cd") Date cd, @RequestParam("crt") String crt) {
-		if (repository.existsBynombreetiqueta(tn)) {
+		if (repository.existsBynombre(tn)) {
 			return "Etiqueta ya guardada";
 		}
 		
@@ -69,7 +69,7 @@ public class etiquetaController {
 	//la nueva fecha de creación y el nombre del nuevo creador
 	@RequestMapping("/actualizarEtiqueta")
 	public String actualizarEtiqueta(@RequestParam("tn") String tn, @RequestParam("cd") Date cd, @RequestParam("crt") String crt) {
-		if (!repository.existsBynombreetiqueta(tn)) {
+		if (!repository.existsBynombre(tn)) {
 			return "La etiqueta no existe";
 		}
 		
