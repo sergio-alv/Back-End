@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-03-2019 a las 17:19:12
+-- Tiempo de generación: 01-04-2019 a las 20:38:30
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -21,6 +21,30 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `ebrozon_bd`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `archivo`
+--
+
+CREATE TABLE `archivo` (
+  `identificador` int(11) NOT NULL,
+  `url` varchar(200) COLLATE utf8_spanish_ci NOT NULL,
+  `borrada` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `archivo`
+--
+
+INSERT INTO `archivo` (`identificador`, `url`, `borrada`) VALUES
+(0, 'ruta de imagen por defecto', 0),
+(56, 'hghghr', 0),
+(57, 'cwecewcec', 0),
+(58, 'cwecewcec', 0),
+(59, 'cwecewcec', 0),
+(60, 'cwecewcec', 0);
 
 -- --------------------------------------------------------
 
@@ -76,13 +100,39 @@ CREATE TABLE `archivoventaverant` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `caca`
+--
+
+CREATE TABLE `caca` (
+  `cust` int(11) NOT NULL,
+  `clase` int(11) NOT NULL,
+  `algo` int(11) DEFAULT NULL,
+  `algo2` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `customer`
+--
+
+CREATE TABLE `customer` (
+  `id` bigint(20) NOT NULL,
+  `firstname` varchar(8) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `lastname` varchar(255) COLLATE utf8_spanish_ci DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `etiqueta`
 --
 
 CREATE TABLE `etiqueta` (
   `nombre` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `fechacreacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `creador` varchar(30) COLLATE utf8_spanish_ci NOT NULL
+  `creador` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `nombreusuario` varchar(30) COLLATE utf8_spanish_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
@@ -113,14 +163,19 @@ CREATE TABLE `etiquetaventaverant` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `archivo`
+-- Estructura de tabla para la tabla `hibernate_sequence`
 --
 
-CREATE TABLE `archivo` (
-  `identificador` int(11) NOT NULL,
-  `url` varchar(200) COLLATE utf8_spanish_ci NOT NULL,
-  `borrada` tinyint(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+CREATE TABLE `hibernate_sequence` (
+  `next_val` bigint(20) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `hibernate_sequence`
+--
+
+INSERT INTO `hibernate_sequence` (`next_val`) VALUES
+(1);
 
 -- --------------------------------------------------------
 
@@ -202,6 +257,16 @@ CREATE TABLE `registrologins` (
   `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
+--
+-- Volcado de datos para la tabla `registrologins`
+--
+
+INSERT INTO `registrologins` (`usuario`, `fecha`) VALUES
+('admin', '0000-00-00 00:00:00'),
+('admin', '2019-03-24 18:52:40'),
+('karny1', '2019-03-30 19:04:18'),
+('karny1', '2019-03-30 20:16:18');
+
 -- --------------------------------------------------------
 
 --
@@ -228,7 +293,8 @@ CREATE TABLE `report` (
 CREATE TABLE `seguimiento` (
   `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `vendedor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechaventa` datetime NOT NULL
+  `fechaventa` datetime NOT NULL,
+  `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
@@ -255,16 +321,28 @@ CREATE TABLE `usuario` (
   `nombreusuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `correo` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
   `contrasena` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
-  `telefono` int(11) NOT NULL,
+  `telefono` int(11) DEFAULT NULL,
   `nombre` varchar(50) COLLATE utf8_spanish_ci NOT NULL,
   `apellidos` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
-  `codigopostal` int(11) NOT NULL,
-  `ciudad` varchar(70) COLLATE utf8_spanish_ci NOT NULL,
+  `codigopostal` int(11) DEFAULT NULL,
+  `ciudad` varchar(70) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `provincia` varchar(70) COLLATE utf8_spanish_ci DEFAULT NULL,
   `latitud` double DEFAULT NULL,
   `longitud` double DEFAULT NULL,
   `archivo` int(11) NOT NULL DEFAULT '0',
   `activo` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`nombreusuario`, `correo`, `contrasena`, `telefono`, `nombre`, `apellidos`, `codigopostal`, `ciudad`, `provincia`, `latitud`, `longitud`, `archivo`, `activo`) VALUES
+('admin', 'adminf@admin.com', 'adminadmin', 999999999, 'admin', 'admin admin', 99999, 'adminlandia', '', 0, 0, 0, 0),
+('karny1', 'cecew@gmail.com', 'd2104a400c7f629a197f33bb33fe80c0', 0, 'saul', 'alarcon', 0, NULL, NULL, 0, 0, 0, 1),
+('karny2', 'cececw@gmail.com', 'd2104a400c7f629a197f33bb33fe80c0', NULL, 'saul', 'alarcon', NULL, NULL, NULL, NULL, NULL, 0, 1),
+('karny22', 'cec2ecw@gmail.com', 'd2104a400c7f629a197f33bb33fe80c0', NULL, 'saúl', 'alarcón', NULL, NULL, NULL, NULL, NULL, 0, 1),
+('karny3', 'cece3cw@gmail.com', 'd2104a400c7f629a197f33bb33fe80c0', NULL, 'saul', 'alarcon', NULL, NULL, NULL, NULL, NULL, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -278,12 +356,14 @@ CREATE TABLE `usuarioverant` (
   `telefono` int(11) NOT NULL,
   `nombre` varchar(50) COLLATE utf8_spanish_ci NOT NULL,
   `apellidos` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
-  `codigopostal` int(11) NOT NULL,
-  `ciudad` varchar(70) COLLATE utf8_spanish_ci NOT NULL,
+  `codigopostal` int(11) DEFAULT NULL,
+  `ciudad` varchar(70) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `provincia` varchar(70) COLLATE utf8_spanish_ci DEFAULT NULL,
   `latitud` double DEFAULT NULL,
   `longitud` double DEFAULT NULL,
-  `archivo` int(11) NOT NULL DEFAULT '0',
-  `activo` tinyint(1) NOT NULL DEFAULT '1'
+  `archivo` int(11) DEFAULT '0',
+  `activo` tinyint(1) NOT NULL DEFAULT '1',
+  `imagen` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
@@ -295,17 +375,27 @@ CREATE TABLE `usuarioverant` (
 CREATE TABLE `venta` (
   `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `fechainicio` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `fechafin` datetime DEFAULT NULL,
+  `fechaventa` datetime DEFAULT NULL,
   `producto` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
   `descripcion` text COLLATE utf8_spanish_ci NOT NULL,
   `precio` double DEFAULT '0',
   `preciofinal` double DEFAULT NULL,
   `comprador` varchar(30) COLLATE utf8_spanish_ci DEFAULT NULL,
   `fechapago` int(11) DEFAULT NULL,
-  `tienevideo` tinyint(1) NOT NULL DEFAULT '0',
+  `tienearchivo` tinyint(1) NOT NULL DEFAULT '0',
   `activa` int(11) NOT NULL DEFAULT '1',
-  `esSubasta` tinyint(1) NOT NULL DEFAULT '0'
+  `esSubasta` tinyint(1) NOT NULL DEFAULT '0',
+  `es_subasta` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `venta`
+--
+
+INSERT INTO `venta` (`usuario`, `fechainicio`, `fechaventa`, `producto`, `descripcion`, `precio`, `preciofinal`, `comprador`, `fechapago`, `tienearchivo`, `activa`, `esSubasta`, `es_subasta`) VALUES
+('karny1', '2019-03-30 19:10:20', NULL, 'movil', '\"esta mu chulo\"', 4.5, 0, NULL, NULL, 1, 0, 0, 0),
+('karny1', '2019-03-30 19:10:39', NULL, 'movil', '\"esta mu chulo\"', 4.5, 0, NULL, NULL, 1, 0, 0, 0),
+('karny1', '2019-03-30 19:12:53', NULL, 'movil', '\"esta mu chulo\"', 4.5, 0, NULL, NULL, 1, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -327,6 +417,12 @@ CREATE TABLE `ventaverant` (
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `archivo`
+--
+ALTER TABLE `archivo`
+  ADD PRIMARY KEY (`identificador`);
 
 --
 -- Indices de la tabla `archivosopinion`
@@ -362,6 +458,18 @@ ALTER TABLE `archivoventaverant`
   ADD KEY `archivoventaverant_ibfk_3` (`fechamodventa`);
 
 --
+-- Indices de la tabla `caca`
+--
+ALTER TABLE `caca`
+  ADD PRIMARY KEY (`cust`,`clase`);
+
+--
+-- Indices de la tabla `customer`
+--
+ALTER TABLE `customer`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `etiqueta`
 --
 ALTER TABLE `etiqueta`
@@ -385,12 +493,6 @@ ALTER TABLE `etiquetaventaverant`
   ADD KEY `etiquetaventaverant_ibfk_2` (`fechaventa`),
   ADD KEY `etiquetaventaverant_ibfk_3` (`fechamodventa`),
   ADD KEY `etiquetaventaverant_ibfk_4` (`etiqueta`);
-
---
--- Indices de la tabla `archivo`
---
-ALTER TABLE `archivo`
-  ADD PRIMARY KEY (`identificador`);
 
 --
 -- Indices de la tabla `mensaje`
@@ -496,7 +598,7 @@ ALTER TABLE `ventaverant`
 -- AUTO_INCREMENT de la tabla `archivo`
 --
 ALTER TABLE `archivo`
-  MODIFY `identificador` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `identificador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT de la tabla `motivo`
