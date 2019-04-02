@@ -5,9 +5,15 @@ import java.io.Serializable;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Range;
+import org.springframework.validation.annotation.Validated;
+
 import javax.persistence.*;
 
 @Entity
@@ -16,20 +22,22 @@ public class usuario {
 	
 	 @Id
 	 @Column(name = "nombreusuario")
-	 @Size(min = 3, max = 30, message="El nombre tiene que tener entre 3 y 30 caracteres")
-	 @Pattern(regexp = "[A-z,0-9,_,-]+", message="El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -")
+	 @Size(min = 3, max = 30, message="El nombre tiene que tener entre 3 y 30 caracteres.")
+	 @Pattern(regexp = "[A-z,0-9,_,-]+", message="El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.")
 	 private String nombreusuario;
 	 
 	 @Column(name = "correo")
-	 @Size(min = 3, max = 100, message="El correo tiene que tener entre 3 y 100 caracteres")
+	 @Size(min = 3, max = 100, message="El correo tiene que tener entre 3 y 100 caracteres.")
+	 @Pattern(regexp = "[^@]+@[A-z,0-9]+.[A-z]+", message="El correo tiene que seguir el patron example@example.example.")
 	 private String correo;
 	 
 	 @Column(name = "contrasena")
-	 @Size(min = 8, max = 100, message="La contraseña tiene que tener entre 8 y 100 caracteres")
-	 @Pattern(regexp = "[A-z,0-9,_,-]+", message="La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -")
+	 @Size(min = 8, max = 100, message="La contraseña tiene que tener entre 8 y 100 caracteres.")
+	 @Pattern(regexp = "[A-z,0-9,_,-]+", message="La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.")
 	 private String contrasena;
 	 
 	 @Column(name = "telefono")
+	 @Range(min=100000000,max=999999999, message = "El teléfono tiene que tener 9 dígitos.")
 	 private Integer telefono;
 	 
 	 @Column(name = "nombre")
@@ -41,6 +49,7 @@ public class usuario {
 	 private String apellidos;
 	 
 	 @Column(name = "codigopostal")
+	 @Range(min=1,max=99999, message = "El código postal tiene que tener un mínimo de 1 dígito y un máximo de 5.")
 	 private Integer codigopostal;
 	 
 	 @Column(name = "ciudad")
@@ -66,9 +75,9 @@ public class usuario {
 	 private String urlArchivo;
 
 	 public usuario(
-				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String nombreusuario,
-				@Size(min = 3, max = 10, message = "El correo tiene que tener entre 3 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+@[A-z]+.[A-z]+", message = "El correo solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String correo,
-				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String contrasena,
+				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.") String nombreusuario,
+				@Size(min = 3, max = 10, message = "El correo tiene que tener entre 3 y 100 caracteres") @Pattern(regexp = "[^@]+@[A-z,0-9]+.[A-z]+", message="El correo tiene que seguir el patron example@example.example.") String correo,
+				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.") String contrasena,
 				@NotNull String nombre, @NotNull String apellidos) {
 			super();
 			this.nombreusuario = nombreusuario;
@@ -79,9 +88,9 @@ public class usuario {
 		}
 	 
 	 public usuario(
-				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String nombreusuario,
-				@Size(min = 3, max = 10, message = "El correo tiene que tener entre 3 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+@[A-z]+.[A-z]+", message = "El correo solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String correo,
-				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String contrasena,
+				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.") String nombreusuario,
+				@Size(min = 3, max = 10, message = "El correo tiene que tener entre 3 y 100 caracteres") @Pattern(regexp = "[^@]+@[A-z,0-9]+.[A-z]+", message = "El correo solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.") String correo,
+				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.") String contrasena,
 				@Min(100000000) @Max(999999999) int telefono, @NotNull String nombre, @NotNull String apellidos,
 				@Min(1) @Max(99999) int codigopostal, @NotNull String ciudad, @NotNull String provincia) {
 			super();
@@ -97,9 +106,9 @@ public class usuario {
 		}
 
 		public usuario(
-				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String nombreusuario,
-				@Size(min = 3, max = 10, message = "El correo tiene que tener entre 3 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+@[A-z]+.[A-z]+", message = "El correo solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String correo,
-				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String contrasena,
+				@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.") String nombreusuario,
+				@Size(min = 3, max = 10, message = "El correo tiene que tener entre 3 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+@[A-z]+.[A-z]+", message = "El correo solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.") String correo,
+				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.") String contrasena,
 				@Min(100000000) @Max(999999999) int telefono, @NotNull String nombre, @NotNull String apellidos,
 				@Min(1) @Max(99999) int codigopostal, @NotNull String ciudad,@NotNull String provincia,
 				float latitud, float longitud, @Min(0) int archivo) {
