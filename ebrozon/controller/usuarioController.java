@@ -1,6 +1,10 @@
 package com.ebrozon.controller;
 
 import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +30,7 @@ public class usuarioController {
 	//Registra a un usuario recibiendo como parámetros obligatorios el nombre de usuario, el correo
 	//la contraseña, el nombre y los apellidos, y siendo opcionales el teléfono, el código postal
 	//la ciudad, la provincia, latitud y longitud, y la imagen de perfil.
-	//http://localhost:8080/registrar?un=karny2&pass=caca&cor=cececw@gmail.com&na=saul&lna=alarcon
+	//localhost:8080/registrar?un=karny2&pass=caca&cor=cececw@gmail.com&na=saul&lna=alarcon
 	@RequestMapping("/registrar")
     public String registrar(@RequestParam("un") String un, @RequestParam("cor") String cor, @RequestParam("pass") String pass,
     						@RequestParam(value = "tel", required=false) Integer tel, @RequestParam("na") String na, @RequestParam("lna") String lna,
@@ -85,17 +89,25 @@ public class usuarioController {
 	        	user.setArchivo(idIm);
 	        }
 	        else {
-	        	user.setArchivo(0);
+	        	user.setArchivo(1);
 	        }
 	        
 	        user.setActivo(1);
+	        repository.save(user);
 		}
-		catch(Exception e){
-			return e.getMessage();
+		catch(Exception e) {
+			Throwable t = e.getCause();
+			while ((t != null) && !(t instanceof ConstraintViolationException)) {
+		        t = t.getCause();
+		    }
+			ConstraintViolationException aux = (ConstraintViolationException) t;
+			Set<ConstraintViolation<?>> list = aux.getConstraintViolations();
+			String error = "";
+			for (ConstraintViolation<?> s : list) {
+			    error = error + s.getMessage() + "\n";
+			}
+			return error;
 		}
-        
-        repository.save(user);
-        
         return "Ok";
     }
 	
