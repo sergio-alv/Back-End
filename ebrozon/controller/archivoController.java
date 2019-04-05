@@ -55,7 +55,7 @@ public class archivoController {
 		if(aux.isPresent()) {
 			return aux.get().getUrl();
 		}
-		return "Ha habido un problema con el archivo";
+		return "{E:Ha habido un problema con el archivo.}";
 	}
 	
 	@RequestMapping("/deleteFile")
@@ -67,9 +67,9 @@ public class archivoController {
 			repository.save(arc);
 		}
 		catch(Exception e) {
-			return "Ha habido un problema al borrar el archivo.";
+			return "{E:Ha habido un problema al borrar el archivo.}";
 		}
-		return "Ok";
+		return "{O:Ok}";
 	}
 	
 	private void saveFile(MultipartFile file, String filename) throws IOException {

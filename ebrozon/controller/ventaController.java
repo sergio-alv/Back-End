@@ -53,6 +53,6 @@ public class ventaController {
 			archiver.deleteFile(idIm);
 			return "Ha habido un problema durante la publicación del producto.";
 		}
-		return "Ok";
+		return "{O:Ok}";
 	}
 }

@@ -39,10 +39,10 @@ public class usuarioController {
     						){
 		
 		if(repository.existsBynombreusuario(un)) {
-			return "El nombre de usuario no está disponible.";
+			return "{E:El nombre de usuario no está disponible.}";
 		}
 		if(repository.existsBycorreo(cor)) {
-			return "El correo electrónico no está disponible.";
+			return "{E:El correo electrónico no está disponible.}";
 		}
 		
 		usuario user;
@@ -59,7 +59,7 @@ public class usuarioController {
 			}
     	}
     	catch(Exception e) {
-    		return "Ha habido un problema durante el registro.";
+    		return "{E:Ha habido un problema durante el registro.}";
     	}
 		
 		try {
@@ -106,9 +106,9 @@ public class usuarioController {
 			for (ConstraintViolation<?> s : list) {
 			    error = error + s.getMessage() + "\n";
 			}
-			return error;
+			return "{E:" + error + "}";
 		}
-        return "Ok";
+        return "{O:Ok}";
     }
 	
 	//Actualiza la información de un usuario recibiendo como parámetros obligatorios el nombre de usuario, el correo
@@ -122,7 +122,7 @@ public class usuarioController {
     						){
 		
 		if(!repository.existsBynombreusuario(un)) {
-			return "El nombre de usuario no exite.";
+			return "{E:El nombre de usuario no exite.}";
 		}
 		
 		usuario user = repository.findBynombreusuario(un).get();
@@ -162,7 +162,7 @@ public class usuarioController {
         
         repository.save(user);
         
-        return "Ok";
+        return "{O:Ok}";
     }
 	
 	//Comprueba la información del usuario para logearse, recibiendo como parámetros su
@@ -173,7 +173,7 @@ public class usuarioController {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
 		if(aux.isPresent()) {
 			if(aux.get().getActivo() == 0) {
-				return "La cuenta está deshabilitada.";
+				return "{E:La cuenta está deshabilitada.}";
 			}
 			MessageDigest md;
 	    	StringBuffer sb = new StringBuffer();
@@ -187,19 +187,19 @@ public class usuarioController {
 				}
 	    	}
 	    	catch(Exception e) {
-	    		return "Ha habido un problema durante el login.";
+	    		return "{E:Ha habido un problema durante el login.}";
 	    	}
 		    
 		    if(sb.toString().equals(aux.get().getContrasena())) {
 		    	repository.registrarLogin(un);
-		    	return "Ok";
+		    	return "{O:Ok}";
 		    }
 		    else {
-		    	return "La contraseña es incorrecta.";
+		    	return "{E:La contraseña es incorrecta.}";
 		    }
 		}
 		else {
-			return "El nombre usuario no existe.";
+			return "{E:El nombre usuario no existe.}";
 		}
 	}
 	
@@ -225,10 +225,10 @@ public class usuarioController {
 			usuario user = aux.get();
 			user.setActivo(0);
 			repository.save(user);
-			return "Ok";
+			return "{O:Ok}";
 		}
 		else {
-			return "No se ha encontrado el usuario";
+			return "{E:No se ha encontrado el usuario.}";
 		}
 	}
 	
@@ -240,10 +240,10 @@ public class usuarioController {
 			usuario user = aux.get();
 			user.setActivo(1);
 			repository.save(user);
-			return "Ok";
+			return "{O:Ok}";
 		}
 		else {
-			return "No se ha encontrado el usuario";
+			return "{E:No se ha encontrado el usuario.}";
 		}
 	}
 }
