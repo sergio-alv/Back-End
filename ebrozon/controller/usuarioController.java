@@ -96,17 +96,21 @@ public class usuarioController {
 	        repository.save(user);
 		}
 		catch(Exception e) {
-			Throwable t = e.getCause();
-			while ((t != null) && !(t instanceof ConstraintViolationException)) {
-		        t = t.getCause();
-		    }
-			ConstraintViolationException aux = (ConstraintViolationException) t;
-			Set<ConstraintViolation<?>> list = aux.getConstraintViolations();
-			String error = "";
-			for (ConstraintViolation<?> s : list) {
-			    error = error + s.getMessage() + "\n";
+			try {
+				Throwable t = e.getCause();
+				while ((t != null) && !(t instanceof ConstraintViolationException)) {
+			        t = t.getCause();
+			    }
+				ConstraintViolationException aux = (ConstraintViolationException) t;
+				Set<ConstraintViolation<?>> list = aux.getConstraintViolations();
+				String error = "";
+				for (ConstraintViolation<?> s : list) {
+				    error = error + s.getMessage() + "\n";
+				}
+				return "{E:" + error + "}";
+			}catch(Exception e2) {
+				return "{E:Error no identificado.}";
 			}
-			return "{E:" + error + "}";
 		}
         return "{O:Ok}";
     }
@@ -155,15 +159,75 @@ public class usuarioController {
 	        	int idIm = archiver.uploadFile(im);
 	        	user.setArchivo(idIm);
 	        }
+	        repository.save(user);
 		}
 		catch(Exception e){
-			return e.getMessage();
+			try {
+				Throwable t = e.getCause();
+				while ((t != null) && !(t instanceof ConstraintViolationException)) {
+			        t = t.getCause();
+			    }
+				ConstraintViolationException aux = (ConstraintViolationException) t;
+				Set<ConstraintViolation<?>> list = aux.getConstraintViolations();
+				String error = "";
+				for (ConstraintViolation<?> s : list) {
+				    error = error + s.getMessage() + "\n";
+				}
+				return "{E:" + error + "}";
+			}catch(Exception e2) {
+				return "{E:Error no identificado.}";
+			}
 		}
-        
-        repository.save(user);
-        
         return "{O:Ok}";
     }
+	
+	@RequestMapping("/cambiarContrasena")
+	public String cambiarContrasena(@RequestParam("un") String un, @RequestParam("oldpass") String oldpass, @RequestParam("newpass") String newpass) {
+		Optional<usuario> aux = repository.findBynombreusuario(un);
+		if(aux.isPresent()) {
+			if(aux.get().getActivo() == 0) {
+				return "{E:La cuenta está deshabilitada.}";
+			}
+			MessageDigest md;
+	    	StringBuffer sb = new StringBuffer();
+		    try {
+		    	md = MessageDigest.getInstance("MD5");
+		    	md.update(oldpass.trim().getBytes());
+				byte[] digest = md.digest();
+				sb = new StringBuffer();
+				for (byte b : digest) {
+					sb.append(String.format("%02x", b & 0xff));
+				}
+	    	}
+	    	catch(Exception e) {
+	    		return "{E:Ha habido un problema durante el cambio de contraseña. Se mantendrá la anterior.}";
+	    	}
+		    
+		    if(sb.toString().equals(aux.get().getContrasena())) {
+		    	try {
+			    	md = MessageDigest.getInstance("MD5");
+			    	md.update(newpass.trim().getBytes());
+					byte[] digest = md.digest();
+					sb = new StringBuffer();
+					for (byte b : digest) {
+						sb.append(String.format("%02x", b & 0xff));
+					}
+		    	}
+		    	catch(Exception e) {
+		    		return "{E:Ha habido un problema durante el cambio de contraseña. Se mantendrá la anterior.}";
+		    	}
+		    	usuario us = aux.get();
+		    	us.setContrasena(sb.toString());
+		    	return "{O:Ok}";
+		    }
+		    else {
+		    	return "{E:La contraseña es incorrecta.}";
+		    }
+		}
+		else {
+			return "{E:El nombre usuario no existe.}";
+		}
+	}
 	
 	//Comprueba la información del usuario para logearse, recibiendo como parámetros su
 	//nombre de usuario y su contraseña
@@ -205,16 +269,11 @@ public class usuarioController {
 	
 	//Recupera la información de un usuario dado su nombre de usuario
 	@RequestMapping("/recuperarUsuario")
-	public usuario recuperarUsuario(@RequestParam("un") String un) {
+	public Optional<usuario> recuperarUsuario(@RequestParam("un") String un) {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
-		if(aux.isPresent()) {
-			usuario user = aux.get();
-			user.setUrlArchivo(archiver.loadFile(user.getArchivo()));
-			return user;
-		}
-		else {
-			return null;
-		}
+		aux.get().setUrlArchivo(archiver.loadFile(aux.get().getArchivo()));
+		aux.get().setContrasena("cwecasdvev");
+		return aux;
 	}
 	
 	//Desactiva la cuenta del usuario identificado por el nombre de usuario dado
@@ -245,5 +304,10 @@ public class usuarioController {
 		else {
 			return "{E:No se ha encontrado el usuario.}";
 		}
+	}
+	
+	@RequestMapping("/existeUsuario")
+	boolean existeUsuario(@RequestParam("un") String un) {
+		return repository.existsBynombreusuario(un);
 	}
 }
