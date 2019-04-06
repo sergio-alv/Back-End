@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-04-2019 a las 20:38:30
+-- Tiempo de generación: 06-04-2019 a las 15:29:39
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -39,12 +39,7 @@ CREATE TABLE `archivo` (
 --
 
 INSERT INTO `archivo` (`identificador`, `url`, `borrada`) VALUES
-(0, 'ruta de imagen por defecto', 0),
-(56, 'hghghr', 0),
-(57, 'cwecewcec', 0),
-(58, 'cwecewcec', 0),
-(59, 'cwecewcec', 0),
-(60, 'cwecewcec', 0);
+(1, 'imagen por defecto', 0);
 
 -- --------------------------------------------------------
 
@@ -170,13 +165,6 @@ CREATE TABLE `hibernate_sequence` (
   `next_val` bigint(20) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
---
--- Volcado de datos para la tabla `hibernate_sequence`
---
-
-INSERT INTO `hibernate_sequence` (`next_val`) VALUES
-(1);
-
 -- --------------------------------------------------------
 
 --
@@ -257,16 +245,6 @@ CREATE TABLE `registrologins` (
   `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
---
--- Volcado de datos para la tabla `registrologins`
---
-
-INSERT INTO `registrologins` (`usuario`, `fecha`) VALUES
-('admin', '0000-00-00 00:00:00'),
-('admin', '2019-03-24 18:52:40'),
-('karny1', '2019-03-30 19:04:18'),
-('karny1', '2019-03-30 20:16:18');
-
 -- --------------------------------------------------------
 
 --
@@ -338,11 +316,7 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`nombreusuario`, `correo`, `contrasena`, `telefono`, `nombre`, `apellidos`, `codigopostal`, `ciudad`, `provincia`, `latitud`, `longitud`, `archivo`, `activo`) VALUES
-('admin', 'adminf@admin.com', 'adminadmin', 999999999, 'admin', 'admin admin', 99999, 'adminlandia', '', 0, 0, 0, 0),
-('karny1', 'cecew@gmail.com', 'd2104a400c7f629a197f33bb33fe80c0', 0, 'saul', 'alarcon', 0, NULL, NULL, 0, 0, 0, 1),
-('karny2', 'cececw@gmail.com', 'd2104a400c7f629a197f33bb33fe80c0', NULL, 'saul', 'alarcon', NULL, NULL, NULL, NULL, NULL, 0, 1),
-('karny22', 'cec2ecw@gmail.com', 'd2104a400c7f629a197f33bb33fe80c0', NULL, 'saúl', 'alarcón', NULL, NULL, NULL, NULL, NULL, 0, 1),
-('karny3', 'cece3cw@gmail.com', 'd2104a400c7f629a197f33bb33fe80c0', NULL, 'saul', 'alarcon', NULL, NULL, NULL, NULL, NULL, 0, 1);
+('admin', 'admin@admin.com', 'cwecasdvev', NULL, 'admin', 'admin', NULL, NULL, NULL, NULL, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -373,11 +347,13 @@ CREATE TABLE `usuarioverant` (
 --
 
 CREATE TABLE `venta` (
+  `identificador` int(11) NOT NULL,
   `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `fechainicio` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fechaventa` datetime DEFAULT NULL,
   `producto` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
   `descripcion` text COLLATE utf8_spanish_ci NOT NULL,
+  `ciudad` varchar(70) COLLATE utf8_spanish_ci DEFAULT NULL,
   `precio` double DEFAULT '0',
   `preciofinal` double DEFAULT NULL,
   `comprador` varchar(30) COLLATE utf8_spanish_ci DEFAULT NULL,
@@ -385,17 +361,9 @@ CREATE TABLE `venta` (
   `tienearchivo` tinyint(1) NOT NULL DEFAULT '0',
   `activa` int(11) NOT NULL DEFAULT '1',
   `esSubasta` tinyint(1) NOT NULL DEFAULT '0',
-  `es_subasta` int(11) NOT NULL
+  `es_subasta` int(11) NOT NULL,
+  `identificadro` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
-
---
--- Volcado de datos para la tabla `venta`
---
-
-INSERT INTO `venta` (`usuario`, `fechainicio`, `fechaventa`, `producto`, `descripcion`, `precio`, `preciofinal`, `comprador`, `fechapago`, `tienearchivo`, `activa`, `esSubasta`, `es_subasta`) VALUES
-('karny1', '2019-03-30 19:10:20', NULL, 'movil', '\"esta mu chulo\"', 4.5, 0, NULL, NULL, 1, 0, 0, 0),
-('karny1', '2019-03-30 19:10:39', NULL, 'movil', '\"esta mu chulo\"', 4.5, 0, NULL, NULL, 1, 0, 0, 0),
-('karny1', '2019-03-30 19:12:53', NULL, 'movil', '\"esta mu chulo\"', 4.5, 0, NULL, NULL, 1, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -580,6 +548,7 @@ ALTER TABLE `usuarioverant`
 --
 ALTER TABLE `venta`
   ADD PRIMARY KEY (`fechainicio`,`usuario`),
+  ADD UNIQUE KEY `identificador` (`identificador`),
   ADD KEY `venta_ibfk_1` (`usuario`),
   ADD KEY `venta_ibfk_2` (`comprador`);
 
@@ -598,12 +567,18 @@ ALTER TABLE `ventaverant`
 -- AUTO_INCREMENT de la tabla `archivo`
 --
 ALTER TABLE `archivo`
-  MODIFY `identificador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `identificador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `motivo`
 --
 ALTER TABLE `motivo`
+  MODIFY `identificador` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `venta`
+--
+ALTER TABLE `venta`
   MODIFY `identificador` int(11) NOT NULL AUTO_INCREMENT;
 
 --
