@@ -17,6 +17,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "archivo")
 public class archivo {
+	public archivo() {}
 	 public archivo(String url, int borrada) {
 		super();
 		this.url = url;

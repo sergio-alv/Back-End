@@ -15,7 +15,10 @@ import javax.persistence.*;
 public class venta implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	 
+	
+	@Column(name = "identificadro")
+	private int identificador;
+	
 	@Id
 	@Column(name = "usuario")
 	@Size(min = 3, max = 30, message="El nombre tiene que tener entre 3 y 30 caracteres")
@@ -42,7 +45,6 @@ public class venta implements Serializable{
 	private double precio;
 	
 	@Column(name = "preciofinal")
-	@Min(0)
 	private double preciofinal;
 	
 	@Column(name = "comprador")
@@ -60,6 +62,9 @@ public class venta implements Serializable{
 	@Column(name = "esSubasta")
 	private int  esSubasta;
 	
+	@Column(name = "ciudad")
+	private String ciudad;
+	
 	@Transient
 	private usuario user;
 
@@ -67,7 +72,7 @@ public class venta implements Serializable{
 			@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String usuario,
 			@Size(min = 3, max = 100, message = "El nombre del producto tiene que tener entre 3 y 100 caracteres") String producto,
 			@Size(min = 10, message = "La descripción del producto tiene que tener mínimo 10 caracteres") String descripcion,
-			@Min(0) double precio, int tienearchivo, int activa) {
+			@Min(0) double precio, int tienearchivo, int activa, String ci) {
 		super();
 		this.usuario = usuario;
 		this.fechainicio = new Date();
@@ -77,6 +82,7 @@ public class venta implements Serializable{
 		this.tienearchivo = tienearchivo;
 		this.activa = activa;
 		this.esSubasta = 0;
+		this.ciudad = ci;
 	}
 	
 	public venta() {}
@@ -101,8 +107,8 @@ public class venta implements Serializable{
 		return fechaventa;
 	}
 
-	public void setFechaventa(Date fechaventa) {
-		this.fechaventa = fechaventa;
+	public void setFechaventa() {
+		this.fechaventa = new Date();
 	}
 
 	public String getProducto() {
@@ -183,6 +189,22 @@ public class venta implements Serializable{
 
 	public void setUser(usuario us) {
 		this.user = us;
+	}
+
+	public int getIdentificador() {
+		return identificador;
+	}
+
+	public void setIdentificador(int identificador) {
+		this.identificador = identificador;
+	}
+
+	public String getCiudad() {
+		return ciudad;
+	}
+
+	public void setCiudad(String ciudad) {
+		this.ciudad = ciudad;
 	}
 	
 }
