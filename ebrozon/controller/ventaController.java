@@ -11,6 +11,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,7 @@ public class ventaController {
 	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
+	@CrossOrigin
 	@RequestMapping("/publicarVenta")
 	public String publicarVenta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
 			@RequestParam("pre") double pre, @RequestParam(value = "arc", required=false) MultipartFile arc) {
@@ -88,11 +90,20 @@ public class ventaController {
 			}
 		}
 	}
+	
+	@CrossOrigin
 	@RequestMapping("/listarProductosCiudad")
 	List<venta> listaProductosCiudad(@RequestParam("ci") String ci){
 		return repository.findByciudad(ci);
 	}
 	
+	@CrossOrigin
+	@RequestMapping("/listarProductosUsuario")
+	List<venta> listaProductosUsuario(@RequestParam("un") String un){
+		return repository.findByusuario(un);
+	}
+	
+	@CrossOrigin
 	Optional<venta> recuperarProducto(@RequestParam("id") int id){
 		return repository.findByidentificador(id);
 	}

@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +32,7 @@ public class usuarioController {
 	//la contraseña, el nombre y los apellidos, y siendo opcionales el teléfono, el código postal
 	//la ciudad, la provincia, latitud y longitud, y la imagen de perfil.
 	//localhost:8080/registrar?un=karny2&pass=caca&cor=cececw@gmail.com&na=saul&lna=alarcon
+	@CrossOrigin
 	@RequestMapping("/registrar")
     public String registrar(@RequestParam("un") String un, @RequestParam("cor") String cor, @RequestParam("pass") String pass,
     						@RequestParam(value = "tel", required=false) Integer tel, @RequestParam("na") String na, @RequestParam("lna") String lna,
@@ -118,6 +120,7 @@ public class usuarioController {
 	//Actualiza la información de un usuario recibiendo como parámetros obligatorios el nombre de usuario, el correo
 	//la contraseña, el nombre y los apellidos, y siendo opcionales el teléfono, el código postal
 	//la ciudad, la provincia, latitud y longitud, y la imagen de perfil.
+	@CrossOrigin
 	@RequestMapping("/actualizarUsuario")
     public String actualizarUsuario(@RequestParam("un") String un,
     						@RequestParam("tel") Integer tel, @RequestParam("name") String na, @RequestParam("lna") String lna,
@@ -181,6 +184,7 @@ public class usuarioController {
         return "{O:Ok}";
     }
 	
+	@CrossOrigin
 	@RequestMapping("/cambiarContrasena")
 	public String cambiarContrasena(@RequestParam("un") String un, @RequestParam("oldpass") String oldpass, @RequestParam("newpass") String newpass) {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
@@ -232,6 +236,7 @@ public class usuarioController {
 	//Comprueba la información del usuario para logearse, recibiendo como parámetros su
 	//nombre de usuario y su contraseña
 	//http://localhost:8080/logear?un=karny1&pass=caca
+	@CrossOrigin
 	@RequestMapping("/logear")
 	public String logear(@RequestParam("un") String un, @RequestParam("pass") String pass) {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
@@ -268,6 +273,7 @@ public class usuarioController {
 	}
 	
 	//Recupera la información de un usuario dado su nombre de usuario
+	@CrossOrigin
 	@RequestMapping("/recuperarUsuario")
 	public Optional<usuario> recuperarUsuario(@RequestParam("un") String un) {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
@@ -277,6 +283,7 @@ public class usuarioController {
 	}
 	
 	//Desactiva la cuenta del usuario identificado por el nombre de usuario dado
+	@CrossOrigin
 	@RequestMapping("/banearUsuario")
 	public String banearUsuario(@RequestParam("un") String un) {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
@@ -292,6 +299,7 @@ public class usuarioController {
 	}
 	
 	//Activa la cuenta del usuario identificado por el nombre de usuario dado
+	@CrossOrigin
 	@RequestMapping("/desbanearUsuario")
 	public String desbanearUsuario(@RequestParam("un") String un) {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
@@ -306,6 +314,7 @@ public class usuarioController {
 		}
 	}
 	
+	@CrossOrigin
 	@RequestMapping("/existeUsuario")
 	boolean existeUsuario(@RequestParam("un") String un) {
 		return repository.existsBynombreusuario(un);
