@@ -21,5 +21,7 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	
 	List<venta> findByciudad(String ci);
 	
+	List<venta> findByusuario(String us);
+	
 	Optional<venta> findByidentificador(int id);
 }
