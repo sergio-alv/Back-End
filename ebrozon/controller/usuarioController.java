@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.ws.rs.Produces;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -275,6 +276,7 @@ public class usuarioController {
 	//Recupera la información de un usuario dado su nombre de usuario
 	@CrossOrigin
 	@RequestMapping("/recuperarUsuario")
+	@Produces("application/json")
 	public Optional<usuario> recuperarUsuario(@RequestParam("un") String un) {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
 		aux.get().setUrlArchivo(archiver.loadFile(aux.get().getArchivo()));

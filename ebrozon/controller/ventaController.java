@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.ws.rs.Produces;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -93,17 +94,21 @@ public class ventaController {
 	
 	@CrossOrigin
 	@RequestMapping("/listarProductosCiudad")
+	@Produces("application/json")
 	List<venta> listaProductosCiudad(@RequestParam("ci") String ci){
 		return repository.findByciudad(ci);
 	}
 	
 	@CrossOrigin
 	@RequestMapping("/listarProductosUsuario")
+	@Produces("application/json")
 	List<venta> listaProductosUsuario(@RequestParam("un") String un){
 		return repository.findByusuario(un);
 	}
 	
 	@CrossOrigin
+	@RequestMapping("/recuperarProducto")
+	@Produces("application/json")
 	Optional<venta> recuperarProducto(@RequestParam("id") int id){
 		return repository.findByidentificador(id);
 	}
