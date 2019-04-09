@@ -10,6 +10,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.validation.annotation.Validated;
@@ -18,7 +19,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "usuario")
-public class usuario {
+@XmlRootElement
+public class usuario  implements Serializable{
 	
 	 @Id
 	 @Column(name = "nombreusuario")

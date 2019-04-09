@@ -7,11 +7,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "venta")
 @IdClass(venta.class)
+@XmlRootElement
 public class venta implements Serializable{
 
 	private static final long serialVersionUID = 1L;
