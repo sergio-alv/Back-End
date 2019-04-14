@@ -12,22 +12,22 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "venta")
-@IdClass(venta.class)
+//@IdClass(venta.class)
 @XmlRootElement
 public class venta implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	@Column(name = "identificadro")
+	@Id
+	@Column(name = "identificador")
 	private int identificador;
 	
-	@Id
+	
 	@Column(name = "usuario")
 	@Size(min = 3, max = 30, message="El nombre tiene que tener entre 3 y 30 caracteres")
 	@Pattern(regexp = "[A-z,0-9,_,-]+", message="El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -")
 	private String usuario;
 	
-	@Id
 	@Column(name = "fechainicio")
 	private Date fechainicio;
 	
@@ -61,8 +61,8 @@ public class venta implements Serializable{
 	@Column(name = "activa")
 	private int activa;
 	
-	@Column(name = "esSubasta")
-	private int  esSubasta;
+	@Column(name = "es_subasta")
+	private int  es_subasta;
 	
 	@Column(name = "ciudad")
 	private String ciudad;
@@ -83,7 +83,7 @@ public class venta implements Serializable{
 		this.precio = precio;
 		this.tienearchivo = tienearchivo;
 		this.activa = activa;
-		this.esSubasta = 0;
+		this.es_subasta = 0;
 		this.ciudad = ci;
 	}
 	
@@ -177,12 +177,12 @@ public class venta implements Serializable{
 		this.activa = activa;
 	}
 
-	public int getEsSubasta() {
-		return esSubasta;
+	public int getes_subasta() {
+		return es_subasta;
 	}
 
-	public void setEsSubasta(int esSubasta) {
-		this.esSubasta = esSubasta;
+	public void setes_subasta(int es_subasta) {
+		this.es_subasta = es_subasta;
 	}
 	
 	public usuario getUser() {
