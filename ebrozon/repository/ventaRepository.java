@@ -19,9 +19,19 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	@Query(value = "insert into archivosventa(archivo, usuarioventa, fechaventa) values(:arc, :un, :fi)", nativeQuery = true)
 	void archivoApareceEnVenta(int arc, String un, Date fi);
 	
-	List<venta> findByciudad(String ci);
+	List<venta> findByciudadAndActiva(String ciudad,int Activa);
 	
-	List<venta> findByusuario(String us);
+	List<venta> findByusuarioAndActiva(String usuario, int Activa);
 	
-	Optional<venta> findByidentificador(int id);
+	Optional<venta> findByidentificador(int identificador);
+	
+	Optional<venta> findByusuario(String usuario);
+	
+	@Query("Select max(identificador) from venta")
+	Optional<Integer> lastId();
+	
+	@Modifying
+	@Transactional
+	@Query(value = "update venta set ciudad = :ci where usuario = :un", nativeQuery = true)
+	void updateCityVentasUsuario(String un, String ci);
 }
