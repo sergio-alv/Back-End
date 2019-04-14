@@ -29,6 +29,9 @@ public class usuarioController {
 	@Autowired
     archivoController archiver;
 	
+	@Autowired
+	ventaController venter;
+	
 	//Registra a un usuario recibiendo como parámetros obligatorios el nombre de usuario, el correo
 	//la contraseña, el nombre y los apellidos, y siendo opcionales el teléfono, el código postal
 	//la ciudad, la provincia, latitud y longitud, y la imagen de perfil.
@@ -124,10 +127,10 @@ public class usuarioController {
 	@CrossOrigin
 	@RequestMapping("/actualizarUsuario")
     public String actualizarUsuario(@RequestParam("un") String un,
-    						@RequestParam("tel") Integer tel, @RequestParam("name") String na, @RequestParam("lna") String lna,
-    						@RequestParam("cp") Integer cp, @RequestParam("ci") String ci, @RequestParam("pr") String pr,
-    						@RequestParam("lat") String lat, @RequestParam("lon") String lon, @RequestParam("im") MultipartFile im
-    						){
+			@RequestParam(value = "tel", required=false) Integer tel, @RequestParam(value = "na", required=false) String na, @RequestParam(value = "lna", required=false) String lna,
+			@RequestParam(value = "cp", required=false) Integer cp, @RequestParam(value = "ci", required=false) String ci, @RequestParam(value = "pr", required=false) String pr,
+			@RequestParam(value = "lat", required=false) String lat, @RequestParam(value = "lon", required=false) String lon, @RequestParam(value = "im", required=false) MultipartFile im
+			){
 		
 		if(!repository.existsBynombreusuario(un)) {
 			return "{E:El nombre de usuario no exite.}";
@@ -136,9 +139,15 @@ public class usuarioController {
 		usuario user = repository.findBynombreusuario(un).get();
 		
 		try {
-			user.setNombre(na);
-	        user.setApellidos(lna);
-	        
+			
+			if (na != null){ 
+				user.setNombre(na);
+	        }
+			
+			if (lna != null){ 
+				user.setApellidos(lna);
+	        }
+			
 	        if (tel != null){ 
 	        	user.setTelefono(tel);
 	        }
@@ -148,6 +157,12 @@ public class usuarioController {
 	        }
 	        
 	        if ((ci != null) && (!ci.trim().equals(""))){ 
+	        	if(!ci.equals(user.getCiudad())) {
+	        		String e = venter.actualizarCiudadVentasUsuario(un, ci);
+	        		if(!e.equals("{O:Ok}")) {
+	        			return "{E:Error al actualizar la ciudad.}";
+	        		}
+	        	}
 	        	user.setCiudad(ci);
 	        }
 	        
@@ -159,7 +174,7 @@ public class usuarioController {
 	        	user.setLatitud(Float.parseFloat(lat));
 	        	user.setLongitud(Float.parseFloat(lon));
 	        }
-	        if (!im.isEmpty()){ 
+	        if (im != null && !im.isEmpty()){ 
 	        	int idIm = archiver.uploadFile(im);
 	        	user.setArchivo(idIm);
 	        }
