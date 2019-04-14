@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-04-2019 a las 15:29:39
+-- Tiempo de generación: 14-04-2019 a las 17:29:28
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -75,8 +75,7 @@ CREATE TABLE `archivosreport` (
 
 CREATE TABLE `archivosventa` (
   `archivo` int(11) NOT NULL,
-  `usuarioventa` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechaventa` datetime NOT NULL
+  `nventa` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
@@ -87,35 +86,9 @@ CREATE TABLE `archivosventa` (
 
 CREATE TABLE `archivoventaverant` (
   `archivo` int(11) NOT NULL,
-  `usuarioventa` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechaventa` datetime NOT NULL,
+  `nventa` int(11) NOT NULL,
   `fechamodventa` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `caca`
---
-
-CREATE TABLE `caca` (
-  `cust` int(11) NOT NULL,
-  `clase` int(11) NOT NULL,
-  `algo` int(11) DEFAULT NULL,
-  `algo2` int(11) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `customer`
---
-
-CREATE TABLE `customer` (
-  `id` bigint(20) NOT NULL,
-  `firstname` varchar(8) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `lastname` varchar(255) COLLATE utf8_spanish_ci DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
@@ -137,8 +110,7 @@ CREATE TABLE `etiqueta` (
 --
 
 CREATE TABLE `etiquetaventa` (
-  `usuarioventa` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechaventa` datetime NOT NULL,
+  `nventa` int(11) NOT NULL,
   `etiqueta` varchar(30) COLLATE utf8_spanish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
@@ -149,8 +121,7 @@ CREATE TABLE `etiquetaventa` (
 --
 
 CREATE TABLE `etiquetaventaverant` (
-  `usuarioventa` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechaventa` datetime NOT NULL,
+  `nventa` int(11) NOT NULL,
   `fechamodventa` datetime NOT NULL,
   `etiqueta` varchar(30) COLLATE utf8_spanish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
@@ -198,8 +169,7 @@ CREATE TABLE `motivo` (
 
 CREATE TABLE `oferta` (
   `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `vendedor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechaventa` datetime NOT NULL,
+  `nventa` int(11) NOT NULL,
   `fecha` int(11) NOT NULL,
   `cantidad` int(11) NOT NULL DEFAULT '0',
   `aceptada` tinyint(1) NOT NULL DEFAULT '0'
@@ -228,8 +198,7 @@ CREATE TABLE `opinion` (
 
 CREATE TABLE `puja` (
   `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `vendedor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechaventa` datetime NOT NULL,
+  `nventa` int(11) NOT NULL,
   `fecha` datetime NOT NULL,
   `cantidad` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
@@ -245,6 +214,14 @@ CREATE TABLE `registrologins` (
   `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
+--
+-- Volcado de datos para la tabla `registrologins`
+--
+
+INSERT INTO `registrologins` (`usuario`, `fecha`) VALUES
+('admin1', '2019-04-09 23:30:56'),
+('admin1', '2019-04-09 23:45:53');
+
 -- --------------------------------------------------------
 
 --
@@ -256,8 +233,7 @@ CREATE TABLE `report` (
   `receptor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `contenido` text COLLATE utf8_spanish_ci NOT NULL,
-  `vendedor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechaventa` datetime NOT NULL,
+  `nventa` int(11) NOT NULL,
   `motivo` int(11) NOT NULL,
   `tienearchivo` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
@@ -270,8 +246,7 @@ CREATE TABLE `report` (
 
 CREATE TABLE `seguimiento` (
   `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `vendedor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechaventa` datetime NOT NULL,
+  `nventa` int(11) NOT NULL,
   `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
@@ -282,8 +257,7 @@ CREATE TABLE `seguimiento` (
 --
 
 CREATE TABLE `subasta` (
-  `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechainicio` datetime NOT NULL,
+  `nventa` int(11) NOT NULL,
   `fechafin` datetime NOT NULL,
   `precioinicial` double NOT NULL DEFAULT '0',
   `pujaactual` double NOT NULL DEFAULT '0'
@@ -316,7 +290,8 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`nombreusuario`, `correo`, `contrasena`, `telefono`, `nombre`, `apellidos`, `codigopostal`, `ciudad`, `provincia`, `latitud`, `longitud`, `archivo`, `activo`) VALUES
-('admin', 'admin@admin.com', 'cwecasdvev', NULL, 'admin', 'admin', NULL, NULL, NULL, NULL, NULL, 1, 1);
+('admin', 'admin@admin.com', 'cwecasdvev', NULL, 'admin', 'admin', NULL, NULL, NULL, NULL, NULL, 1, 1),
+('admin1', 'admin@admin1.com', '21232f297a57a5a743894a0e4a801fc3', NULL, 'admin', 'admin', NULL, NULL, NULL, NULL, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -372,8 +347,7 @@ CREATE TABLE `venta` (
 --
 
 CREATE TABLE `ventaverant` (
-  `usuario` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `fechainicio` datetime NOT NULL,
+  `nventa` int(11) NOT NULL,
   `fechamod` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `producto` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
   `descripcion` text COLLATE utf8_spanish_ci NOT NULL,
@@ -412,30 +386,16 @@ ALTER TABLE `archivosreport`
 -- Indices de la tabla `archivosventa`
 --
 ALTER TABLE `archivosventa`
-  ADD PRIMARY KEY (`archivo`,`usuarioventa`,`fechaventa`),
-  ADD KEY `usuarioventa` (`usuarioventa`),
-  ADD KEY `fechaventa` (`fechaventa`);
+  ADD PRIMARY KEY (`archivo`,`nventa`),
+  ADD KEY `nventa` (`nventa`);
 
 --
 -- Indices de la tabla `archivoventaverant`
 --
 ALTER TABLE `archivoventaverant`
-  ADD PRIMARY KEY (`archivo`,`usuarioventa`,`fechaventa`,`fechamodventa`),
-  ADD KEY `archivoventaverant_ibfk_1` (`usuarioventa`),
-  ADD KEY `archivoventaverant_ibfk_2` (`fechaventa`),
-  ADD KEY `archivoventaverant_ibfk_3` (`fechamodventa`);
-
---
--- Indices de la tabla `caca`
---
-ALTER TABLE `caca`
-  ADD PRIMARY KEY (`cust`,`clase`);
-
---
--- Indices de la tabla `customer`
---
-ALTER TABLE `customer`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`archivo`,`nventa`,`fechamodventa`),
+  ADD KEY `archivoventaverant_ibfk_1` (`nventa`),
+  ADD KEY `archivoventaverant_ibfk_2` (`fechamodventa`);
 
 --
 -- Indices de la tabla `etiqueta`
@@ -448,17 +408,16 @@ ALTER TABLE `etiqueta`
 -- Indices de la tabla `etiquetaventa`
 --
 ALTER TABLE `etiquetaventa`
-  ADD PRIMARY KEY (`usuarioventa`,`fechaventa`,`etiqueta`),
-  ADD KEY `fechaventa` (`fechaventa`),
-  ADD KEY `etiqueta` (`etiqueta`);
+  ADD PRIMARY KEY (`nventa`,`etiqueta`),
+  ADD KEY `nventa` (`nventa`),
+  ADD KEY `etiquetaventa_ibfk_3` (`etiqueta`);
 
 --
 -- Indices de la tabla `etiquetaventaverant`
 --
 ALTER TABLE `etiquetaventaverant`
-  ADD PRIMARY KEY (`usuarioventa`,`fechaventa`,`fechamodventa`,`etiqueta`),
-  ADD KEY `etiquetaventaverant_ibfk_1` (`usuarioventa`),
-  ADD KEY `etiquetaventaverant_ibfk_2` (`fechaventa`),
+  ADD PRIMARY KEY (`nventa`,`fechamodventa`,`etiqueta`),
+  ADD KEY `etiquetaventaverant_ibfk_1` (`nventa`),
   ADD KEY `etiquetaventaverant_ibfk_3` (`fechamodventa`),
   ADD KEY `etiquetaventaverant_ibfk_4` (`etiqueta`);
 
@@ -479,9 +438,8 @@ ALTER TABLE `motivo`
 -- Indices de la tabla `oferta`
 --
 ALTER TABLE `oferta`
-  ADD PRIMARY KEY (`usuario`,`vendedor`,`fechaventa`),
-  ADD KEY `vendedor` (`vendedor`),
-  ADD KEY `fechaventa` (`fechaventa`);
+  ADD PRIMARY KEY (`usuario`,`nventa`),
+  ADD KEY `nventa` (`nventa`);
 
 --
 -- Indices de la tabla `opinion`
@@ -494,9 +452,8 @@ ALTER TABLE `opinion`
 -- Indices de la tabla `puja`
 --
 ALTER TABLE `puja`
-  ADD PRIMARY KEY (`usuario`,`vendedor`,`fechaventa`,`fecha`),
-  ADD KEY `vendedor` (`vendedor`),
-  ADD KEY `fechaventa` (`fechaventa`);
+  ADD PRIMARY KEY (`usuario`,`nventa`,`fecha`),
+  ADD KEY `nventa` (`nventa`);
 
 --
 -- Indices de la tabla `registrologins`
@@ -510,23 +467,23 @@ ALTER TABLE `registrologins`
 ALTER TABLE `report`
   ADD PRIMARY KEY (`emisor`,`receptor`,`fecha`),
   ADD KEY `report_ibfk_2` (`receptor`),
-  ADD KEY `motivo` (`motivo`);
+  ADD KEY `motivo` (`motivo`),
+  ADD KEY `nventa` (`nventa`);
 
 --
 -- Indices de la tabla `seguimiento`
 --
 ALTER TABLE `seguimiento`
-  ADD PRIMARY KEY (`usuario`,`vendedor`,`fechaventa`),
-  ADD KEY `seguimiento_ibfk_1` (`fechaventa`),
-  ADD KEY `seguimiento_ibfk_2` (`vendedor`),
+  ADD PRIMARY KEY (`usuario`,`nventa`),
+  ADD KEY `seguimiento_ibfk_1` (`nventa`),
   ADD KEY `seguimiento_ibfk_3` (`usuario`);
 
 --
 -- Indices de la tabla `subasta`
 --
 ALTER TABLE `subasta`
-  ADD PRIMARY KEY (`usuario`,`fechainicio`),
-  ADD KEY `fechainicio` (`fechainicio`);
+  ADD PRIMARY KEY (`nventa`),
+  ADD KEY `nventa` (`nventa`);
 
 --
 -- Indices de la tabla `usuario`
@@ -547,8 +504,7 @@ ALTER TABLE `usuarioverant`
 -- Indices de la tabla `venta`
 --
 ALTER TABLE `venta`
-  ADD PRIMARY KEY (`fechainicio`,`usuario`),
-  ADD UNIQUE KEY `identificador` (`identificador`),
+  ADD PRIMARY KEY (`identificador`),
   ADD KEY `venta_ibfk_1` (`usuario`),
   ADD KEY `venta_ibfk_2` (`comprador`);
 
@@ -556,8 +512,9 @@ ALTER TABLE `venta`
 -- Indices de la tabla `ventaverant`
 --
 ALTER TABLE `ventaverant`
-  ADD PRIMARY KEY (`usuario`,`fechainicio`,`fechamod`),
-  ADD KEY `ventaverant_ibfk_1` (`fechainicio`);
+  ADD PRIMARY KEY (`nventa`,`fechamod`),
+  ADD KEY `ventaverant_ibfk_1` (`nventa`),
+  ADD KEY `ventaverant_ibfk_2` (`fechamod`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -605,16 +562,15 @@ ALTER TABLE `archivosreport`
 -- Filtros para la tabla `archivosventa`
 --
 ALTER TABLE `archivosventa`
-  ADD CONSTRAINT `archivosventa_ibfk_1` FOREIGN KEY (`usuarioventa`) REFERENCES `venta` (`usuario`),
-  ADD CONSTRAINT `archivosventa_ibfk_2` FOREIGN KEY (`fechaventa`) REFERENCES `venta` (`fechainicio`),
+  ADD CONSTRAINT `archivosventa_ibfk_1` FOREIGN KEY (`nventa`) REFERENCES `venta` (`identificador`),
   ADD CONSTRAINT `archivosventa_ibfk_3` FOREIGN KEY (`archivo`) REFERENCES `archivo` (`identificador`);
 
 --
 -- Filtros para la tabla `archivoventaverant`
 --
 ALTER TABLE `archivoventaverant`
-  ADD CONSTRAINT `archivoventaverant_ibfk_1` FOREIGN KEY (`usuarioventa`) REFERENCES `ventaverant` (`usuario`),
-  ADD CONSTRAINT `archivoventaverant_ibfk_2` FOREIGN KEY (`fechaventa`) REFERENCES `ventaverant` (`fechainicio`),
+  ADD CONSTRAINT `archivoventaverant_ibfk_1` FOREIGN KEY (`nventa`) REFERENCES `ventaverant` (`nventa`),
+  ADD CONSTRAINT `archivoventaverant_ibfk_2` FOREIGN KEY (`fechamodventa`) REFERENCES `ventaverant` (`fechamod`),
   ADD CONSTRAINT `archivoventaverant_ibfk_3` FOREIGN KEY (`archivo`) REFERENCES `archivo` (`identificador`);
 
 --
@@ -627,17 +583,16 @@ ALTER TABLE `etiqueta`
 -- Filtros para la tabla `etiquetaventa`
 --
 ALTER TABLE `etiquetaventa`
-  ADD CONSTRAINT `etiquetaventa_ibfk_1` FOREIGN KEY (`usuarioventa`) REFERENCES `venta` (`usuario`),
-  ADD CONSTRAINT `etiquetaventa_ibfk_2` FOREIGN KEY (`fechaventa`) REFERENCES `venta` (`fechainicio`),
+  ADD CONSTRAINT `etiquetaventa_ibfk_1` FOREIGN KEY (`nventa`) REFERENCES `venta` (`identificador`),
   ADD CONSTRAINT `etiquetaventa_ibfk_3` FOREIGN KEY (`etiqueta`) REFERENCES `etiqueta` (`nombre`);
 
 --
 -- Filtros para la tabla `etiquetaventaverant`
 --
 ALTER TABLE `etiquetaventaverant`
-  ADD CONSTRAINT `etiquetaventaverant_ibfk_1` FOREIGN KEY (`usuarioventa`) REFERENCES `ventaverant` (`usuario`),
-  ADD CONSTRAINT `etiquetaventaverant_ibfk_4` FOREIGN KEY (`etiqueta`) REFERENCES `etiqueta` (`nombre`),
-  ADD CONSTRAINT `etiquetaventaverant_ibfk_5` FOREIGN KEY (`fechaventa`) REFERENCES `ventaverant` (`fechainicio`);
+  ADD CONSTRAINT `etiquetaventaverant_ibfk_1` FOREIGN KEY (`nventa`) REFERENCES `ventaverant` (`nventa`),
+  ADD CONSTRAINT `etiquetaventaverant_ibfk_2` FOREIGN KEY (`fechamodventa`) REFERENCES `ventaverant` (`fechamod`),
+  ADD CONSTRAINT `etiquetaventaverant_ibfk_4` FOREIGN KEY (`etiqueta`) REFERENCES `etiqueta` (`nombre`);
 
 --
 -- Filtros para la tabla `mensaje`
@@ -650,8 +605,7 @@ ALTER TABLE `mensaje`
 -- Filtros para la tabla `oferta`
 --
 ALTER TABLE `oferta`
-  ADD CONSTRAINT `oferta_ibfk_1` FOREIGN KEY (`vendedor`) REFERENCES `venta` (`usuario`),
-  ADD CONSTRAINT `oferta_ibfk_2` FOREIGN KEY (`fechaventa`) REFERENCES `venta` (`fechainicio`),
+  ADD CONSTRAINT `oferta_ibfk_1` FOREIGN KEY (`nventa`) REFERENCES `venta` (`identificador`),
   ADD CONSTRAINT `oferta_ibfk_3` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`nombreusuario`);
 
 --
@@ -665,9 +619,8 @@ ALTER TABLE `opinion`
 -- Filtros para la tabla `puja`
 --
 ALTER TABLE `puja`
-  ADD CONSTRAINT `puja_ibfk_1` FOREIGN KEY (`vendedor`) REFERENCES `subasta` (`usuario`),
-  ADD CONSTRAINT `puja_ibfk_2` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`nombreusuario`),
-  ADD CONSTRAINT `puja_ibfk_3` FOREIGN KEY (`fechaventa`) REFERENCES `subasta` (`fechainicio`);
+  ADD CONSTRAINT `puja_ibfk_1` FOREIGN KEY (`nventa`) REFERENCES `subasta` (`nventa`),
+  ADD CONSTRAINT `puja_ibfk_2` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`nombreusuario`);
 
 --
 -- Filtros para la tabla `registrologins`
@@ -681,22 +634,21 @@ ALTER TABLE `registrologins`
 ALTER TABLE `report`
   ADD CONSTRAINT `report_ibfk_1` FOREIGN KEY (`emisor`) REFERENCES `usuario` (`nombreusuario`),
   ADD CONSTRAINT `report_ibfk_2` FOREIGN KEY (`receptor`) REFERENCES `usuario` (`nombreusuario`),
-  ADD CONSTRAINT `report_ibfk_3` FOREIGN KEY (`motivo`) REFERENCES `motivo` (`identificador`);
+  ADD CONSTRAINT `report_ibfk_3` FOREIGN KEY (`motivo`) REFERENCES `motivo` (`identificador`),
+  ADD CONSTRAINT `report_ibfk_4` FOREIGN KEY (`nventa`) REFERENCES `venta` (`identificador`);
 
 --
 -- Filtros para la tabla `seguimiento`
 --
 ALTER TABLE `seguimiento`
-  ADD CONSTRAINT `seguimiento_ibfk_1` FOREIGN KEY (`fechaventa`) REFERENCES `venta` (`fechainicio`),
-  ADD CONSTRAINT `seguimiento_ibfk_2` FOREIGN KEY (`vendedor`) REFERENCES `venta` (`usuario`),
+  ADD CONSTRAINT `seguimiento_ibfk_1` FOREIGN KEY (`nventa`) REFERENCES `venta` (`identificador`),
   ADD CONSTRAINT `seguimiento_ibfk_3` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`nombreusuario`);
 
 --
 -- Filtros para la tabla `subasta`
 --
 ALTER TABLE `subasta`
-  ADD CONSTRAINT `subasta_ibfk_1` FOREIGN KEY (`usuario`) REFERENCES `venta` (`usuario`),
-  ADD CONSTRAINT `subasta_ibfk_2` FOREIGN KEY (`fechainicio`) REFERENCES `venta` (`fechainicio`);
+  ADD CONSTRAINT `subasta_ibfk_1` FOREIGN KEY (`nventa`) REFERENCES `venta` (`identificador`);
 
 --
 -- Filtros para la tabla `usuario`
@@ -721,8 +673,7 @@ ALTER TABLE `venta`
 -- Filtros para la tabla `ventaverant`
 --
 ALTER TABLE `ventaverant`
-  ADD CONSTRAINT `ventaverant_ibfk_1` FOREIGN KEY (`fechainicio`) REFERENCES `venta` (`fechainicio`),
-  ADD CONSTRAINT `ventaverant_ibfk_2` FOREIGN KEY (`usuario`) REFERENCES `venta` (`usuario`);
+  ADD CONSTRAINT `ventaverant_ibfk_1` FOREIGN KEY (`nventa`) REFERENCES `venta` (`identificador`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
