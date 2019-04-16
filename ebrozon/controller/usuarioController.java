@@ -1,21 +1,31 @@
 package com.ebrozon.controller;
 
+import java.util.Date;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Produces;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 
 import com.ebrozon.model.usuario;
@@ -31,6 +41,35 @@ public class usuarioController {
 	
 	@Autowired
 	ventaController venter;
+	
+	private void sendmail(String us, String ver, String cor) throws AddressException, MessagingException, IOException {
+		   Properties props = new Properties();
+		   props.put("mail.smtp.auth", "true");
+		   props.put("mail.smtp.starttls.enable", "true");
+		   props.put("mail.smtp.host", "smtp.gmail.com");
+		   props.put("mail.smtp.port", "587");
+		   
+		   Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+		      protected PasswordAuthentication getPasswordAuthentication() {
+		         return new PasswordAuthentication("karny.sac@gmail.com", "199819981998s");
+		      }
+		   });
+		   Message msg = new MimeMessage(session);
+		   msg.setFrom(new InternetAddress("karny.sac@gmail.com", false));
+
+		   msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(cor));
+		   msg.setSubject("Registro en Ebrozon");
+		   String mensaje = "Muchas gracias por registrarse en Ebrozon, le damos la bienvenida " + us + ".\n"
+				   			+ "Para completar el registro, por favor haga click sobre el siguiente enlace:\n\n"
+				   			+ "http://localhost:8080/aceptarRegistro?un=" + us + "&ver=" + ver
+				   			+ "\nSi usted no sabe nada acerca de este registro, para cancelar el registro"
+				   			+ "haga click sobre el siguiente enlace\n\n"
+				   			+ "http://localhost:8080/rechazarRegistro?un=" + us + "&ver=" + ver
+				   			+ "\nGracias y saludos";
+		   msg.setContent(mensaje, "text/html; charset=utf-8");
+		   msg.setSentDate(new Date());
+		   Transport.send(msg);   
+		}
 	
 	//Registra a un usuario recibiendo como parámetros obligatorios el nombre de usuario, el correo
 	//la contraseña, el nombre y los apellidos, y siendo opcionales el teléfono, el código postal
@@ -98,7 +137,8 @@ public class usuarioController {
 	        	user.setArchivo(1);
 	        }
 	        
-	        user.setActivo(1);
+	        user.setActivo(0);
+	        sendmail(user.getNombreusuario(),user.getContrasena(), user.getCorreo());
 	        repository.save(user);
 		}
 		catch(Exception e) {
@@ -282,6 +322,43 @@ public class usuarioController {
 		    else {
 		    	return "{E:La contraseña es incorrecta.}";
 		    }
+		}
+		else {
+			return "{E:El nombre usuario no existe.}";
+		}
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/aceptarRegistro")
+	public String aceptarRegistro(@RequestParam("un") String un, @RequestParam("ver") String ver) {
+		Optional<usuario> aux = repository.findBynombreusuario(un);
+		if(aux.isPresent()) {
+			if(ver.equals(aux.get().getContrasena())) {
+				aux.get().setActivo(1);
+				repository.save(aux.get());
+				return "{O:Registro finalizado con éxito}";
+			}
+			else {
+				return "{E:Por favor vuelva a registrarse.}";
+			}
+		}
+		else {
+			return "{E:El nombre usuario no existe.}";
+		}
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/rechazarRegistro")
+	public String rechazarRegistro(@RequestParam("un") String un, @RequestParam("ver") String ver) {
+		Optional<usuario> aux = repository.findBynombreusuario(un);
+		if(aux.isPresent()) {
+			if(ver.equals(aux.get().getContrasena())) {
+				repository.delete(aux.get());
+				return "{O:Registro cancelado con éxito}";
+			}
+			else {
+				return "{E:Por favor vuelva a registrarse.}";
+			}
 		}
 		else {
 			return "{E:El nombre usuario no existe.}";

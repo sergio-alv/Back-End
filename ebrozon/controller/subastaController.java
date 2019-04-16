@@ -1,5 +1,6 @@
 package com.ebrozon.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -15,15 +16,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ebrozon.model.venta;
+import com.ebrozon.model.subasta;
 import com.ebrozon.model.usuario;
-import com.ebrozon.repository.ventaRepository;
+import com.ebrozon.repository.subastaRepository;
 
 @RestController
-public class ventaController {
+public class subastaController {
 	
 	@Autowired
-    ventaRepository repository;
+    subastaRepository repository;
 	
 	@Autowired
     archivoController archiver;
@@ -31,30 +32,28 @@ public class ventaController {
 	@Autowired
     usuarioController userer;
 	
-	@Autowired
-    subastaController subaster;
-	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
 	@CrossOrigin
-	@RequestMapping("/publicarVenta")
-	public String publicarVenta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
-			@RequestParam("pre") double pre, @RequestParam(value = "arc", required=false) MultipartFile arc) {
+	@RequestMapping("/publicarSubasta")
+	public String publicarSubasta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
+			@RequestParam("pre") double pre, @RequestParam("end") /*Date*/String end,  @RequestParam("pin") double pin, 
+			@RequestParam(value = "arc", required=false) MultipartFile arc) {
 		Optional<usuario> usaux = userer.recuperarUsuario(un);
 		if(!usaux.isPresent()) {
 			return "{E:No existe el usuario.}";
 		}
 		int idIm = 1;
 		boolean archivoGuardado = false;
-		venta vent;
+		subasta sub;
 		try {
-			vent = new venta(un,prod, desc, pre, 1, 1, usaux.get().getCiudad());
+			sub = new subasta(un,prod, desc, pre, 1, 1, usaux.get().getCiudad(),new Date(),pin,pin);
 			int id = 1;
 			Optional<Integer> idAux = repository.lastId();
 			if(idAux.isPresent()) {
 				id = idAux.get()+1;
 			}
-			vent.setIdentificador(id);
+			sub.setIdentificador(id);
 			/*if(arc != null) {
 				vent.setTienearchivo(1);
 				idIm = archiver.uploadFile(arc);
@@ -65,7 +64,7 @@ public class ventaController {
 			}
 			else {*/
 				usaux = null;
-				repository.save(vent);
+				repository.save(sub);
 				return "{O:Ok}";
 				//return "{E:Es obligatorio insertar al menos una imagen del producto.}";
 			//}
@@ -91,20 +90,29 @@ public class ventaController {
 	}
 	
 	@CrossOrigin
-	@RequestMapping("/actualizarVenta")
-	public String actualizarVenta(@RequestParam("id") int id, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
-			@RequestParam("pre") double pre, @RequestParam(value = "arc", required=false) MultipartFile arc) {
-		Optional<venta> ventaux = repository.findByidentificador(id);
-		if(!ventaux.isPresent()) {
+	@RequestMapping("/actualizarSubasta")
+	public String actualizarSubasta(@RequestParam("id") int id, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
+			@RequestParam("pre") double pre, @RequestParam("end") /*Date*/String end,  @RequestParam("pin") double pin, 
+			@RequestParam(value = "arc", required=false) MultipartFile arc) {
+		
+		if(repository.numeroPujasRecibidas(id) >0) {
+			return "{E:No se puede actualizar una subasta cuando esta ha recibido ya una puja.}";
+		}
+		
+		Optional<subasta> subaux = repository.findByidentificador(id);
+		if(!subaux.isPresent()) {
 			return "{E:Error inesperado.}";
 		}
 		int idIm = 1;
 		boolean archivoGuardado = false;
-		venta vent = ventaux.get();
+		subasta sub = subaux.get();
 		try {
-			vent.setProducto(prod);
-			vent.setDescripcion(desc);
-			vent.setPrecio(pre);
+			sub.setProducto(prod);
+			sub.setDescripcion(desc);
+			sub.setPrecio(pre);
+			sub.setFechafin(new Date());
+			sub.setPrecioinicial(pin);
+			sub.setPujaactual(pin);
 			/*if(arc != null) {
 				vent.setTienearchivo(1);
 				idIm = archiver.uploadFile(arc);
@@ -114,7 +122,7 @@ public class ventaController {
 				return "{O:Ok}";
 			}
 			else {*/
-				repository.save(vent);
+				repository.save(sub);
 				return "{O:Ok}";
 				//return "{E:Es obligatorio insertar al menos una imagen del producto.}";
 			//}
@@ -140,70 +148,51 @@ public class ventaController {
 	}
 	
 	@CrossOrigin
-	@RequestMapping("/listarPaginaPrincipal")
+	@RequestMapping("/listarSubastasCiudad")
 	@Produces("application/json")
-	List<venta> listarPaginaPrincipal(){
-		return  repository.findByactivaOrderByFechainicioDesc(1);
-	}
-	
-	@CrossOrigin
-	@RequestMapping("/listarProductosCiudad")
-	@Produces("application/json")
-	List<venta> listarProductosCiudad(@RequestParam("ci") String ci){
+	List<subasta> listarSubastasCiudad(@RequestParam("ci") String ci){
 		return repository.findByciudadAndActivaOrderByFechainicioDesc(ci,1);
 	}
 	
 	@CrossOrigin
-	@RequestMapping("/listarProductosUsuario")
+	@RequestMapping("/listarSubastasUsuario")
 	@Produces("application/json")
-	List<venta> listarProductosUsuario(@RequestParam("un") String un){
+	List<subasta> listarSubastasUsuario(@RequestParam("un") String un){
 		return repository.findByusuarioOrderByFechainicioDesc(un);
 	}
 	
 	@CrossOrigin
-	@RequestMapping("/recuperarProducto")
+	@RequestMapping("/recuperarSubasta")
 	@Produces("application/json")
-	Optional<venta> recuperarProducto(@RequestParam("id") int id){
+	Optional<subasta> recuperarSubasta(@RequestParam("id") int id){
 		return repository.findByidentificador(id);
 	}
 	
-	String actualizarCiudadVentasUsuario(String un,String ci) {
-		try {
-			repository.updateCityVentasUsuario(un, ci);
+	@CrossOrigin
+	@RequestMapping("/realizarPuja")
+	String realizarPuja(@RequestParam("un") String un, @RequestParam("id") int id, @RequestParam("ct") Double ct) {
+		Optional<usuario> usaux = userer.recuperarUsuario(un);
+		if(!usaux.isPresent()) {
+			return "{E:No existe el usuario.}";
 		}
-		catch(Exception e) {
-			return "{E:Error inesperado.}";
+		Optional<subasta> aux = repository.findByidentificador(id);
+		if(!aux.isPresent()) {
+			return "{E:La subasta no existe.}";
+		}
+		subasta sub = aux.get();
+		if(sub.getActiva() == 0) {
+			return "{E:La subasta no está activa.}";
+		}
+		if(sub.getPujaactual() >= ct) {
+			return "{E:La puja tiene que ser superior a la puja actual.}";
+		}
+		try {
+			sub.setPujaactual(ct);
+			repository.save(sub);
+			repository.pujarSubasta(un, id, ct);
+		}catch(Exception e) {
+			return "{E:Ha habido un problema al realizar la puja.}";
 		}
 		return "{O:Ok}";
-	}
-	
-	@CrossOrigin
-	@RequestMapping("/desactivarVenta")
-	String desactivarVenta(@RequestParam("id") int id) {
-		Optional<venta> aux = repository.findByidentificador(id);
-		if(aux.isPresent()) {
-			venta vent = aux.get();
-			vent.setActiva(0);
-			repository.save(vent);
-			return "{O:Ok}";
-		}
-		else {
-			return "{E:No se ha encontrado la venta.}";
-		}
-	}
-	
-	@CrossOrigin
-	@RequestMapping("/activarVenta")
-	String activarVenta(@RequestParam("id") int id) {
-		Optional<venta> aux = repository.findByidentificador(id);
-		if(aux.isPresent()) {
-			venta vent = aux.get();
-			vent.setActiva(1);
-			repository.save(vent);
-			return "{O:Ok}";
-		}
-		else {
-			return "{E:No se ha encontrado la venta.}";
-		}
 	}
 }
