@@ -1,6 +1,5 @@
 package com.ebrozon.repository;
  
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,16 +15,18 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	
 	@Modifying
 	@Transactional
-	@Query(value = "insert into archivosventa(archivo, usuarioventa, fechaventa) values(:arc, :un, :fi)", nativeQuery = true)
-	void archivoApareceEnVenta(int arc, String un, Date fi);
+	@Query(value = "insert into archivosventa(archivo, nventa) values(:arc, :nv)", nativeQuery = true)
+	void archivoApareceEnVenta(int arc, int nv);
 	
-	List<venta> findByciudadAndActiva(String ciudad,int Activa);
+	List<venta> findByciudadAndActivaOrderByFechainicioDesc(String ciudad,int Activa);
 	
-	List<venta> findByusuarioAndActiva(String usuario, int Activa);
+	List<venta> findByusuarioAndActivaOrderByFechainicioDesc(String usuario, int Activa);
+	
+	List<venta> findByactivaOrderByFechainicioDesc(int activa);
 	
 	Optional<venta> findByidentificador(int identificador);
 	
-	Optional<venta> findByusuario(String usuario);
+	List<venta> findByusuarioOrderByFechainicioDesc(String usuario);
 	
 	@Query("Select max(identificador) from venta")
 	Optional<Integer> lastId();
