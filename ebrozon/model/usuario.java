@@ -4,23 +4,21 @@ import java.io.Serializable;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.Range;
-import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "usuario")
 @XmlRootElement
-public class usuario  implements Serializable{
+public class usuario implements Serializable{
+	
+	protected static final long serialVersionUID = 1L;
 	
 	 @Id
 	 @Column(name = "nombreusuario")

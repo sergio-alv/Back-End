@@ -3,8 +3,6 @@ package com.ebrozon.model;
 import java.util.Date;
 import java.io.Serializable;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,62 +11,63 @@ import javax.persistence.*;
 @Entity
 @Table(name = "venta")
 //@IdClass(venta.class)
+@Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
 public class venta implements Serializable{
 
-	private static final long serialVersionUID = 1L;
+	protected static final long serialVersionUID = 1L;
 	
 	@Id
 	@Column(name = "identificador")
-	private int identificador;
+	protected int identificador;
 	
 	
 	@Column(name = "usuario")
 	@Size(min = 3, max = 30, message="El nombre tiene que tener entre 3 y 30 caracteres")
 	@Pattern(regexp = "[A-z,0-9,_,-]+", message="El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -")
-	private String usuario;
+	protected String usuario;
 	
 	@Column(name = "fechainicio")
-	private Date fechainicio;
+	protected Date fechainicio;
 	
 	@Column(name = "fechaventa")
-	private Date fechaventa;
+	protected Date fechaventa;
 	
 	@Column(name = "producto")
 	@Size(min = 3, max = 100, message="El nombre del producto tiene que tener entre 3 y 100 caracteres")
-	private String producto;
+	protected String producto;
 	
 	@Column(name = "descripcion")
 	@Size(min = 10, message="La descripción del producto tiene que tener mínimo 10 caracteres")
-	private String descripcion;
+	protected String descripcion;
 	
 	@Column(name = "precio")
 	@Min(0)
-	private double precio;
+	protected double precio;
 	
 	@Column(name = "preciofinal")
-	private double preciofinal;
+	protected double preciofinal;
 	
 	@Column(name = "comprador")
-	private String comprador;
+	protected String comprador;
 	
 	@Column(name = "fechapago")
-	private Date fechapago;
+	protected Date fechapago;
 	
 	@Column(name = "tienearchivo")
-	private int tienearchivo;
+	protected int tienearchivo;
 	
 	@Column(name = "activa")
-	private int activa;
+	protected int activa;
 	
 	@Column(name = "es_subasta")
-	private int  es_subasta;
+	protected int  es_subasta;
 	
 	@Column(name = "ciudad")
-	private String ciudad;
+	protected String ciudad;
 	
 	@Transient
-	private usuario user;
+	protected usuario user;
 
 	public venta(
 			@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String usuario,
