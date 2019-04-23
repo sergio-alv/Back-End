@@ -18,6 +18,8 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	@Query(value = "insert into archivosventa(archivo, nventa) values(:arc, :nv)", nativeQuery = true)
 	void archivoApareceEnVenta(int arc, int nv);
 	
+	boolean existsByidentificador(int identificador);
+	
 	List<venta> findByciudadAndActivaOrderByFechainicioDesc(String ciudad,int Activa);
 	
 	List<venta> findByusuarioAndActivaOrderByFechainicioDesc(String usuario, int Activa);
