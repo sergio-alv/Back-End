@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ebrozon.repository.ventaRepository;
+import com.ebrozon.repository.ofertaRepository;
 import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.model.oferta;
-import com.ebrozon.repository.ofertaRepository;
+
 
 import java.security.MessageDigest;
 import java.sql.Date;
@@ -57,19 +58,19 @@ public class ofertaController {
 	// Lista todas las ofertas recibidas sobre una venta recibiendo como parámetros obligatorios el número de la venta.
 	@RequestMapping("/listarOfertasVenta")
 	public List<oferta> listarOfertasVenta(@RequestParam("nventa") int nventa) {
-		return repository.findBynventaOrderByfechaDesc(nventa);
+		return repository.findBynventaOrderByFechaDesc(nventa);
 	}
 	
 	// Lista todas las ofertas realizadas por un usuario recibiendo como parámetros obligatorios el nombre del usuario.
 	@RequestMapping("/listarOfertasUsuario")
 	public List<oferta> listarOfertasUsuario(@RequestParam("usuario") String usuario) {
-		return repository.findByusuarioOrderByfechaDesc(usuario);
+		return repository.findByusuarioOrderByFechaDesc(usuario);
 	}
 	
 	// Lista todas las ofertas sobre un producto recibiendo como parámetros obligatorios el nombre del producto.
 	@RequestMapping("/listarOfertasProducto")
 	public List<oferta> listarOfertasProducto(String producto) {
-		return repository.findByproductoOrderByfechaDesc(producto);
+		return repository.findByproductoOrderByFechaDesc(producto);
 	}
 	
 	// Acepta la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
@@ -85,7 +86,7 @@ public class ofertaController {
 			else {
 				oferta o;
 				try {
-					Optional<oferta> o_aux = repository.findByusuarioAndnventaAndfechaAndcantidad(usuario,nventa,fecha,cantidad);
+					Optional<oferta> o_aux = repository.findByusuarioAndNventaAndFechaAndCantidad(usuario,nventa,fecha,cantidad);
 					o = o_aux.get();
 					o.setAceptada((short) 1);
 				}
@@ -98,14 +99,12 @@ public class ofertaController {
 				for (int i=0; i<l.size(); ++i) {
 					if (l.get(i).getAceptada() == (short) 0) {
 						try {
-							Optional<oferta> o_aux = repository.findByusuarioAndnventaAndfechaAndcantidad(l.get(i).getUsuario(),l.get(i).getNventa(),l.get(i).getFecha(),l.get(i).getCantidad());
-							o = o_aux.get();
-							o.setAceptada((short)-1);
+							l.get(i).setAceptada((short) -1);
 						}
 						catch (Exception e) {
 							return e.getMessage();
 						}
-						repository.save(o);
+						repository.save(l.get(i));
 					}
 				}
 				return "{O:Ok}";
@@ -126,7 +125,7 @@ public class ofertaController {
 			else {
 				oferta o;
 				try {
-					Optional<oferta> o_aux = repository.findByusuarioAndnventaAndfechaAndcantidad(usuario,nventa,fecha,cantidad);
+					Optional<oferta> o_aux = repository.findByusuarioAndNventaAndFechaAndCantidad(usuario,nventa,fecha,cantidad);
 					o = o_aux.get();
 					o.setAceptada((short) -1);
 				}
@@ -150,8 +149,9 @@ public class ofertaController {
 				return "{E:No existe la venta o el usuario.}";
 			}
 			else {
-				Optional<oferta> o_aux = repository.findByusuarioAndnventaAndfechaAndcantidad(usuario,nventa,fecha,cantidad);
+				Optional<oferta> o_aux = repository.findByusuarioAndNventaAndFechaAndCantidad(usuario,nventa,fecha,cantidad);
 				repository.delete(o_aux.get());
+				return "{O:Ok}";
 			}
 		}
 	}
