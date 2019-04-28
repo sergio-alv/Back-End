@@ -24,6 +24,8 @@ public interface subastaRepository extends CrudRepository<subasta, Long>{
 	
 	Optional<subasta> findByidentificador(int identificador);
 	
+	List<subasta> findByactiva(int ac);
+	
 	List<subasta> findByusuarioOrderByFechainicioDesc(String usuario);
 	
 	@Query("Select max(identificador) from venta")

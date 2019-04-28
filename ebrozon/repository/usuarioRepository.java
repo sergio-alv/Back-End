@@ -24,4 +24,9 @@ public interface usuarioRepository extends CrudRepository<usuario, Long>{
 	@Transactional
 	@Query(value = "insert into registrologins(usuario) values(:un)", nativeQuery = true)
 	void registrarLogin(String un);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "update usuario set estrellas = :es where nombreusuario = :un", nativeQuery = true)
+	void actualizarEstrellas(String un, double es);
 }
