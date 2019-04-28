@@ -12,7 +12,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -371,7 +370,7 @@ public class usuarioController {
 	@Produces("application/json")
 	public Optional<usuario> recuperarUsuario(@RequestParam("un") String un) {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
-		aux.get().setUrlArchivo(archiver.loadFile(aux.get().getArchivo()));
+		aux.get().setUrlArchivo(archiver.loadFileUrl(aux.get().getArchivo()));
 		aux.get().setContrasena("cwecasdvev");
 		return aux;
 	}
@@ -412,5 +411,10 @@ public class usuarioController {
 	@RequestMapping("/existeUsuario")
 	boolean existeUsuario(@RequestParam("un") String un) {
 		return repository.existsBynombreusuario(un);
+	}
+	
+	String actualizarEstrellasUsuario(String un, double estrellas) {
+		repository.actualizarEstrellas(un, estrellas);
+		return "{O:Ok}";
 	}
 }

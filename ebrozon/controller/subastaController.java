@@ -10,6 +10,9 @@ import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Produces;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +24,8 @@ import com.ebrozon.model.usuario;
 import com.ebrozon.repository.subastaRepository;
 
 @RestController
+@Configuration
+@EnableScheduling
 public class subastaController {
 	
 	@Autowired
@@ -194,5 +199,16 @@ public class subastaController {
 			return "{E:Ha habido un problema al realizar la puja.}";
 		}
 		return "{O:Ok}";
+	}
+	
+	@Scheduled(cron = "* * * * * *", zone = "CET")
+	void cerrarSubastas() {
+		List<subasta> list = repository.findByactiva(1);
+		for(int i = 0; i < list.size();++i) {
+			if(new Date().after(list.get(i).getFechafin())) {
+				list.get(i).setActiva(0);
+				repository.save(list.get(i));
+			}
+		}
 	}
 }
