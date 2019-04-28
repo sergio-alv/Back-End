@@ -71,6 +71,9 @@ public class usuario implements Serializable{
 	 @Column(name = "activo")
 	 private int activo;
 	 
+	 @Column(name = "estrellas")
+	 private int estrellas;
+	 
 	 @Transient
 	 private String urlArchivo;
 
@@ -85,6 +88,7 @@ public class usuario implements Serializable{
 			this.contrasena = contrasena;
 			this.nombre = nombre;
 			this.apellidos = apellidos;
+			this.estrellas = 5;
 		}
 	 
 	 public usuario(
@@ -103,6 +107,7 @@ public class usuario implements Serializable{
 			this.codigopostal = codigopostal;
 			this.ciudad = ciudad;
 			this.provincia = provincia;
+			this.estrellas = 5;
 		}
 
 		public usuario(
@@ -125,6 +130,7 @@ public class usuario implements Serializable{
 			this.latitud = latitud;
 			this.longitud = longitud;
 			this.archivo = archivo;
+			this.estrellas = 5;
 		}
 	public usuario() {}
 	 
@@ -238,6 +244,14 @@ public class usuario implements Serializable{
 	
 	public String getUrlArchivo() {
 		return this.urlArchivo;
+	}
+
+	public int getEstrellas() {
+		return estrellas;
+	}
+
+	public void setEstrellas(int estrellas) {
+		this.estrellas = estrellas;
 	}
 	 
 	/*
