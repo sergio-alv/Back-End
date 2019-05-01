@@ -66,6 +66,9 @@ public class venta implements Serializable{
 	@Column(name = "ciudad")
 	protected String ciudad;
 	
+	@Column(name = "provincia")
+	protected String provincia;
+	
 	@Transient
 	protected usuario user;
 
@@ -206,6 +209,14 @@ public class venta implements Serializable{
 
 	public void setCiudad(String ciudad) {
 		this.ciudad = ciudad;
+	}
+
+	public String getProvincia() {
+		return provincia;
+	}
+
+	public void setProvincia(String provincia) {
+		this.provincia = provincia;
 	}
 	
 }

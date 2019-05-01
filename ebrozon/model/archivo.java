@@ -1,18 +1,9 @@
 package com.ebrozon.model;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "archivo")
@@ -33,6 +24,9 @@ public class archivo {
 	 
 	 @Column(name = "borrada")
 	 private int borrada;
+	 
+	 @Column(name="datos")
+	 private String datos;
 
 	public int getIdentificador() {
 		return identificador;
@@ -56,5 +50,11 @@ public class archivo {
 
 	public void setBorrada(int borrada) {
 		this.borrada = borrada;
+	}
+	public String getDatos() {
+		return datos;
+	}
+	public void setDatos(String datos) {
+		this.datos = datos;
 	}
 }

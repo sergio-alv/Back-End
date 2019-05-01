@@ -37,8 +37,8 @@ public class usuario implements Serializable{
 	 private String contrasena;
 	 
 	 @Column(name = "telefono")
-	 @Range(min=100000000,max=999999999, message = "El teléfono tiene que tener 9 dígitos.")
-	 private Integer telefono;
+	 //@Range(min=100000000,max=999999999, message = "El teléfono tiene que tener 9 dígitos.")
+	 private int telefono;
 	 
 	 @Column(name = "nombre")
 	 @NotNull
@@ -49,8 +49,8 @@ public class usuario implements Serializable{
 	 private String apellidos;
 	 
 	 @Column(name = "codigopostal")
-	 @Range(min=1,max=99999, message = "El código postal tiene que tener un mínimo de 1 dígito y un máximo de 5.")
-	 private Integer codigopostal;
+	 //@Range(min=1,max=99999, message = "El código postal tiene que tener un mínimo de 1 dígito y un máximo de 5.")
+	 private int codigopostal;
 	 
 	 @Column(name = "ciudad")
 	 private String ciudad;
@@ -59,10 +59,10 @@ public class usuario implements Serializable{
 	 private String provincia;
 	 
 	 @Column(name = "latitud")
-	 private Float latitud;
+	 private double latitud;
 	 
 	 @Column(name = "longitud")
-	 private Float longitud;
+	 private double longitud;
 	 
 	 @Column(name = "archivo")
 	 @Min(0)
@@ -72,7 +72,7 @@ public class usuario implements Serializable{
 	 private int activo;
 	 
 	 @Column(name = "estrellas")
-	 private int estrellas;
+	 private double estrellas;
 	 
 	 @Transient
 	 private String urlArchivo;
@@ -88,7 +88,16 @@ public class usuario implements Serializable{
 			this.contrasena = contrasena;
 			this.nombre = nombre;
 			this.apellidos = apellidos;
-			this.estrellas = 5;
+			
+			this.codigopostal = 0;
+			this.ciudad = "";
+			this.provincia = "";
+			this.latitud = 0.0;
+			this.longitud = 0.0;
+			this.archivo = 0;
+			this.telefono = 0;
+			
+			this.estrellas = 5.0;
 		}
 	 
 	 public usuario(
@@ -107,7 +116,7 @@ public class usuario implements Serializable{
 			this.codigopostal = codigopostal;
 			this.ciudad = ciudad;
 			this.provincia = provincia;
-			this.estrellas = 5;
+			this.estrellas = 5.0;
 		}
 
 		public usuario(
@@ -116,7 +125,7 @@ public class usuario implements Serializable{
 				@Size(min = 8, max = 100, message = "El correo tiene que tener entre 8 y 100 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "La contraseña solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -.") String contrasena,
 				@Min(100000000) @Max(999999999) int telefono, @NotNull String nombre, @NotNull String apellidos,
 				@Min(1) @Max(99999) int codigopostal, @NotNull String ciudad,@NotNull String provincia,
-				float latitud, float longitud, @Min(0) int archivo) {
+				double latitud, double longitud, @Min(0) int archivo) {
 			super();
 			this.nombreusuario = nombreusuario;
 			this.correo = correo;
@@ -130,7 +139,7 @@ public class usuario implements Serializable{
 			this.latitud = latitud;
 			this.longitud = longitud;
 			this.archivo = archivo;
-			this.estrellas = 5;
+			this.estrellas = 5.0;
 		}
 	public usuario() {}
 	 
@@ -206,19 +215,19 @@ public class usuario implements Serializable{
 		this.provincia = provincia;
 	}
 
-	public float getLatitud() {
+	public double getLatitud() {
 		return latitud;
 	}
 
-	public void setLatitud(float latitud) {
+	public void setLatitud(double latitud) {
 		this.latitud = latitud;
 	}
 
-	public float getLongitud() {
+	public double getLongitud() {
 		return longitud;
 	}
 
-	public void setLongitud(float longitud) {
+	public void setLongitud(double longitud) {
 		this.longitud = longitud;
 	}
 
@@ -246,11 +255,11 @@ public class usuario implements Serializable{
 		return this.urlArchivo;
 	}
 
-	public int getEstrellas() {
+	public double getEstrellas() {
 		return estrellas;
 	}
 
-	public void setEstrellas(int estrellas) {
+	public void setEstrellas(double estrellas) {
 		this.estrellas = estrellas;
 	}
 	 
