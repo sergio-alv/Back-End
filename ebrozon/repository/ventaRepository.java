@@ -20,6 +20,8 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	
 	List<venta> findByciudadAndActivaOrderByFechainicioDesc(String ciudad,int Activa);
 	
+	List<venta> findByprovinciaAndActivaOrderByFechainicioDesc(String provincia,int Activa);
+	
 	List<venta> findByusuarioAndActivaOrderByFechainicioDesc(String usuario, int Activa);
 	
 	List<venta> findByactivaOrderByFechainicioDesc(int activa);
@@ -35,4 +37,9 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	@Transactional
 	@Query(value = "update venta set ciudad = :ci where usuario = :un", nativeQuery = true)
 	void updateCityVentasUsuario(String un, String ci);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "update venta set provincia = :pr where usuario = :un", nativeQuery = true)
+	void updateProvinciaVentasUsuario(String un, String pr);
 }
