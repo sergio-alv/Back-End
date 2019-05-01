@@ -1,9 +1,14 @@
 package com.ebrozon.controller;
 
+import java.util.Base64;
 import java.util.Optional;
 import java.nio.file.Paths;
+import java.sql.Blob;
 import java.util.Random;
 
+import javax.sql.rowset.serial.SerialBlob;
+
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +47,7 @@ public class archivoController {
 				archivo f = new archivo(upload_folder + fileName, 0);
 				f.setIdentificador(id);
 				repository.save(f);
-				return repository.findByurl(upload_folder + fileName).get().getIdentificador();
+				return id;//repository.findByurl(upload_folder + fileName).get().getIdentificador();
 			}
 			catch(IOException e) {
 				return -1;
@@ -50,6 +55,39 @@ public class archivoController {
 		}
 		return -1;
 	}
+	
+	@RequestMapping("/uploadArchivoTemp")
+	public int uploadArchivoTemp(@RequestParam("file") String file) {
+		if(!file.isEmpty()) {
+			try {
+				int id = 1;
+				Optional<Integer> idAux = repository.lastId();
+				if(idAux.isPresent()) {
+					id = idAux.get()+1;
+				}
+				//byte[] array = new byte[10];
+				//new Random().nextBytes(array);
+				//String fileName = Integer.toString(id)  + "-" + file.getOriginalFilename();
+				//saveFile(file, fileName);
+				archivo f = new archivo(Integer.toString(id), 0);
+				f.setIdentificador(id);
+				f.setDatos(file);
+				repository.save(f);
+				return id;//repository.findByurl(upload_folder + fileName).get().getIdentificador();
+			}
+			catch(Exception e) {
+				return -1;
+			}
+		}
+		return -1;
+	}
+	
+	@RequestMapping("/loadArchivoTemp")
+	public String loadArchivoTemp(@RequestParam("id") int id) {
+		try {
+			return repository.findByidentificador(id).get().getDatos();
+		}catch(Exception e){return "caca";}
+		}
 	
 	@RequestMapping("/loadFileUrl")
 	public String loadFileUrl(@RequestParam("id") int id) {

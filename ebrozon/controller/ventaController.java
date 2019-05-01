@@ -49,6 +49,7 @@ public class ventaController {
 		venta vent;
 		try {
 			vent = new venta(un,prod, desc, pre, 1, 1, usaux.get().getCiudad());
+			vent.setProvincia(usaux.get().getProvincia());
 			int id = 1;
 			Optional<Integer> idAux = repository.lastId();
 			if(idAux.isPresent()) {
@@ -154,6 +155,13 @@ public class ventaController {
 	}
 	
 	@CrossOrigin
+	@RequestMapping("/listarProductosProvincia")
+	@Produces("application/json")
+	List<venta> listarProductosProvincia(@RequestParam("pr") String pr){
+		return repository.findByprovinciaAndActivaOrderByFechainicioDesc(pr,1);
+	}
+	
+	@CrossOrigin
 	@RequestMapping("/listarProductosUsuario")
 	@Produces("application/json")
 	List<venta> listarProductosUsuario(@RequestParam("un") String un){
@@ -170,6 +178,16 @@ public class ventaController {
 	String actualizarCiudadVentasUsuario(String un,String ci) {
 		try {
 			repository.updateCityVentasUsuario(un, ci);
+		}
+		catch(Exception e) {
+			return "{E:Error inesperado.}";
+		}
+		return "{O:Ok}";
+	}
+	
+	String actualizarProvinciaVentasUsuario(String un,String pr) {
+		try {
+			repository.updateProvinciaVentasUsuario(un, pr);
 		}
 		catch(Exception e) {
 			return "{E:Error inesperado.}";

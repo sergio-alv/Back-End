@@ -206,6 +206,12 @@ public class usuarioController {
 	        }
 	        
 	        if ((pr != null) && (!pr.trim().equals(""))){ 
+	        	if(!pr.equals(user.getProvincia())) {
+	        		String e = venter.actualizarProvinciaVentasUsuario(un, pr);
+	        		if(!e.equals("{O:Ok}")) {
+	        			return "{E:Error al actualizar la ciudad.}";
+	        		}
+	        	}
 	        	user.setProvincia(pr);
 	        }
 	        
@@ -370,8 +376,10 @@ public class usuarioController {
 	@Produces("application/json")
 	public Optional<usuario> recuperarUsuario(@RequestParam("un") String un) {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
-		aux.get().setUrlArchivo(archiver.loadFileUrl(aux.get().getArchivo()));
-		aux.get().setContrasena("cwecasdvev");
+		if(aux.isPresent()) {
+			aux.get().setUrlArchivo(archiver.loadFileUrl(aux.get().getArchivo()));
+			aux.get().setContrasena("cwecasdvev");
+		}
 		return aux;
 	}
 	
