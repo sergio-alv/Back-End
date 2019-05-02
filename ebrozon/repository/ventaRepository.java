@@ -33,6 +33,9 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	@Query("Select max(identificador) from venta")
 	Optional<Integer> lastId();
 	
+	@Query(value = "Select archivo from archivosventa where nventa = :prod", nativeQuery = true)
+	List<Integer> listaArchivos(int prod);
+	
 	@Modifying
 	@Transactional
 	@Query(value = "update venta set ciudad = :ci where usuario = :un", nativeQuery = true)
