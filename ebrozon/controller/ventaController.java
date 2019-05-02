@@ -172,7 +172,11 @@ public class ventaController {
 	@RequestMapping("/recuperarProducto")
 	@Produces("application/json")
 	Optional<venta> recuperarProducto(@RequestParam("id") int id){
-		return repository.findByidentificador(id);
+		Optional<venta> aux  = repository.findByidentificador(id);
+		if(aux.isPresent()) {
+			aux.get().setArchivos(repository.listaArchivos(id));
+		}
+		return aux;
 	}
 	
 	String actualizarCiudadVentasUsuario(String un,String ci) {

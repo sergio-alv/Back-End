@@ -136,8 +136,8 @@ public class usuarioController {
 	        	user.setArchivo(1);
 	        }
 	        
-	        user.setActivo(0);
-	        sendmail(user.getNombreusuario(),user.getContrasena(), user.getCorreo());
+	        user.setActivo(1);
+	        //sendmail(user.getNombreusuario(),user.getContrasena(), user.getCorreo());
 	        repository.save(user);
 		}
 		catch(Exception e) {
@@ -168,7 +168,7 @@ public class usuarioController {
     public String actualizarUsuario(@RequestParam("un") String un,
 			@RequestParam(value = "tel", required=false) Integer tel, @RequestParam(value = "na", required=false) String na, @RequestParam(value = "lna", required=false) String lna,
 			@RequestParam(value = "cp", required=false) Integer cp, @RequestParam(value = "ci", required=false) String ci, @RequestParam(value = "pr", required=false) String pr,
-			@RequestParam(value = "lat", required=false) String lat, @RequestParam(value = "lon", required=false) String lon, @RequestParam(value = "im", required=false) MultipartFile im
+			@RequestParam(value = "lat", required=false) String lat, @RequestParam(value = "lon", required=false) String lon, @RequestParam(value = "im", required=false) String im
 			){
 		
 		if(!repository.existsBynombreusuario(un)) {
@@ -209,7 +209,7 @@ public class usuarioController {
 	        	if(!pr.equals(user.getProvincia())) {
 	        		String e = venter.actualizarProvinciaVentasUsuario(un, pr);
 	        		if(!e.equals("{O:Ok}")) {
-	        			return "{E:Error al actualizar la ciudad.}";
+	        			return "{E:Error al actualizar la provincia.}";
 	        		}
 	        	}
 	        	user.setProvincia(pr);
@@ -220,7 +220,10 @@ public class usuarioController {
 	        	user.setLongitud(Float.parseFloat(lon));
 	        }
 	        if (im != null && !im.isEmpty()){ 
-	        	int idIm = archiver.uploadFile(im);
+	        	int idIm = archiver.uploadArchivoTemp(im);
+	        	if(idIm == -1) {
+	        		return "{E:Error al actualizar la imagen.}";
+	        	}
 	        	user.setArchivo(idIm);
 	        }
 	        repository.save(user);
