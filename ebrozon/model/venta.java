@@ -1,6 +1,7 @@
 package com.ebrozon.model;
 
 import java.util.Date;
+import java.util.List;
 import java.io.Serializable;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
@@ -71,6 +72,9 @@ public class venta implements Serializable{
 	
 	@Transient
 	protected usuario user;
+	
+	@Transient
+	protected List<Integer> archivos;
 
 	public venta(
 			@Size(min = 3, max = 30, message = "El nombre tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message = "El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String usuario,
@@ -217,6 +221,14 @@ public class venta implements Serializable{
 
 	public void setProvincia(String provincia) {
 		this.provincia = provincia;
+	}
+
+	public List<Integer> getArchivos() {
+		return archivos;
+	}
+
+	public void setArchivos(List<Integer> archivos) {
+		this.archivos = archivos;
 	}
 	
 }
