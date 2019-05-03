@@ -39,40 +39,54 @@ public class ventaController {
 	@CrossOrigin
 	@RequestMapping("/publicarVenta")
 	public String publicarVenta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
-			@RequestParam("pre") double pre, @RequestParam(value = "arc", required=false) MultipartFile arc) {
+			@RequestParam("pre") double pre, @RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
+			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4) {
 		Optional<usuario> usaux = userer.recuperarUsuario(un);
 		if(!usaux.isPresent()) {
 			return "{E:No existe el usuario.}";
 		}
 		int idIm = 1;
+		int id = 1;
 		boolean archivoGuardado = false;
+		boolean ventaGuardada = false;
 		venta vent;
 		try {
 			vent = new venta(un,prod, desc, pre, 1, 1, usaux.get().getCiudad());
 			vent.setProvincia(usaux.get().getProvincia());
-			int id = 1;
+			usaux = null;
 			Optional<Integer> idAux = repository.lastId();
 			if(idAux.isPresent()) {
 				id = idAux.get()+1;
 			}
 			vent.setIdentificador(id);
-			/*if(arc != null) {
+			if(arc1 != null) {
 				vent.setTienearchivo(1);
-				idIm = archiver.uploadFile(arc);
-				if(idIm != -1) {archivoGuardado = true;}
-				repository. archivoApareceEnVenta(idIm, un, vent.getFechainicio());
 				repository.save(vent);
+				ventaGuardada = true;
+				idIm = archiver.uploadArchivoTemp(arc1);
+				if(idIm != -1) {archivoGuardado = true;}
+				repository.archivoApareceEnVenta(idIm, id);
+				if(arc2 != null) {
+					idIm = archiver.uploadArchivoTemp(arc2);
+					repository.archivoApareceEnVenta(idIm, id);
+				}
+				if(arc3 != null) {
+					idIm = archiver.uploadArchivoTemp(arc3);
+					repository.archivoApareceEnVenta(idIm, id);
+				}
+				if(arc4 != null) {
+					idIm = archiver.uploadArchivoTemp(arc4);
+					repository.archivoApareceEnVenta(idIm, id);
+				}
 				return "{O:Ok}";
 			}
-			else {*/
-				usaux = null;
-				repository.save(vent);
-				return "{O:Ok}";
-				//return "{E:Es obligatorio insertar al menos una imagen del producto.}";
-			//}
+			else {
+				return "{E:Es obligatorio insertar al menos una imagen del producto.}";
+			}
 		}
 		catch(Exception e) {
-			if(archivoGuardado) {archiver.deleteFile(idIm);}
+			if(archivoGuardado) {repository.borrarArchivosVenta(id);}
+			if(ventaGuardada) {repository.deleteByidentificador(id);}
 			try {
 				Throwable t = e.getCause();
 				while ((t != null) && !(t instanceof ConstraintViolationException)) {
@@ -94,7 +108,8 @@ public class ventaController {
 	@CrossOrigin
 	@RequestMapping("/actualizarVenta")
 	public String actualizarVenta(@RequestParam("id") int id, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
-			@RequestParam("pre") double pre, @RequestParam(value = "arc", required=false) MultipartFile arc) {
+			@RequestParam("pre") double pre, @RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
+			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4) {
 		Optional<venta> ventaux = repository.findByidentificador(id);
 		if(!ventaux.isPresent()) {
 			return "{E:Error inesperado.}";
@@ -106,22 +121,32 @@ public class ventaController {
 			vent.setProducto(prod);
 			vent.setDescripcion(desc);
 			vent.setPrecio(pre);
-			/*if(arc != null) {
+			if(arc1 != null) {
 				vent.setTienearchivo(1);
-				idIm = archiver.uploadFile(arc);
-				if(idIm != -1) {archivoGuardado = true;}
-				repository. archivoApareceEnVenta(idIm, un, vent.getFechainicio());
 				repository.save(vent);
+				idIm = archiver.uploadArchivoTemp(arc1);
+				if(idIm != -1) {archivoGuardado = true;}
+				repository.archivoApareceEnVenta(idIm, id);
+				if(arc2 != null) {
+					idIm = archiver.uploadArchivoTemp(arc2);
+					repository.archivoApareceEnVenta(idIm, id);
+				}
+				if(arc3 != null) {
+					idIm = archiver.uploadArchivoTemp(arc3);
+					repository.archivoApareceEnVenta(idIm, id);
+				}
+				if(arc4 != null) {
+					idIm = archiver.uploadArchivoTemp(arc4);
+					repository.archivoApareceEnVenta(idIm, id);
+				}
 				return "{O:Ok}";
 			}
-			else {*/
-				repository.save(vent);
-				return "{O:Ok}";
-				//return "{E:Es obligatorio insertar al menos una imagen del producto.}";
-			//}
+			else {
+				return "{E:Es obligatorio insertar al menos una imagen del producto.}";
+			}
 		}
 		catch(Exception e) {
-			if(archivoGuardado) {archiver.deleteFile(idIm);}
+			if(archivoGuardado) {repository.borrarArchivosVenta(id);}
 			try {
 				Throwable t = e.getCause();
 				while ((t != null) && !(t instanceof ConstraintViolationException)) {
@@ -143,29 +168,29 @@ public class ventaController {
 	@CrossOrigin
 	@RequestMapping("/listarPaginaPrincipal")
 	@Produces("application/json")
-	List<venta> listarPaginaPrincipal(){
-		return  repository.findByactivaOrderByFechainicioDesc(1);
+	List<venta> listarPaginaPrincipal(@RequestParam("id") int id){
+		return  repository.findFirst25ByactivaAndIdentificadorGreaterThanOrderByFechainicioDesc(1,id);
 	}
 	
 	@CrossOrigin
 	@RequestMapping("/listarProductosCiudad")
 	@Produces("application/json")
-	List<venta> listarProductosCiudad(@RequestParam("ci") String ci){
-		return repository.findByciudadAndActivaOrderByFechainicioDesc(ci,1);
+	List<venta> listarProductosCiudad(@RequestParam("ci") String ci, @RequestParam("id") int id){
+		return repository.findFirst25ByciudadAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(ci,1,id);
 	}
 	
 	@CrossOrigin
 	@RequestMapping("/listarProductosProvincia")
 	@Produces("application/json")
-	List<venta> listarProductosProvincia(@RequestParam("pr") String pr){
-		return repository.findByprovinciaAndActivaOrderByFechainicioDesc(pr,1);
+	List<venta> listarProductosProvincia(@RequestParam("pr") String pr, @RequestParam("id") int id){
+		return repository.findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(pr,1,id);
 	}
 	
 	@CrossOrigin
 	@RequestMapping("/listarProductosUsuario")
 	@Produces("application/json")
-	List<venta> listarProductosUsuario(@RequestParam("un") String un){
-		return repository.findByusuarioOrderByFechainicioDesc(un);
+	List<venta> listarProductosUsuario(@RequestParam("un") String un, @RequestParam("id") int id){
+		return repository.findFirst25ByusuarioAndIdentificadorGreaterThanOrderByFechainicioDesc(un,id);
 	}
 	
 	@CrossOrigin
