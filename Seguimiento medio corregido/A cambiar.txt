@@ -1,0 +1,9 @@
+-En seguirProducto solo deberían tener que pasarte el usuario y el identificador de la venta,
+la fecha la asignas tu en el constructor al hacer fecha = new Date(). El nombre del producto 
+tampoco deberian tener por qué pasartelo, lo puedes recuperar tu a partir del identificador de
+la venta, Recuperalo con una consulta y asignaselo
+-Usa mejor identificador en las peticiones que la clave compuesta, será más cómodo para los del front end
+Esto hace que en vez que tener que buscar en base a la clave compuesta puedas buscar el base al identificador
+Ya he puesto yo el atributo, y el que se genere automaticamente, asi que lo puedes usar directamente
+-Para los nombres de los parámetros, al menos en @RequestParam ponles nombres acorde a lo que he ido
+poniendo hasta ahora, por ejemplo usuario = un, nventa = idv o nv,...
