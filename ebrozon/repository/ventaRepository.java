@@ -18,6 +18,11 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	@Query(value = "insert into archivosventa(archivo, nventa) values(:arc, :nv)", nativeQuery = true)
 	void archivoApareceEnVenta(int arc, int nv);
 	
+	@Modifying
+	@Transactional
+	@Query(value = "delete from archivosventa where nventa = :nv", nativeQuery = true)
+	void borrarArchivosVenta(int nv);
+	
 	List<venta> findByciudadAndActivaOrderByFechainicioDesc(String ciudad,int Activa);
 	
 	List<venta> findByprovinciaAndActivaOrderByFechainicioDesc(String provincia,int Activa);
@@ -29,6 +34,8 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	Optional<venta> findByidentificador(int identificador);
 	
 	List<venta> findByusuarioOrderByFechainicioDesc(String usuario);
+	
+	boolean existsByidentificador(int id);
 	
 	@Query("Select max(identificador) from venta")
 	Optional<Integer> lastId();
@@ -45,4 +52,21 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	@Transactional
 	@Query(value = "update venta set provincia = :pr where usuario = :un", nativeQuery = true)
 	void updateProvinciaVentasUsuario(String un, String pr);
+
+	void deleteByidentificador(int id);
+
+	List<venta> findFirst25ByactivaAndIdentificadorGreaterThanOrderByFechainicioDesc(int i, int id);
+
+	List<venta> findFirst25ByciudadAndActivaAndIdentificadorOrderByFechainicioDesc(String ci, int i, int id);
+
+	List<venta> findFirst25ByprovinciaAndActivaAndIdentificadorOrderByFechainicioDesc(String pr, int i, int id);
+
+	List<venta> findFirst25ByusuarioAndIdentificadorOrderByFechainicioDesc(String un, int id);
+
+	List<venta> findFirst25ByusuarioAndIdentificadorGreaterThanOrderByFechainicioDesc(String un, int id);
+
+	List<venta> findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(String pr, int i,
+			int id);
+
+	List<venta> findFirst25ByciudadAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(String ci, int i, int id);
 }

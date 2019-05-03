@@ -18,6 +18,11 @@ public interface subastaRepository extends CrudRepository<subasta, Long>{
 	@Query(value = "insert into archivosventa(archivo, nventa) values(:arc, :nv)", nativeQuery = true)
 	void archivoApareceEnVenta(int arc, int nv);
 	
+	@Modifying
+	@Transactional
+	@Query(value = "delete from archivosventa where nventa = :nv", nativeQuery = true)
+	void borrarArchivosVenta(int nv);
+	
 	List<subasta> findByciudadAndActivaOrderByFechainicioDesc(String ciudad,int Activa);
 	
 	List<subasta> findByusuarioAndActivaOrderByFechainicioDesc(String usuario, int Activa);
@@ -46,4 +51,14 @@ public interface subastaRepository extends CrudRepository<subasta, Long>{
 	@Transactional
 	@Query(value = "update subasta set ciudad = :ci where usuario = :un", nativeQuery = true)
 	void updateCitysubastasUsuario(String un, String ci);
+
+	void deleteByidentificador(int id);
+
+	List<subasta> findByprovinciaAndActivaOrderByFechainicioDesc(String pr, int i);
+
+	List<subasta> findFirst25ByciudadAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(String ci, int i,
+			int id);
+
+	List<subasta> findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(String pr, int i,
+			int id);
 }
