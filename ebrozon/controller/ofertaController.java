@@ -42,8 +42,14 @@ public class ofertaController {
 			}
 			else {
 				oferta o;
+				int id = 1;
 				try {
 					o = new oferta(usuario,nventa,fecha,cantidad,(@NotNull short) 0,producto);
+					Optional<Integer> idAux = repository.lastId();
+					if(idAux.isPresent()) {
+						id = idAux.get()+1;
+					}
+					o.setIndentificador(id);
 				}
 				catch(Exception e){
 					return e.getMessage();

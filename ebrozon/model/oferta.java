@@ -1,10 +1,13 @@
 package com.ebrozon.model;
 
+import javax.persistence.Transient;
+import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -12,14 +15,18 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "oferta")
-public class oferta {
+@IdClass(oferta.class)
+public class oferta implements Serializable{
+	
 	@Id
+	@Column(name = "identificador")
+	private int identificador;
+	
 	@Column(name = "usuario")
 	@Size(min = 3, max = 30, message="El nombre del usuario tiene que tener entre 3 y 30 caracteres")
 	@Pattern(regexp = "[A-z,0-9,_,-]+", message="El nombre del usuario solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -")
 	private String usuario;
 	
-	@Id
 	@Column(name = "nventa")
 	private int nventa;
 	
@@ -35,7 +42,9 @@ public class oferta {
 	@NotNull
 	private short aceptada;
 	
-	private transient String producto;
+	@Column(name = "producto")
+	@NotNull
+	private String producto;
 	
 	
 	public oferta(
@@ -48,6 +57,14 @@ public class oferta {
 		this.cantidad = cantidad;
 		this.aceptada = aceptada;
 		this.producto = producto;
+	}
+	
+	public int getIdentificador() {
+		return identificador;
+	}
+	
+	public void setIndentificador(int identificador) {
+		this.identificador = identificador;
 	}
 
 	public String getUsuario() {
