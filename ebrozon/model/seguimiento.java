@@ -1,11 +1,13 @@
 package com.ebrozon.model;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -13,13 +15,16 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "seguimiento")
 public class seguimiento {
+	
 	@Id
+	@Column(name = "identificador")
+	private int identificador;
+	
 	@Column(name = "usuario")
 	@Size(min = 3, max = 30, message="El nombre del usuario tiene que tener entre 3 y 30 caracteres")
 	@Pattern(regexp = "[A-z,0-9,_,-]+", message="El nombre del usuario solo puede tener letras mayusculas o minusculas sin acentuar, numeros, y los caracteres _ y -")
 	private String usuario;
 	
-	@Id
 	@Column(name = "nventa")
 	private int nventa;
 	
@@ -27,13 +32,15 @@ public class seguimiento {
 	@NotNull
 	private Date fecha;
 	
-	private transient String producto;
+	@Column(name = "producto")
+	private String producto;
 	
+	public seguimiento() {}
 	
 	public seguimiento(
 			@Size(min = 3, max = 30, message="El usuario tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message="El usuario solo puede tener letras mayusculas o minusculas sin acentuar, numeros, y los caracteres _ y -") String usuario,
 			@Size(max = 11) int nventa, 
-      String producto) {
+      			String producto) {
 		super();
 		this.usuario = usuario;
 		this.nventa = nventa;
@@ -67,11 +74,19 @@ public class seguimiento {
 		this.fecha = fecha;
 	}
   
-  public String getProducto() {
+  	public String getProducto() {
 		return producto;
 	}
 	
 	public void setProducto(String producto) {
 		this.producto = producto;
+	}
+
+	public int getIdentificador() {
+		return identificador;
+	}
+
+	public void setIdentificador(int identificador) {
+		this.identificador = identificador;
 	}
 }

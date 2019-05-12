@@ -39,11 +39,16 @@ public class seguimientoController {
 	@Autowired
 	ventaRepository repository_v;
 	
-	// Crea el seguimiento de un producto recibiendo como parámetros obligatorios el nombre del usuario que lo realiza,
-	// el número de la venta, la fecha y el nombre del producto.
+	// Crea el seguimiento de un producto recibiendo como parametros obligatorios el nombre del usuario que lo realiza,
+	// el numero de la venta, la fecha y el nombre del producto.
 	@RequestMapping("/seguirProducto")
-	public String seguirProducto(@RequestParam("usuario") String usuario, @RequestParam("nventa") int nventa, @RequestParam("fecha") Date fecha, @RequestParam("producto") String producto) {
-		if (!repository.existsByusuarioAndnventaAndproducto(usuario,nventa,producto)) {
+	public String seguirProducto(@RequestParam("un") String usuario, @RequestParam("nv") int nventa) {
+		Optional<venta> aux =  repository_v.findByidentificador(nventa);
+    		String producto = "";
+    		if(aux.isPresent()) {
+      			producto = aux.get().getProducto();
+		}
+    		if (!repository.existsByusuarioAndNventaAndProducto(usuario,nventa,producto)) {
 			if (!repository_v.existsByidentificador(nventa) || !repository_u.existsBynombreusuario(usuario)) {
 				return "{E:No existe la venta o el usuario.}";
 			}
@@ -51,6 +56,12 @@ public class seguimientoController {
 				seguimiento s;
 				try {
 					s = new seguimiento(usuario,nventa,producto);
+					int id = 1;
+					Optional<Integer> idAux = repository.lastId();
+					if(idAux.isPresent()) {
+						id = idAux.get()+1;
+					}
+					s.setIdentificador(id);
 				}
 				catch(Exception e){
 					return e.getMessage();
@@ -62,58 +73,55 @@ public class seguimientoController {
 		return "{O:Ok}";
 	}
 	
-  // Lista todas los seguimientos sobre una venta recibiendo como parámetros obligatorios el número de la venta.
+  	// Lista todas los seguimientos sobre una venta recibiendo como parametros obligatorios el numero de la venta.
 	@RequestMapping("/listarSeguimientosVenta")
-	public List<seguimiento> listarSeguimientosVenta(@RequestParam("nventa") int nventa) {
+	public List<seguimiento> listarSeguimientosVenta(@RequestParam("nv") int nventa) {
 		return repository.findBynventaOrderByFechaDesc(nventa);
 	}
 	
-	// Lista todas los seguimientos realizadas por un usuario recibiendo como parámetros obligatorios el nombre del usuario.
+	// Lista todas los seguimientos realizadas por un usuario recibiendo como parametros obligatorios el nombre del usuario.
 	@RequestMapping("/listarSeguimientosUsuario")
-	public List<oferta> listarSeguimientosUsuario(@RequestParam("usuario") String usuario) {
+	public List<seguimiento> listarSeguimientosUsuario(@RequestParam("un") String usuario) {
 		return repository.findByusuarioOrderByFechaDesc(usuario);
 	}
 	
-	// Lista todas los seguimientos sobre un producto recibiendo como parámetros obligatorios el nombre del producto.
+	// Lista todas los seguimientos sobre un producto recibiendo como parametros obligatorios el nombre del producto.
 	@RequestMapping("/listarSeguimientosProducto")
-	public List<oferta> listarSeguimientosProducto(String producto) {
+	public List<seguimiento> listarSeguimientosProducto(String producto) {
 		return repository.findByproductoOrderByFechaDesc(producto);
 	}
 	
-	// Elimina el seguimiento recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
+	// Elimina el seguimiento recibiendo como parametros obligatorios el nombre del usuario que la realizo, el numero de venta, la fecha y la cantidad.
 	@RequestMapping("/eliminarSeguimiento")
-	public String eliminarSeguimiento(@RequestParam("usuario") String usuario, @RequestParam("nventa") int nventa, @RequestParam("fecha") Date fecha) {
-		if (!repository.existsByusuarioAndnventaAndfecha(usuario,nventa,fecha)) {
+	public String eliminarSeguimiento(@RequestParam("id") int id) {
+		if (!repository.existsByidentificador(id)) {
 			return "{E:No existe tal seguimiento}";
 		}
 		else {
-			if (!repository_v.existsByidentificador(nventa) || !repository_u.existsBynombreusuario(usuario)) {
-				return "{E:No existe la venta o el usuario.}";
-			}
-			else {
-				Optional<seguimiento> s_aux = repository.findByusuarioAndNventaAndFecha(usuario,nventa,fecha);
-				repository.delete(s_aux.get());
-				return "{O:Ok}";
-			}
+			Optional<seguimiento> s_aux = repository.findByidentificador(id);
+			repository.delete(s_aux.get());
+			return "{O:Ok}";
 		}
 	}
   
-  //Obtiene la cantidad de seguidos que tiene una venta recibiendo como parámetros el número de venta
-  @RequestMapping("/cantidadSeguidosVenta")
-  public int cantidadSeguidosVenta(@RequestParam("nventa") int nventa){
-    return listarSeguimientosVenta(nventa).size();  
-  }
+  	//Obtiene la cantidad de seguidos que tiene una venta recibiendo como parametros el numero de venta
+  	@RequestMapping("/cantidadSeguidosVenta")
+  	public int cantidadSeguidosVenta(@RequestParam("nv") int nventa){
+    		return listarSeguimientosVenta(nventa).size();  
+  	}
   
-  //Obtiene la cantidad de seguidos que tiene un usuario recibiendo como parámetros el nombre de usuario
-  @RequestMapping("/cantidadSeguidosUsuario")
-  public int cantidadSeguidosVenta(@RequestParam("usuario") String usuario){
-    return listarSeguimientosUsuario(usuario).size();  
-  }
+  	//Obtiene la cantidad de seguidos que tiene un usuario recibiendo como parametros el nombre de usuario
+  	@RequestMapping("/cantidadSeguidosUsuario")
+  	public int cantidadSeguidosUsuario(@RequestParam("un") String usuario){
+    		return listarSeguimientosUsuario(usuario).size();  
+  	}
   
-  //Obtiene la cantidad de seguidos que tiene un producto recibiendo como parámetros el nombre del producto
-  @RequestMapping("/cantidadSeguidosProducto")
-  public int cantidadSeguidosVenta(String producto){
-    return listarSeguimientosVenta(producto).size();  
-  }
+  	//Obtiene la cantidad de seguidos que tiene un producto recibiendo como parametros el nombre del producto
+  	@RequestMapping("/cantidadSeguidosProducto")
+  	public int cantidadSeguidosProducto(String producto){
+    		return listarSeguimientosProducto(producto).size();  
+  	}
 }
+
+
 
