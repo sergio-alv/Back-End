@@ -10,7 +10,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.ebrozon.model.seguimiento;
 
 public interface seguimientoRepository extends CrudRepository<seguimiento, Long>{
-	boolean existsByusuarioAndNventaAndProducto(String usuario, int nventa, String producto);
+	boolean existsByusuarioAndNventa(String usuario, int nventa);
     
     	boolean existsByidentificador(int id);
     
