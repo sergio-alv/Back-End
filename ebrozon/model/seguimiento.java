@@ -45,8 +45,6 @@ public class seguimiento {
 		this.usuario = usuario;
 		this.nventa = nventa;
 		this.fecha = new Date();
-		//this.cantidad = cantidad;
-		//this.aceptada = aceptada;
 		this.producto = producto;
 	}
 

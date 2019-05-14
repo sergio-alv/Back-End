@@ -2,7 +2,7 @@ package com.ebrozon.model;
 
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,8 +15,9 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "oferta")
-@IdClass(oferta.class)
 public class oferta implements Serializable{
+	
+	protected static final long serialVersionUID = 1L;
 	
 	@Id
 	@Column(name = "identificador")
@@ -46,14 +47,15 @@ public class oferta implements Serializable{
 	@NotNull
 	private String producto;
 	
+	public oferta() {}
 	
 	public oferta(
 			@Size(min = 3, max = 30, message="El usuario tiene que tener entre 3 y 30 caracteres") @Pattern(regexp = "[A-z,0-9,_,-]+", message="El usuario solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -") String usuario,
-			int nventa, @NotNull Date fecha, @NotNull float cantidad, @NotNull short aceptada, String producto) {
+			int nventa, @NotNull float cantidad, @NotNull short aceptada, String producto) {
 		super();
 		this.usuario = usuario;
 		this.nventa = nventa;
-		this.fecha = fecha;
+		this.fecha = new Date();
 		this.cantidad = cantidad;
 		this.aceptada = aceptada;
 		this.producto = producto;
