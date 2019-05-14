@@ -12,7 +12,7 @@ import com.ebrozon.repository.ventaRepository;
 import com.ebrozon.repository.ofertaRepository;
 import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.model.oferta;
-
+import com.ebrozon.model.venta;
 
 import java.security.MessageDigest;
 import java.sql.Date;
@@ -35,8 +35,8 @@ public class ofertaController {
 	// Guarda una oferta recibiendo como parámetros obligatorios el nombre del usuario que la realiza,
 	// el número de la venta, la cantidad, la fecha y el nombre del producto.
 	@RequestMapping("/hacerOferta")
-	public String hacerOferta(@RequestParam("usuario") String usuario, @RequestParam("nventa") int nventa, @RequestParam("cantidad") float cantidad, @RequestParam("fecha") Date fecha, @RequestParam("producto") String producto) {
-		if (!repository.existsByusuarioAndcantidadAndproducto(usuario,cantidad,producto)) {
+	public String hacerOferta(@RequestParam("un") String usuario, @RequestParam("nv") int nventa, @RequestParam("can") float cantidad) {
+		if (!repository.existsByusuarioAndNventa(usuario,nventa)) {
 			if (!repository_v.existsByidentificador(nventa) || !repository_u.existsBynombreusuario(usuario)) {
 				return "{E:No existe la venta o el usuario.}";
 			}
@@ -44,32 +44,37 @@ public class ofertaController {
 				oferta o;
 				int id = 1;
 				try {
-					o = new oferta(usuario,nventa,fecha,cantidad,(@NotNull short) 0,producto);
+					venta v = repository_v.findByidentificador(nventa).get();
+					o = new oferta(usuario,nventa,cantidad,(@NotNull short) 0,v.getProducto());
 					Optional<Integer> idAux = repository.lastId();
 					if(idAux.isPresent()) {
 						id = idAux.get()+1;
 					}
 					o.setIndentificador(id);
+					repository.save(o);
 				}
 				catch(Exception e){
-					return e.getMessage();
+					return "{E:Ha habido un error inesperado.}";
 				}
-				
-				repository.save(o);
 			}
+		}
+		else {
+			oferta aux = repository.findByusuarioAndNventa(usuario, nventa).get();
+			aux.setCantidad(cantidad);
+			repository.save(aux);
 		}
 		return "{O:Ok}";
 	}
 	
 	// Lista todas las ofertas recibidas sobre una venta recibiendo como parámetros obligatorios el número de la venta.
 	@RequestMapping("/listarOfertasVenta")
-	public List<oferta> listarOfertasVenta(@RequestParam("nventa") int nventa) {
+	public List<oferta> listarOfertasVenta(@RequestParam("nv") int nventa) {
 		return repository.findBynventaOrderByFechaDesc(nventa);
 	}
 	
 	// Lista todas las ofertas realizadas por un usuario recibiendo como parámetros obligatorios el nombre del usuario.
 	@RequestMapping("/listarOfertasUsuario")
-	public List<oferta> listarOfertasUsuario(@RequestParam("usuario") String usuario) {
+	public List<oferta> listarOfertasUsuario(@RequestParam("un") String usuario) {
 		return repository.findByusuarioOrderByFechaDesc(usuario);
 	}
 	
@@ -81,84 +86,68 @@ public class ofertaController {
 	
 	// Acepta la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
 	@RequestMapping("/aceptarOferta")
-	public String aceptarOferta(@RequestParam("usuario") String usuario, @RequestParam("nventa") int nventa, @RequestParam("cantidad") float cantidad, @RequestParam("fecha") Date fecha) {
-		if (!repository.existsByusuarioAndnventaAndfechaAndcantidad(usuario,nventa,fecha,cantidad)) {
+	public String aceptarOferta(@RequestParam("id") int id) {
+		if (!repository.existsByIdentificador(id)) {
 			return "{E:No existe tal oferta}";
 		}
 		else {
-			if (!repository_v.existsByidentificador(nventa) || !repository_u.existsBynombreusuario(usuario)) {
-				return "{E:No existe la venta o el usuario.}";
-			}
-			else {
-				oferta o;
-				try {
-					Optional<oferta> o_aux = repository.findByusuarioAndNventaAndFechaAndCantidad(usuario,nventa,fecha,cantidad);
-					o = o_aux.get();
-					o.setAceptada((short) 1);
-				}
-				catch (Exception e) {
-					return e.getMessage();
-				}
+			oferta o;
+			try {
+				Optional<oferta> o_aux = repository.findByIdentificador(id);
+				o = o_aux.get();
+				o.setAceptada((short) 1);
 				repository.save(o);
-				
-				List<oferta> l = listarOfertasVenta(nventa);
-				for (int i=0; i<l.size(); ++i) {
-					if (l.get(i).getAceptada() == (short) 0) {
-						try {
-							l.get(i).setAceptada((short) -1);
-						}
-						catch (Exception e) {
-							return e.getMessage();
-						}
+			}
+			catch (Exception e) {
+				return "{E:Ha habido un error inesperado.}";
+			}
+			List<oferta> l = listarOfertasVenta(o.getNventa());
+			for (int i=0; i<l.size(); ++i) {
+				if (l.get(i).getAceptada() == (short) 0) {
+					try {
+						l.get(i).setAceptada((short) -1);
 						repository.save(l.get(i));
 					}
+					catch (Exception e) {
+						return e.getMessage();
+					}
 				}
-				return "{O:Ok}";
 			}
+			return "{O:Ok}";
 		}
 	}
 	
 	// Rechaza la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
 	@RequestMapping("/rechazarOferta")
-	public String rechazarOferta(@RequestParam("usuario") String usuario, @RequestParam("nventa") int nventa, @RequestParam("cantidad") float cantidad, @RequestParam("fecha") Date fecha) {
-		if (!repository.existsByusuarioAndnventaAndfechaAndcantidad(usuario,nventa,fecha,cantidad)) {
+	public String rechazarOferta(@RequestParam("id") int id) {
+		if (!repository.existsByIdentificador(id)) {
 			return "{E:No existe tal oferta}";
 		}
 		else {
-			if (!repository_v.existsByidentificador(nventa) || !repository_u.existsBynombreusuario(usuario)) {
-				return "{E:No existe la venta o el usuario.}";
-			}
-			else {
-				oferta o;
-				try {
-					Optional<oferta> o_aux = repository.findByusuarioAndNventaAndFechaAndCantidad(usuario,nventa,fecha,cantidad);
-					o = o_aux.get();
-					o.setAceptada((short) -1);
-				}
-				catch (Exception e) {
-					return e.getMessage();
-				}
+			oferta o;
+			try {
+				Optional<oferta> o_aux = repository.findByIdentificador(id);
+				o = o_aux.get();
+				o.setAceptada((short) -1);
 				repository.save(o);
-				return "{O:Ok}";
 			}
+			catch (Exception e) {
+				return e.getMessage();
+			}
+			return "{O:Ok}";
 		}
 	}
 	
 	// Elimina la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
 	@RequestMapping("/retirarOferta")
-	public String retirarOferta(@RequestParam("usuario") String usuario, @RequestParam("nventa") int nventa, @RequestParam("cantidad") float cantidad, @RequestParam("fecha") Date fecha) {
-		if (!repository.existsByusuarioAndnventaAndfechaAndcantidad(usuario,nventa,fecha,cantidad)) {
+	public String retirarOferta(@RequestParam("id") int id) {
+		if (!repository.existsByIdentificador(id)) {
 			return "{E:No existe tal oferta}";
 		}
 		else {
-			if (!repository_v.existsByidentificador(nventa) || !repository_u.existsBynombreusuario(usuario)) {
-				return "{E:No existe la venta o el usuario.}";
-			}
-			else {
-				Optional<oferta> o_aux = repository.findByusuarioAndNventaAndFechaAndCantidad(usuario,nventa,fecha,cantidad);
-				repository.delete(o_aux.get());
-				return "{O:Ok}";
-			}
+			Optional<oferta> o_aux = repository.findByIdentificador(id);
+			repository.delete(o_aux.get());
+			return "{O:Ok}";
 		}
 	}
 }

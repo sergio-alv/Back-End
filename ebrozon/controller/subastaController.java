@@ -21,7 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ebrozon.model.subasta;
 import com.ebrozon.model.usuario;
+import com.ebrozon.model.venta;
+import com.ebrozon.repository.ofertaRepository;
 import com.ebrozon.repository.subastaRepository;
+import com.ebrozon.repository.usuarioRepository;
 
 @RestController
 @Configuration
@@ -37,15 +40,21 @@ public class subastaController {
 	@Autowired
     usuarioController userer;
 	
+	@Autowired
+   	usuarioRepository repository_u;
+
+	@Autowired
+	ofertaRepository repository_o;
+	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
 	@CrossOrigin
 	@RequestMapping("/publicarSubasta")
 	public String publicarSubasta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
-			@RequestParam("pre") double pre, @RequestParam("end") /*Date*/String end,  @RequestParam("pin") double pin, 
+			@RequestParam("pre") double pre, @RequestParam("end") long end,  @RequestParam("pin") double pin, 
 			@RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
 			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4) {
-		Optional<usuario> usaux = userer.recuperarUsuario(un);
+		Optional<usuario> usaux = repository_u.findBynombreusuario(un);
 		if(!usaux.isPresent()) {
 			return "{E:No existe el usuario.}";
 		}
@@ -55,7 +64,14 @@ public class subastaController {
 		boolean ventaGuardada = false;
 		subasta sub;
 		try {
-			sub = new subasta(un,prod, desc, pre, 1, 1, usaux.get().getCiudad(),new Date(),pin,pin);
+			if(usaux.get().getCiudad() != null && !usaux.get().getCiudad().contentEquals("")) {
+				sub = new subasta(un,prod, desc, pre, 1, 1, new String(usaux.get().getCiudad()),new Date(end),pin,pin);
+			}
+			else {
+				sub = new subasta(un,prod, desc, pre, 1, 1, new String(usaux.get().getProvincia()),new Date(end),pin,pin);
+			}
+			sub.setProvincia(new String(usaux.get().getProvincia()));
+			
 			Optional<Integer> idAux = repository.lastId();
 			if(idAux.isPresent()) {
 				id = idAux.get()+1;
@@ -63,20 +79,21 @@ public class subastaController {
 			sub.setIdentificador(id);
 			if(arc1 != null) {
 				sub.setTienearchivo(1);
+				usaux = null;
 				repository.save(sub);
 				ventaGuardada = true;
 				idIm = archiver.uploadArchivoTemp(arc1);
 				if(idIm != -1) {archivoGuardado = true;}
 				repository.archivoApareceEnVenta(idIm, id);
-				if(arc2 != null) {
+				if(arc2 != null && !arc2.equals("")) {
 					idIm = archiver.uploadArchivoTemp(arc2);
 					repository.archivoApareceEnVenta(idIm, id);
 				}
-				if(arc3 != null) {
+				if(arc3 != null && !arc3.equals("")) {
 					idIm = archiver.uploadArchivoTemp(arc3);
 					repository.archivoApareceEnVenta(idIm, id);
 				}
-				if(arc4 != null) {
+				if(arc4 != null && !arc4.equals("")) {
 					idIm = archiver.uploadArchivoTemp(arc4);
 					repository.archivoApareceEnVenta(idIm, id);
 				}
@@ -110,7 +127,7 @@ public class subastaController {
 	@CrossOrigin
 	@RequestMapping("/actualizarSubasta")
 	public String actualizarSubasta(@RequestParam("id") int id, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
-			@RequestParam("pre") double pre, @RequestParam("end") /*Date*/String end,  @RequestParam("pin") double pin, 
+			@RequestParam("pre") double pre, @RequestParam("end") long end,  @RequestParam("pin") double pin, 
 			@RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
 			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4) {
 		
@@ -127,9 +144,10 @@ public class subastaController {
 		subasta sub = subaux.get();
 		try {
 			sub.setProducto(prod);
+			repository_o.actualizarProductoOfertas(id,prod);
 			sub.setDescripcion(desc);
 			sub.setPrecio(pre);
-			sub.setFechafin(new Date());
+			sub.setFechafin(new Date(end));
 			sub.setPrecioinicial(pin);
 			sub.setPujaactual(pin);
 			if(arc1 != null) {
@@ -180,28 +198,44 @@ public class subastaController {
 	@RequestMapping("/listarSubastasCiudad")
 	@Produces("application/json")
 	List<subasta> listarSubastasCiudad(@RequestParam("ci") String ci, @RequestParam("id") int id){
-		return repository.findFirst25ByciudadAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(ci,1,id);
+		List<subasta> lista = repository.findFirst25ByciudadAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(ci,1,id);
+		for(int i = 0; i < lista.size();++i) {
+			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
+		}
+		return lista;
 	}
 	
 	@CrossOrigin
 	@RequestMapping("/listarSubastasProvincia")
 	@Produces("application/json")
 	List<subasta> listarSubastasProvincia(@RequestParam("pr") String pr, @RequestParam("id") int id){
-		return repository.findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(pr,1,id);
+		List<subasta> lista = repository.findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(pr,1,id);
+		for(int i = 0; i < lista.size();++i) {
+			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
+		}
+		return lista;
 	}
 	
 	@CrossOrigin
 	@RequestMapping("/listarSubastasUsuario")
 	@Produces("application/json")
 	List<subasta> listarSubastasUsuario(@RequestParam("un") String un, @RequestParam("id") int id){
-		return repository.findByusuarioOrderByFechainicioDesc(un);
+		List<subasta> lista  = repository.findByusuarioOrderByFechainicioDesc(un);
+		for(int i = 0; i < lista.size();++i) {
+			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
+		}
+		return lista;
 	}
 	
 	@CrossOrigin
 	@RequestMapping("/recuperarSubasta")
 	@Produces("application/json")
 	Optional<subasta> recuperarSubasta(@RequestParam("id") int id){
-		return repository.findByidentificador(id);
+		Optional<subasta> aux = repository.findByidentificador(id);
+		if(aux.isPresent()) {
+			aux.get().setArchivos(repository.listaArchivos(id));
+		}
+		return aux;
 	}
 	
 	@CrossOrigin
@@ -238,6 +272,10 @@ public class subastaController {
 		for(int i = 0; i < list.size();++i) {
 			if(new Date().after(list.get(i).getFechafin())) {
 				list.get(i).setActiva(0);
+				Optional<String> aux = repository.pujadorGanador(list.get(i).getIdentificador());
+				if(aux.isPresent()) {
+					list.get(i).setComprador(aux.get());
+				}
 				repository.save(list.get(i));
 			}
 		}

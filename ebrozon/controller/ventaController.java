@@ -1,5 +1,6 @@
 package com.ebrozon.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ebrozon.model.venta;
 import com.ebrozon.model.usuario;
+import com.ebrozon.repository.ofertaRepository;
+import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.repository.ventaRepository;
 
 @RestController
@@ -24,6 +27,9 @@ public class ventaController {
 	
 	@Autowired
     ventaRepository repository;
+	
+	@Autowired
+   	usuarioRepository repository_u;
 	
 	@Autowired
     archivoController archiver;
@@ -34,6 +40,9 @@ public class ventaController {
 	@Autowired
     subastaController subaster;
 	
+	@Autowired
+	ofertaRepository repository_o;
+	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
 	@CrossOrigin
@@ -41,7 +50,7 @@ public class ventaController {
 	public String publicarVenta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
 			@RequestParam("pre") double pre, @RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
 			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4) {
-		Optional<usuario> usaux = userer.recuperarUsuario(un);
+		Optional<usuario> usaux = repository_u.findBynombreusuario(un);
 		if(!usaux.isPresent()) {
 			return "{E:No existe el usuario.}";
 		}
@@ -51,9 +60,13 @@ public class ventaController {
 		boolean ventaGuardada = false;
 		venta vent;
 		try {
-			vent = new venta(un,prod, desc, pre, 1, 1, usaux.get().getCiudad());
-			vent.setProvincia(usaux.get().getProvincia());
-			usaux = null;
+			if(usaux.get().getCiudad() != null && !usaux.get().getCiudad().equals("")) {
+				vent = new venta(un,prod, desc, pre, 1, 1, new String(usaux.get().getCiudad()));
+			}
+			else {
+				vent = new venta(un,prod, desc, pre, 1, 1, new String(usaux.get().getProvincia()));
+			}
+			vent.setProvincia(new String(usaux.get().getProvincia()));
 			Optional<Integer> idAux = repository.lastId();
 			if(idAux.isPresent()) {
 				id = idAux.get()+1;
@@ -61,20 +74,21 @@ public class ventaController {
 			vent.setIdentificador(id);
 			if(arc1 != null) {
 				vent.setTienearchivo(1);
+				usaux = null;
 				repository.save(vent);
 				ventaGuardada = true;
 				idIm = archiver.uploadArchivoTemp(arc1);
 				if(idIm != -1) {archivoGuardado = true;}
 				repository.archivoApareceEnVenta(idIm, id);
-				if(arc2 != null) {
+				if(arc2 != null && !arc2.equals("")) {
 					idIm = archiver.uploadArchivoTemp(arc2);
 					repository.archivoApareceEnVenta(idIm, id);
 				}
-				if(arc3 != null) {
+				if(arc3 != null && !arc3.equals("")) {
 					idIm = archiver.uploadArchivoTemp(arc3);
 					repository.archivoApareceEnVenta(idIm, id);
 				}
-				if(arc4 != null) {
+				if(arc4 != null && !arc4.equals("")) {
 					idIm = archiver.uploadArchivoTemp(arc4);
 					repository.archivoApareceEnVenta(idIm, id);
 				}
@@ -119,6 +133,7 @@ public class ventaController {
 		venta vent = ventaux.get();
 		try {
 			vent.setProducto(prod);
+			repository_o.actualizarProductoOfertas(id,prod);
 			vent.setDescripcion(desc);
 			vent.setPrecio(pre);
 			if(arc1 != null) {
@@ -169,28 +184,44 @@ public class ventaController {
 	@RequestMapping("/listarPaginaPrincipal")
 	@Produces("application/json")
 	List<venta> listarPaginaPrincipal(@RequestParam("id") int id){
-		return  repository.findFirst25ByactivaAndIdentificadorGreaterThanOrderByFechainicioDesc(1,id);
+		List<venta> lista = repository.findFirst25ByactivaAndIdentificadorGreaterThanOrderByFechainicioDesc(1,id);
+		for(int i = 0; i < lista.size();++i) {
+			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
+		}
+		return lista;
 	}
 	
 	@CrossOrigin
 	@RequestMapping("/listarProductosCiudad")
 	@Produces("application/json")
 	List<venta> listarProductosCiudad(@RequestParam("ci") String ci, @RequestParam("id") int id){
-		return repository.findFirst25ByciudadAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(ci,1,id);
+		List<venta> lista = repository.findFirst25ByciudadAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(ci,1,id);
+		for(int i = 0; i < lista.size();++i) {
+			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
+		}
+		return lista;
 	}
 	
 	@CrossOrigin
 	@RequestMapping("/listarProductosProvincia")
 	@Produces("application/json")
 	List<venta> listarProductosProvincia(@RequestParam("pr") String pr, @RequestParam("id") int id){
-		return repository.findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(pr,1,id);
+		List<venta> lista = repository.findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(pr,1,id);
+		for(int i = 0; i < lista.size();++i) {
+			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
+		}
+		return lista;
 	}
 	
 	@CrossOrigin
 	@RequestMapping("/listarProductosUsuario")
 	@Produces("application/json")
 	List<venta> listarProductosUsuario(@RequestParam("un") String un, @RequestParam("id") int id){
-		return repository.findFirst25ByusuarioAndIdentificadorGreaterThanOrderByFechainicioDesc(un,id);
+		List<venta> lista = repository.findFirst25ByusuarioAndIdentificadorGreaterThanOrderByFechainicioDesc(un,id);
+		for(int i = 0; i < lista.size();++i) {
+			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
+		}
+		return lista;
 	}
 	
 	@CrossOrigin
@@ -252,5 +283,29 @@ public class ventaController {
 		else {
 			return "{E:No se ha encontrado la venta.}";
 		}
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/numeroVentasUsuario")
+	int numeroVentasUsuario(@RequestParam("un") String un) {
+		return repository.numeroVentasRealizadas(un);
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/numeroComprasUsuario")
+	int numeroComprarUsuario(@RequestParam("un") String un) {
+		return repository.numeroComprasRealizadas(un);
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/confirmarPagoVenta")
+	String confirmarPagoVenta(@RequestParam("id") int id) {
+		Optional<venta> aux = repository.findByidentificador(id);
+		if(!aux.isPresent()) {
+			return "{E:La venta no existe}";
+		}
+		aux.get().setFechapago(new Date());
+		repository.save(aux.get());
+		return "{O:Ok}";
 	}
 }
