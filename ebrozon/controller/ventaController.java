@@ -1,9 +1,11 @@
 package com.ebrozon.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -21,6 +23,9 @@ import com.ebrozon.model.usuario;
 import com.ebrozon.repository.ofertaRepository;
 import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.repository.ventaRepository;
+
+import parser.Parseador;
+import parser.Stopwords;
 
 @RestController
 public class ventaController {
@@ -42,6 +47,9 @@ public class ventaController {
 	
 	@Autowired
 	ofertaRepository repository_o;
+	
+	@Autowired
+    etiquetaController etiqueter;
 	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
@@ -92,6 +100,21 @@ public class ventaController {
 					idIm = archiver.uploadArchivoTemp(arc4);
 					repository.archivoApareceEnVenta(idIm, id);
 				}
+				
+				//ETIQUETAS
+				Vector etiquetas = new Parseador(prod,new Stopwords()).parsear();
+				for(int i = 0; i < etiquetas.size();i++) {
+					etiqueter.guardarEtiqueta((String) etiquetas.get(i), un);
+					etiqueter.asignarEtiqueta(id, (String) etiquetas.get(i));
+				}
+				etiquetas = new Parseador(desc,new Stopwords()).parsear();
+				for(int i = 0; i < etiquetas.size();i++) {
+					etiqueter.guardarEtiqueta((String) etiquetas.get(i), un);
+					etiqueter.asignarEtiqueta(id, (String) etiquetas.get(i));
+				}
+				
+				//--------
+				
 				return "{O:Ok}";
 			}
 			else {
@@ -307,5 +330,89 @@ public class ventaController {
 		aux.get().setFechapago(new Date());
 		repository.save(aux.get());
 		return "{O:Ok}";
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/listarProductosEtiquetas")
+	@Produces("application/json")
+	List<venta> listarProductosEtiquetas(@RequestParam("ets") String ets, @RequestParam("met") String met,
+			@RequestParam(value = "min", required=false) Double min,@RequestParam(value = "max", required=false) Double max,
+			@RequestParam(value = "pr", required=false) String pr, @RequestParam(value = "ci", required=false) String ci,
+			@RequestParam(value = "id", required=false) Integer id, @RequestParam(value = "tp", required=false) Integer tp){
+		List<venta> lista = new ArrayList<venta>();
+		List<venta> listaBuena = new ArrayList<venta>();
+		Vector etiquetas = new Parseador(ets,new Stopwords()).parsear();
+		
+		if(met.equals("Coincidencias")){
+			int idm = 99999999;
+			if(id != null) {idm = id;}
+			List<Integer> nvs = etiqueter.ventasConEtiquetasOrdenadasPorCoincidencias(etiquetas);
+			boolean ok = (id == null) || !nvs.contains(idm);
+			for(int i = 0; i < nvs.size(); ++i) {
+				if(ok) {
+					lista.add(repository.findByidentificador(nvs.get(i)).get());
+				}
+				if(nvs.get(i) == idm) {ok = true;}
+			}
+		}
+		else if(met.equals("Precio asc")){
+			int idm = 0;
+			if(id != null) {idm = id;}
+			List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
+			Optional<venta> vaux = repository.findByidentificador(idm);
+			double p = 0;
+			if(vaux.isPresent()) {
+				p = vaux.get().getPrecio();
+			}
+			lista = repository.findByidentificadorInAndPrecioGreaterThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioAsc(nvs,p,p,idm);
+		}
+		else if(met.equals("Precio des")){
+			int idm = 99999999;
+			if(id != null) {idm = id;}
+			List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
+			Optional<venta> vaux = repository.findByidentificador(idm);
+			double p = 99999999;
+			if(vaux.isPresent()) {
+				p = vaux.get().getPrecio();
+			}
+			lista = repository.findByidentificadorInAndPrecioLessThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioDesc(nvs,p,p,idm);
+		}
+		else if(met.equals("Fecha asc")){
+			int idm = 0;
+			if(id != null) {idm = id;}
+			List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
+			lista = repository.findByidentificadorInAndIdentificadorGreaterThanOrderByFechainicioAsc(nvs,idm);
+		}
+		else if(met.equals("Fecha des")){
+			int idm = 99999999;
+			if(id != null) {idm = id;}
+			List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
+			lista = repository.findByidentificadorInAndIdentificadorLessThanOrderByFechainicioDesc(nvs,idm);
+		}
+		else {
+			return lista;
+		}
+		
+		double pmin = 0;
+		double pmax = 99999999;
+		if(min != null) {
+			pmin = min;
+		}
+		if(max != null) {
+			pmax = max;
+		}
+		int count = 0;
+		for(int i = 0; count < 25 && i < lista.size();++i) {
+			venta aux = lista.get(i);
+			if(aux.getPrecio() >= pmin && aux.getPrecio() <= pmax &&
+					(pr == null || (pr != null && aux.getProvincia().equals(pr))) &&
+					(ci == null || (ci != null && aux.getCiudad().equals(ci))) &&
+					(tp == null || (tp != null && aux.getes_subasta() == 1))) {
+				listaBuena.add(lista.get(i));
+				++count;
+			}
+		}
+		
+		return listaBuena;
 	}
 }

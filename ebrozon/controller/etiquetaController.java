@@ -1,20 +1,17 @@
 package com.ebrozon.controller;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.security.MessageDigest;
 import java.sql.Date;
 
 import com.ebrozon.model.etiqueta;
-import com.ebrozon.model.usuario;
 import com.ebrozon.repository.etiquetaRepository;
 import com.ebrozon.repository.usuarioRepository;
 
@@ -29,32 +26,35 @@ public class etiquetaController {
 	//Guarda una etiqueta recibiendo como parámetros obligatorios el nombre de la etiqueta, la fecha
 	//de creación y el nombre del creador.
 	//http://localhost:8080/guardar?un=karny2&pass=caca&cor=cececw@gmail.com&na=saul&lna=alarcon
-	@RequestMapping("/guardar")
-	public String guardar(@RequestParam("tn") String tn, @RequestParam("cd") Date cd, @RequestParam("crt") String crt) {
+	@RequestMapping("/guardarEtiqueta")
+	public String guardarEtiqueta(@RequestParam("et") String tn, @RequestParam("un") String crt) {
 		if (repository.existsBynombre(tn)) {
-			return "Etiqueta ya guardada";
+			return "{O:Ok}";
 		}
 		
 		if (!repository_u.existsBynombreusuario(crt)) {
-			return "El creador de la etiqueta no existe";
+			return "{E:El usuario creador de la etiqueta no existe.}";
 		}
 		
 		etiqueta t;
 		try {
-			t = new etiqueta(tn,cd,crt);
+			t = new etiqueta(tn,crt);
+			repository.save(t);
 		}
 		catch(Exception e){
-			return e.getMessage();
+			return "{E:Problema inesperado al guardar la etiqueta}";
 		}
 		
-		repository.save(t);
-		
-		return "Ok";
+		return "{O:Ok}";
+	}
+	
+	public void asignarEtiqueta(int nv, String et) {
+		repository.etiquetaApareceEnVenta(nv, et);
 	}
 	
 	//Recupera la información de una etiqueta dado el nombre
 	@RequestMapping("/recuperarEtiqueta")
-	public etiqueta recuperarEtiqueta(@RequestParam("tn") String tn) {
+	public etiqueta recuperarEtiqueta(@RequestParam("et") String tn) {
 		Optional<etiqueta> aux = repository.findBynombre(tn);
 		if (aux.isPresent()) {
 			etiqueta t = aux.get();
@@ -90,5 +90,18 @@ public class etiquetaController {
 		repository.save(t);
 		
 		return "Ok";
+	}
+	
+	public List<Integer> ventasConEtiquetas(Vector ets) {
+		return repository.ventasConEtiquetas((String[]) ets.toArray(new String[0]));
+	}
+	
+	public List<Integer> ventasConEtiquetasMinDos(Vector ets) {
+		return repository.ventasConEtiquetasMinDos((String[]) ets.toArray(new String[0]));
+	}
+	
+	public List<Integer> ventasConEtiquetasOrdenadasPorCoincidencias(Vector ets) {
+		String[] p = (String[]) ets.toArray(new String[0]);
+		return repository.ventasConEtiquetasOrdenadasPorCoincidencias((String[]) ets.toArray(new String[0]));
 	}
 }
