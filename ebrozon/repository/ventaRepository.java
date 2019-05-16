@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import com.ebrozon.model.usuario;
 import com.ebrozon.model.venta;
 
 public interface ventaRepository extends CrudRepository<venta, Long>{
@@ -69,4 +70,20 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 			int id);
 
 	List<venta> findFirst25ByciudadAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(String ci, int i, int id);
+	
+	@Query("Select count(*) from venta where usuario = :un")
+	int numeroVentasRealizadas(String un);
+	
+	@Query("Select count(*) from venta where comprador = :un")
+	int numeroComprasRealizadas(String un);
+	
+	//////////////////////////////
+
+	List<venta> findByidentificadorInAndPrecioGreaterThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioAsc(List<Integer> nvs, double p1, double p2,int id);
+
+	List<venta> findByidentificadorInAndPrecioLessThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioDesc(List<Integer> nvs,double p1, double p2,int id);
+
+	List<venta> findByidentificadorInAndIdentificadorGreaterThanOrderByFechainicioAsc(List<Integer> nvs, int idm);
+
+	List<venta> findByidentificadorInAndIdentificadorLessThanOrderByFechainicioDesc(List<Integer> nvs, int idm);
 }
