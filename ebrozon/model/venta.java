@@ -115,8 +115,8 @@ public class venta implements Serializable{
 		return fechaventa;
 	}
 
-	public void setFechaventa() {
-		this.fechaventa = new Date();
+	public void setFechaventa(Date date) {
+		this.fechaventa = date;
 	}
 
 	public String getProducto() {

@@ -9,8 +9,6 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.validator.constraints.Range;
-
 import javax.persistence.*;
 
 @Entity
@@ -97,7 +95,7 @@ public class usuario implements Serializable{
 			this.archivo = 0;
 			this.telefono = 0;
 			
-			this.estrellas = 5.0;
+			this.estrellas = 0.0;
 		}
 	 
 	 public usuario(
@@ -116,7 +114,7 @@ public class usuario implements Serializable{
 			this.codigopostal = codigopostal;
 			this.ciudad = ciudad;
 			this.provincia = provincia;
-			this.estrellas = 5.0;
+			this.estrellas = 0.0;
 		}
 
 		public usuario(
@@ -139,7 +137,7 @@ public class usuario implements Serializable{
 			this.latitud = latitud;
 			this.longitud = longitud;
 			this.archivo = archivo;
-			this.estrellas = 5.0;
+			this.estrellas = 0.0;
 		}
 	public usuario() {}
 	 

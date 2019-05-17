@@ -5,14 +5,10 @@ import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -33,8 +29,8 @@ public class usuarioverant implements Serializable{
 	 private Date fecha;
 	 
 	 @Column(name = "telefono")
-	 @Min(100000000)
-	 @Max(999999999)
+	 //@Min(100000000)
+	 //@Max(999999999)
 	 private int telefono;
 	 
 	 @Column(name = "nombre")
@@ -46,8 +42,8 @@ public class usuarioverant implements Serializable{
 	 private String apellidos;
 	 
 	 @Column(name = "codigopostal")
-	 @Min(00001)
-	 @Max(99999)
+	 //@Min(00001)
+	 //@Max(99999)
 	 private int codigopostal;
 	 
 	 @Column(name = "ciudad")
@@ -59,121 +55,32 @@ public class usuarioverant implements Serializable{
 	 private String provincia;
 	 
 	 @Column(name = "latitud")
-	 private float latitud;
+	 private double latitud;
 	 
 	 @Column(name = "longitud")
-	 private float longitud;
+	 private double longitud;
 	 
 	 @Column(name = "imagen")
 	 private int imagen;
 	 
 	 @Column(name = "activo")
 	 private int activo;
-	 
+
 	public usuarioverant(usuario u) {
 		super();
 		this.nombreusuario = u.getNombreusuario();
+		this.telefono = u.getTelefono();
 		this.nombre = u.getNombre();
 		this.apellidos = u.getApellidos();
+		this.codigopostal = u.getCodigopostal();
+		this.ciudad = u.getCiudad();
+		this.provincia = u.getProvincia();
+		//this.latitud = u.getLatitud();
+		//this.longitud = u.getLongitud();
+		this.imagen = u.getArchivo();
 		this.activo = u.getActivo();
 	}
 	
 	public usuarioverant() {}
-
-	public String getNombreusuario() {
-		return nombreusuario;
-	}
-
-	public void setNombreusuario(String nombreusuario) {
-		this.nombreusuario = nombreusuario;
-	}
-
-	public Date getFecha() {
-		return fecha;
-	}
-
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
-	}
-
-	public int getTelefono() {
-		return telefono;
-	}
-
-	public void setTelefono(@Min(100000000) @Max(999999999)int telefono) {
-		this.telefono = telefono;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public String getApellidos() {
-		return apellidos;
-	}
-
-	public void setApellidos(String apellidos) {
-		this.apellidos = apellidos;
-	}
-
-	public int getCodigopostal() {
-		return codigopostal;
-	}
-
-	public void setCodigopostal(@Min(0) @Max(99999)int codigopostal) {
-		this.codigopostal = codigopostal;
-	}
-
-	public String getCiudad() {
-		return ciudad;
-	}
-
-	public void setCiudad(String ciudad) {
-		this.ciudad = ciudad;
-	}
-
-	public String getProvincia() {
-		return provincia;
-	}
-
-	public void setProvincia(String provincia) {
-		this.provincia = provincia;
-	}
-
-	public float getLatitud() {
-		return latitud;
-	}
-
-	public void setLatitud(float latitud) {
-		this.latitud = latitud;
-	}
-
-	public float getLongitud() {
-		return longitud;
-	}
-
-	public void setLongitud(float longitud) {
-		this.longitud = longitud;
-	}
-
-	public int getImagen() {
-		return imagen;
-	}
-
-	public void setImagen(int imagen) {
-		this.imagen = imagen;
-	}
-
-	public int getActivo() {
-		return activo;
-	}
-
-	public void setActivo(int activo) {
-		this.activo = activo;
-	}
 	
 }
