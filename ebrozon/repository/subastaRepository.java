@@ -61,4 +61,14 @@ public interface subastaRepository extends CrudRepository<subasta, Long>{
 
 	List<subasta> findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(String pr, int i,
 			int id);
+	
+	@Query(value = "select usuario from puja where nventa = :nv and cantidad = (select max(cantidad) from puja where nventa = :nv)", nativeQuery = true)
+	Optional<String> pujadorGanador(int nv);
+	
+	@Query(value = "Select archivo from archivosventa where nventa = :prod", nativeQuery = true)
+	List<Integer> listaArchivos(int prod);
+
+	List<subasta> findBycompradorAndActivaAndFechapagoIsNull(String un, int j);
+
+	List<subasta> findByusuarioAndActivaAndFechapagoIsNull(String un, int i);
 }

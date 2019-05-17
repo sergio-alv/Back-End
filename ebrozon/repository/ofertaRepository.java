@@ -39,4 +39,16 @@ public interface ofertaRepository extends CrudRepository<oferta, Long>{
 	List<oferta> findByproductoAndAceptadaOrderByFechaDesc(String producto, int i);
 
 	List<oferta> findBynventaInAndAceptadaOrderByFechaDesc(List<Integer> nvs, int i);
+	
+	@Query(value = "Select * from oferta\n"
+			+ "where usuario = :un and aceptada = 1\n"
+			+ "and (select fechapago from venta\n"
+			+ "		where identificador = nventa) is null\n", nativeQuery = true)
+	List<oferta> ofertasRealizadasAceptadasPendientes(String un);
+	
+	@Query(value = "Select * from oferta\n"
+			+ "where aceptada = 1 and nventa in :nvs\n"
+			+ "and (select fechapago from venta\n"
+			+ "		where identificador = nventa) is null\n", nativeQuery = true)
+	List<oferta> ofertasRecibidasAceptadasPendientes(List<Integer> nvs);
 }
