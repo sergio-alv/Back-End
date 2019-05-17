@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
+import javax.ws.rs.Produces;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +29,7 @@ public class etiquetaController {
 	//Guarda una etiqueta recibiendo como parámetros obligatorios el nombre de la etiqueta, la fecha
 	//de creación y el nombre del creador.
 	//http://localhost:8080/guardar?un=karny2&pass=caca&cor=cececw@gmail.com&na=saul&lna=alarcon
+	@CrossOrigin
 	@RequestMapping("/guardarEtiqueta")
 	public String guardarEtiqueta(@RequestParam("et") String tn, @RequestParam("un") String crt) {
 		if (repository.existsBynombre(tn)) {
@@ -53,6 +57,8 @@ public class etiquetaController {
 	}
 	
 	//Recupera la información de una etiqueta dado el nombre
+	@CrossOrigin
+	@Produces("application/json")
 	@RequestMapping("/recuperarEtiqueta")
 	public etiqueta recuperarEtiqueta(@RequestParam("et") String tn) {
 		Optional<etiqueta> aux = repository.findBynombre(tn);
@@ -67,6 +73,7 @@ public class etiquetaController {
 	
 	//Actualiza la información de la etiqueta recibiendo como parámetros obligatorios
 	//la nueva fecha de creación y el nombre del nuevo creador
+	@CrossOrigin
 	@RequestMapping("/actualizarEtiqueta")
 	public String actualizarEtiqueta(@RequestParam("tn") String tn, @RequestParam("cd") Date cd, @RequestParam("crt") String crt) {
 		if (!repository.existsBynombre(tn)) {
@@ -90,6 +97,10 @@ public class etiquetaController {
 		repository.save(t);
 		
 		return "Ok";
+	}
+	
+	public void borrarEtiquetasVenta(int nv) {
+		repository.borrarEtiquetasVenta(nv);
 	}
 	
 	public List<Integer> ventasConEtiquetas(Vector ets) {

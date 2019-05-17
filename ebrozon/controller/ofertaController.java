@@ -1,12 +1,10 @@
 package com.ebrozon.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.ebrozon.repository.ventaRepository;
 import com.ebrozon.repository.ofertaRepository;
@@ -14,12 +12,12 @@ import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.model.oferta;
 import com.ebrozon.model.venta;
 
-import java.security.MessageDigest;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.Produces;
 
 @RestController
 public class ofertaController {
@@ -34,6 +32,7 @@ public class ofertaController {
 	
 	// Guarda una oferta recibiendo como parámetros obligatorios el nombre del usuario que la realiza,
 	// el número de la venta, la cantidad, la fecha y el nombre del producto.
+	@CrossOrigin
 	@RequestMapping("/hacerOferta")
 	public String hacerOferta(@RequestParam("un") String usuario, @RequestParam("nv") int nventa, @RequestParam("can") float cantidad) {
 		if (!repository.existsByusuarioAndNventa(usuario,nventa)) {
@@ -51,6 +50,16 @@ public class ofertaController {
 						id = idAux.get()+1;
 					}
 					o.setIndentificador(id);
+					if(v.getes_subasta() == 1 && cantidad < v.getPrecio()) {
+						return "{E:Un producto en subasta solo puede recibir ofertas mayores o iguales al precio de compra inmediata.}";
+					}
+					else if(v.getes_subasta() == 1 && cantidad >= v.getPrecio()) {
+						v.setActiva(0);
+						v.setFechaventa(new Date());
+						v.setComprador(usuario);
+						repository_v.save(v);
+						return "{O:Ok}";
+					}
 					repository.save(o);
 				}
 				catch(Exception e){
@@ -67,24 +76,39 @@ public class ofertaController {
 	}
 	
 	// Lista todas las ofertas recibidas sobre una venta recibiendo como parámetros obligatorios el número de la venta.
+	@CrossOrigin
+	@Produces("application/json")
 	@RequestMapping("/listarOfertasVenta")
 	public List<oferta> listarOfertasVenta(@RequestParam("nv") int nventa) {
 		return repository.findBynventaOrderByFechaDesc(nventa);
 	}
 	
 	// Lista todas las ofertas realizadas por un usuario recibiendo como parámetros obligatorios el nombre del usuario.
-	@RequestMapping("/listarOfertasUsuario")
-	public List<oferta> listarOfertasUsuario(@RequestParam("un") String usuario) {
-		return repository.findByusuarioOrderByFechaDesc(usuario);
+	@CrossOrigin
+	@Produces("application/json")
+	@RequestMapping("/listarOfertasRealizadas")
+	public List<oferta> listarOfertasRealizadas(@RequestParam("un") String usuario) {
+		return repository.findByusuarioAndAceptadaOrderByFechaDesc(usuario,0);
+	}
+	
+	@CrossOrigin
+	@Produces("application/json")
+	@RequestMapping("/listarOfertasRecibidas")
+	public List<oferta> listarOfertasRecibidas(@RequestParam("un") String usuario) {
+		List<Integer> nvs = repository_v.numerosVentasUsuario(usuario);
+		return repository.findBynventaInAndAceptadaOrderByFechaDesc(nvs,0);
 	}
 	
 	// Lista todas las ofertas sobre un producto recibiendo como parámetros obligatorios el nombre del producto.
+	@CrossOrigin
+	@Produces("application/json")
 	@RequestMapping("/listarOfertasProducto")
 	public List<oferta> listarOfertasProducto(String producto) {
-		return repository.findByproductoOrderByFechaDesc(producto);
+		return repository.findByproductoAndAceptadaOrderByFechaDesc(producto,0);
 	}
 	
 	// Acepta la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
+	@CrossOrigin
 	@RequestMapping("/aceptarOferta")
 	public String aceptarOferta(@RequestParam("id") int id) {
 		if (!repository.existsByIdentificador(id)) {
@@ -113,11 +137,22 @@ public class ofertaController {
 					}
 				}
 			}
+			try {
+				venta aux = repository_v.findByidentificador(o.getNventa()).get();
+				aux.setActiva(0);
+				aux.setFechaventa(new Date());
+				aux.setComprador(o.getUsuario());
+				repository_v.save(aux);
+			}
+			catch(Exception e){
+				return "{E:Ha habido un error inesperado.}";
+			}
 			return "{O:Ok}";
 		}
 	}
 	
 	// Rechaza la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
+	@CrossOrigin
 	@RequestMapping("/rechazarOferta")
 	public String rechazarOferta(@RequestParam("id") int id) {
 		if (!repository.existsByIdentificador(id)) {
@@ -139,6 +174,7 @@ public class ofertaController {
 	}
 	
 	// Elimina la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
+	@CrossOrigin
 	@RequestMapping("/retirarOferta")
 	public String retirarOferta(@RequestParam("id") int id) {
 		if (!repository.existsByIdentificador(id)) {

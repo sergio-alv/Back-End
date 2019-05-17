@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -17,14 +18,15 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.ebrozon.model.subasta;
 import com.ebrozon.model.usuario;
-import com.ebrozon.model.venta;
 import com.ebrozon.repository.ofertaRepository;
 import com.ebrozon.repository.subastaRepository;
 import com.ebrozon.repository.usuarioRepository;
+
+import parser.Parseador;
+import parser.Stopwords;
 
 @RestController
 @Configuration
@@ -36,6 +38,9 @@ public class subastaController {
 	
 	@Autowired
     archivoController archiver;
+	
+	@Autowired
+    etiquetaController etiqueter;
 	
 	@Autowired
     usuarioController userer;
@@ -97,6 +102,21 @@ public class subastaController {
 					idIm = archiver.uploadArchivoTemp(arc4);
 					repository.archivoApareceEnVenta(idIm, id);
 				}
+				
+				//ETIQUETAS
+				Vector etiquetas = new Parseador(prod,new Stopwords()).parsear();
+				for(int i = 0; i < etiquetas.size();i++) {
+					etiqueter.guardarEtiqueta((String) etiquetas.get(i), un);
+					etiqueter.asignarEtiqueta(id, (String) etiquetas.get(i));
+				}
+				etiquetas = new Parseador(desc,new Stopwords()).parsear();
+				for(int i = 0; i < etiquetas.size();i++) {
+					etiqueter.guardarEtiqueta((String) etiquetas.get(i), un);
+					etiqueter.asignarEtiqueta(id, (String) etiquetas.get(i));
+				}
+				
+				//--------
+				
 				return "{O:Ok}";
 			}
 			else {
@@ -168,6 +188,20 @@ public class subastaController {
 					idIm = archiver.uploadArchivoTemp(arc4);
 					repository.archivoApareceEnVenta(idIm, id);
 				}
+				
+				etiqueter.borrarEtiquetasVenta(id);
+				
+				Vector etiquetas = new Parseador(prod,new Stopwords()).parsear();
+				for(int i = 0; i < etiquetas.size();i++) {
+					etiqueter.guardarEtiqueta((String) etiquetas.get(i), sub.getUsuario());
+					etiqueter.asignarEtiqueta(id, (String) etiquetas.get(i));
+				}
+				etiquetas = new Parseador(desc,new Stopwords()).parsear();
+				for(int i = 0; i < etiquetas.size();i++) {
+					etiqueter.guardarEtiqueta((String) etiquetas.get(i), sub.getUsuario());
+					etiqueter.asignarEtiqueta(id, (String) etiquetas.get(i));
+				}
+				
 				return "{O:Ok}";
 			}
 			else {

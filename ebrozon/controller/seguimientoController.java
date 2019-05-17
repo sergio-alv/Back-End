@@ -8,20 +8,13 @@ import com.ebrozon.model.venta;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-
-import java.security.MessageDigest;
-import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.Produces;
 
 
@@ -43,6 +36,7 @@ public class seguimientoController {
 	
 	// Crea el seguimiento de un producto recibiendo como parametros obligatorios el nombre del usuario que lo realiza,
 	// el numero de la venta, la fecha y el nombre del producto.
+	@CrossOrigin
 	@RequestMapping("/seguirProducto")
 	public String seguirProducto(@RequestParam("un") String usuario, @RequestParam("nv") int nventa) {
     		if (!repository.existsByusuarioAndNventa(usuario,nventa)) {
@@ -89,6 +83,7 @@ public class seguimientoController {
 	}
 	
 	// Elimina el seguimiento recibiendo como parametros obligatorios el nombre del usuario que la realizo, el numero de venta, la fecha y la cantidad.
+	@CrossOrigin
 	@RequestMapping("/eliminarSeguimiento")
 	public String eliminarSeguimiento(@RequestParam("id") int id) {
 		if (!repository.existsByidentificador(id)) {
@@ -102,12 +97,14 @@ public class seguimientoController {
 	}
   
   	//Obtiene la cantidad de seguidos que tiene una venta recibiendo como parametros el numero de venta
+	@CrossOrigin
   	@RequestMapping("/cantidadSeguidosVenta")
   	public int cantidadSeguidosVenta(@RequestParam("nv") int nventa){
     		return listarSeguimientosVenta(nventa).size();  
   	}
   
   	//Obtiene la cantidad de seguidos que tiene un usuario recibiendo como parametros el nombre de usuario
+	@CrossOrigin
   	@RequestMapping("/cantidadSeguidosUsuario")
   	public int cantidadSeguidosUsuario(@RequestParam("un") String usuario){
     		return listarSeguimientosUsuario(usuario).size();  

@@ -16,11 +16,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.ebrozon.model.venta;
 import com.ebrozon.model.usuario;
 import com.ebrozon.repository.ofertaRepository;
+import com.ebrozon.repository.opinionRepository;
+import com.ebrozon.repository.seguimientoRepository;
 import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.repository.ventaRepository;
 
@@ -47,6 +48,12 @@ public class ventaController {
 	
 	@Autowired
 	ofertaRepository repository_o;
+	
+	@Autowired
+	opinionRepository repository_op;
+	
+	@Autowired
+	seguimientoRepository repository_s;
 	
 	@Autowired
     etiquetaController etiqueter;
@@ -177,6 +184,20 @@ public class ventaController {
 					idIm = archiver.uploadArchivoTemp(arc4);
 					repository.archivoApareceEnVenta(idIm, id);
 				}
+				
+				etiqueter.borrarEtiquetasVenta(id);
+				
+				Vector etiquetas = new Parseador(prod,new Stopwords()).parsear();
+				for(int i = 0; i < etiquetas.size();i++) {
+					etiqueter.guardarEtiqueta((String) etiquetas.get(i), vent.getUsuario());
+					etiqueter.asignarEtiqueta(id, (String) etiquetas.get(i));
+				}
+				etiquetas = new Parseador(desc,new Stopwords()).parsear();
+				for(int i = 0; i < etiquetas.size();i++) {
+					etiqueter.guardarEtiqueta((String) etiquetas.get(i), vent.getUsuario());
+					etiqueter.asignarEtiqueta(id, (String) etiquetas.get(i));
+				}
+				
 				return "{O:Ok}";
 			}
 			else {
@@ -333,17 +354,36 @@ public class ventaController {
 	}
 	
 	@CrossOrigin
-	@RequestMapping("/listarProductosEtiquetas")
+	@RequestMapping("/cancelarPagoVenta")
+	String cancelarPagoVenta(@RequestParam("id") int id) {
+		Optional<venta> aux = repository.findByidentificador(id);
+		if(!aux.isPresent()) {
+			return "{E:La venta no existe}";
+		}
+		aux.get().setFechaventa(null);
+		aux.get().setActiva(1);
+		aux.get().setComprador(null);
+		repository.save(aux.get());
+		return "{O:Ok}";
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/listarProductos")
 	@Produces("application/json")
-	List<venta> listarProductosEtiquetas(@RequestParam("ets") String ets, @RequestParam("met") String met,
+	List<venta> listarProductosEtiquetas(@RequestParam(value = "ets", required=false) String ets, @RequestParam("met") String met,
 			@RequestParam(value = "min", required=false) Double min,@RequestParam(value = "max", required=false) Double max,
 			@RequestParam(value = "pr", required=false) String pr, @RequestParam(value = "ci", required=false) String ci,
 			@RequestParam(value = "id", required=false) Integer id, @RequestParam(value = "tp", required=false) Integer tp){
 		List<venta> lista = new ArrayList<venta>();
 		List<venta> listaBuena = new ArrayList<venta>();
-		Vector etiquetas = new Parseador(ets,new Stopwords()).parsear();
-		
-		if(met.equals("Coincidencias")){
+		Vector etiquetas = null;
+		if(ets!= null) {
+			etiquetas = new Parseador(ets,new Stopwords()).parsear();
+		}
+		if(met.equals("Coincidencias") && ets == null) {
+			return null;
+		}
+		else if(met.equals("Coincidencias")){
 			int idm = 99999999;
 			if(id != null) {idm = id;}
 			List<Integer> nvs = etiqueter.ventasConEtiquetasOrdenadasPorCoincidencias(etiquetas);
@@ -355,39 +395,88 @@ public class ventaController {
 				if(nvs.get(i) == idm) {ok = true;}
 			}
 		}
+		else if(met.equals("Popularidad") || met.equals("Valoraciones")){
+			int idm = 99999999;
+			if(id != null) {idm = id;}
+			List<Integer> nvs = null;
+			if(met.equals("Popularidad")) {
+				nvs= repository_s.ventasPorSeguimientos();
+			}
+			else {
+				nvs = repository_op.ventasPorValoraciones();
+			}
+			boolean ok = (id == null) || !nvs.contains(idm);
+			if(ets == null) {
+				for(int i = 0; i < nvs.size(); ++i) {
+					if(ok) {
+						lista.add(repository.findByidentificador(nvs.get(i)).get());
+					}
+					if(nvs.get(i) == idm) {ok = true;}
+				}
+			}
+			else {
+				List<Integer> nve  = etiqueter.ventasConEtiquetas(etiquetas);
+				for(int i = 0; i < nvs.size(); ++i) {
+					if(ok && nve.contains(nvs.get(i))) {
+						lista.add(repository.findByidentificador(nvs.get(i)).get());
+					}
+					if(nvs.get(i) == idm) {ok = true;}
+				}
+			}
+		}
 		else if(met.equals("Precio asc")){
 			int idm = 0;
 			if(id != null) {idm = id;}
-			List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
 			Optional<venta> vaux = repository.findByidentificador(idm);
 			double p = 0;
 			if(vaux.isPresent()) {
 				p = vaux.get().getPrecio();
 			}
-			lista = repository.findByidentificadorInAndPrecioGreaterThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioAsc(nvs,p,p,idm);
+			if(ets != null) {
+				List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
+				lista = repository.findByidentificadorInAndPrecioGreaterThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioAsc(nvs,p,p,idm);
+			}
+			else {
+				lista = repository.findByprecioGreaterThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioAsc(p,p,idm);
+			}
 		}
 		else if(met.equals("Precio des")){
 			int idm = 99999999;
 			if(id != null) {idm = id;}
-			List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
 			Optional<venta> vaux = repository.findByidentificador(idm);
 			double p = 99999999;
 			if(vaux.isPresent()) {
 				p = vaux.get().getPrecio();
 			}
-			lista = repository.findByidentificadorInAndPrecioLessThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioDesc(nvs,p,p,idm);
+			if(ets != null) {
+				List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
+				lista = repository.findByidentificadorInAndPrecioLessThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioDesc(nvs,p,p,idm);
+			}
+			else {
+				lista = repository.findByprecioLessThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioDesc(p,p,idm);
+			}
 		}
 		else if(met.equals("Fecha asc")){
 			int idm = 0;
 			if(id != null) {idm = id;}
-			List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
-			lista = repository.findByidentificadorInAndIdentificadorGreaterThanOrderByFechainicioAsc(nvs,idm);
+			if(ets != null) {
+				List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
+				lista = repository.findByidentificadorInAndIdentificadorGreaterThanOrderByFechainicioAsc(nvs,idm);
+			}
+			else {
+				lista = repository.findByidentificadorGreaterThanOrderByFechainicioAsc(idm);
+			}
 		}
 		else if(met.equals("Fecha des")){
 			int idm = 99999999;
 			if(id != null) {idm = id;}
-			List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
-			lista = repository.findByidentificadorInAndIdentificadorLessThanOrderByFechainicioDesc(nvs,idm);
+			if(ets != null) {
+				List<Integer> nvs = etiqueter.ventasConEtiquetas(etiquetas);
+				lista = repository.findByidentificadorInAndIdentificadorLessThanOrderByFechainicioDesc(nvs,idm);
+			}
+			else {
+				lista = repository.findByidentificadorLessThanOrderByFechainicioDesc(idm);
+			}
 		}
 		else {
 			return lista;
@@ -404,10 +493,10 @@ public class ventaController {
 		int count = 0;
 		for(int i = 0; count < 25 && i < lista.size();++i) {
 			venta aux = lista.get(i);
-			if(aux.getPrecio() >= pmin && aux.getPrecio() <= pmax &&
+			if(aux.getActiva() == 1 && aux.getPrecio() >= pmin && aux.getPrecio() <= pmax &&
 					(pr == null || (pr != null && aux.getProvincia().equals(pr))) &&
 					(ci == null || (ci != null && aux.getCiudad().equals(ci))) &&
-					(tp == null || (tp != null && aux.getes_subasta() == 1))) {
+					(tp == null || (tp != null && aux.getes_subasta() == tp))) {
 				listaBuena.add(lista.get(i));
 				++count;
 			}

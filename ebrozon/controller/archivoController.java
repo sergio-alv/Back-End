@@ -1,15 +1,11 @@
 package com.ebrozon.controller;
 
-import java.util.Base64;
 import java.util.Optional;
 import java.nio.file.Paths;
-import java.sql.Blob;
 import java.util.Random;
 
-import javax.sql.rowset.serial.SerialBlob;
-
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +17,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import com.ebrozon.model.archivo;
+import com.ebrozon.model.usuario;
 import com.ebrozon.repository.archivoRepository;
+import com.ebrozon.repository.usuarioRepository;
 
 @RestController
 public class archivoController {
@@ -29,8 +27,12 @@ public class archivoController {
 	@Autowired
     archivoRepository repository;
 	
+	@Autowired
+    usuarioRepository repository_u;
+	
 	private String upload_folder = ".//src//main//resources//files//";
 	
+	@CrossOrigin
 	@RequestMapping("/uploadFile")
 	public int uploadFile(@RequestParam("file") MultipartFile file) {
 		if(!file.isEmpty()) {
@@ -56,6 +58,7 @@ public class archivoController {
 		return -1;
 	}
 	
+	@CrossOrigin
 	@RequestMapping("/uploadArchivoTemp")
 	public int uploadArchivoTemp(@RequestParam("file") String file) {
 		if(!file.isEmpty()) {
@@ -82,6 +85,7 @@ public class archivoController {
 		return -1;
 	}
 	
+	@CrossOrigin
 	@RequestMapping("/loadArchivoTemp")
 	public String loadArchivoTemp(@RequestParam("id") int id) {
 		try {
@@ -89,6 +93,18 @@ public class archivoController {
 		}catch(Exception e){return "caca";}
 		}
 	
+	@CrossOrigin
+	@RequestMapping("/loadArchivoUsuario")
+	public String loadArchivoUsuario(@RequestParam("un") String un) {
+		try {
+			Optional<usuario> aux = repository_u.findBynombreusuario(un);
+			if(!aux.isPresent()) {return "{E:No existe el usuario}";}
+			int id = aux.get().getArchivo();
+			return repository.findByidentificador(id).get().getDatos();
+		}catch(Exception e){return "caca";}
+		}
+	
+	@CrossOrigin
 	@RequestMapping("/loadFileUrl")
 	public String loadFileUrl(@RequestParam("id") int id) {
 		Optional<archivo> aux = repository.findByidentificador(id);
@@ -98,13 +114,12 @@ public class archivoController {
 		return "{E:Ha habido un problema con el archivo.}";
 	}
 	
+	@CrossOrigin
 	@RequestMapping("/loadFile")
 	public File loadFile(@RequestParam("id") int id) {
 		Optional<archivo> aux = repository.findByidentificador(id);
 		if(aux.isPresent()) {
 			try {
-				File f = Paths.get(aux.get().getUrl()).toFile();
-				long x = f.length();
 				return Paths.get(aux.get().getUrl()).toFile();
 			}
 			catch(Exception e){return null;}
@@ -112,6 +127,7 @@ public class archivoController {
 		return null;
 	}
 	
+	@CrossOrigin
 	@RequestMapping("/deleteFile")
 	public String deleteFile(int id) {
 		Optional<archivo> aux = repository.findByidentificador(id);

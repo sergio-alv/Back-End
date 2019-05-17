@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.ws.rs.Produces;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,7 @@ public class opinionController {
 	@Autowired
     usuarioController userer;
 	
+	@CrossOrigin
 	@RequestMapping("/mandarOpinion")
 	String mandarOpinion(@RequestParam("em") String em, @RequestParam("re") String re, @RequestParam("con") String con, @RequestParam("es") Double es) {
 		if(!userer.existeUsuario(em)) {return "{E:No existe el usuario emisor}";}
@@ -42,18 +44,31 @@ public class opinionController {
 		return "{O:Ok}";
 	}
 	
-	@RequestMapping("/listarOpinionesRecibidas")
+	@CrossOrigin
 	@Produces("application/json")
+	@RequestMapping("/listarOpinionesRecibidas")
 	List<opinion> listarOpinionesRecibidas(@RequestParam("un") String un){
 		List<opinion> list = repository.findByreceptorOrderByIdentificadorDesc(un);
 		return list;
 	}
 	
-	@RequestMapping("/listarOpinionesHechas")
+	@CrossOrigin
 	@Produces("application/json")
+	@RequestMapping("/listarOpinionesHechas")
 	List<opinion> listarOpinionesHechas(@RequestParam("un") String un){
 		List<opinion> list = repository.findByemisorOrderByIdentificadorDesc(un);
 		return list;
 	}
 	
+	@CrossOrigin
+	@RequestMapping("/numeroOpinionesRecibidas")
+	int numeroOpinionesRecibidas(@RequestParam("un") String un) {
+		return repository.numeroOpinionesRecibidas(un);
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/numeroOpinionesRealizadas")
+	int numeroOpinionesRealizadas(@RequestParam("un") String un) {
+		return repository.numeroOpinionesRealizadas(un);
+	}
 }
