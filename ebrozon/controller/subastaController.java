@@ -273,6 +273,20 @@ public class subastaController {
 	}
 	
 	@CrossOrigin
+	@RequestMapping("/listarSubastasGanadasPendientes")
+	@Produces("application/json")
+	List<subasta> listarSubastasGanadasPendientes(@RequestParam("un") String un){
+		return repository.findBycompradorAndActivaAndFechapagoIsNull(un, 0);
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/listarSubastasTerminadasPendientes")
+	@Produces("application/json")
+	List<subasta> listarSubastasTerminadasPendientes(@RequestParam("un") String un){
+		return repository.findByusuarioAndActivaAndFechapagoIsNull(un, 0);
+	}
+	
+	@CrossOrigin
 	@RequestMapping("/realizarPuja")
 	String realizarPuja(@RequestParam("un") String un, @RequestParam("id") int id, @RequestParam("ct") Double ct) {
 		Optional<usuario> usaux = userer.recuperarUsuario(un);
@@ -309,6 +323,7 @@ public class subastaController {
 				Optional<String> aux = repository.pujadorGanador(list.get(i).getIdentificador());
 				if(aux.isPresent()) {
 					list.get(i).setComprador(aux.get());
+					list.get(i).setPreciofinal(list.get(i).getPujaactual());
 				}
 				repository.save(list.get(i));
 			}

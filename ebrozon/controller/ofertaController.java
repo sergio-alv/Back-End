@@ -57,6 +57,7 @@ public class ofertaController {
 						v.setActiva(0);
 						v.setFechaventa(new Date());
 						v.setComprador(usuario);
+						v.setPreciofinal(v.getPrecio());
 						repository_v.save(v);
 						return "{O:Ok}";
 					}
@@ -93,10 +94,17 @@ public class ofertaController {
 	
 	@CrossOrigin
 	@Produces("application/json")
-	@RequestMapping("/listarOfertasRecibidas")
-	public List<oferta> listarOfertasRecibidas(@RequestParam("un") String usuario) {
+	@RequestMapping("/listarOfertasRealizadasAceptadasPendientes")
+	public List<oferta> listarOfertasRealizadasAceptadasPendientes(@RequestParam("un") String usuario) {
+		return repository.ofertasRealizadasAceptadasPendientes(usuario);
+	}
+	
+	@CrossOrigin
+	@Produces("application/json")
+	@RequestMapping("/listarOfertasRecibidasAceptadasPendientes")
+	public List<oferta> listarOfertasRecibidasAceptadasPendientes(@RequestParam("un") String usuario) {
 		List<Integer> nvs = repository_v.numerosVentasUsuario(usuario);
-		return repository.findBynventaInAndAceptadaOrderByFechaDesc(nvs,0);
+		return repository.ofertasRecibidasAceptadasPendientes(nvs);
 	}
 	
 	// Lista todas las ofertas sobre un producto recibiendo como parámetros obligatorios el nombre del producto.
@@ -142,6 +150,7 @@ public class ofertaController {
 				aux.setActiva(0);
 				aux.setFechaventa(new Date());
 				aux.setComprador(o.getUsuario());
+				aux.setPreciofinal(o.getCantidad());
 				repository_v.save(aux);
 			}
 			catch(Exception e){
