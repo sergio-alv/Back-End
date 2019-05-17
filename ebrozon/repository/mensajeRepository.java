@@ -17,10 +17,19 @@ public interface mensajeRepository  extends CrudRepository<mensaje, Long>{
 	@Query("Select max(identificador) from mensaje")
 	Optional<Integer> lastId();
 	
-	@Query("Select distinct(emisor) from mensaje where receptor = :un")
+	@Query("Select emisor from mensaje where receptor = :un group by emisor order by max(identificador) desc")
 	List<String> usuariosChateados(String un);
 	
-	List<mensaje> findByemisorAndReceptorOrderByIdentificadorAsc(String emisor, String receptor);
+	List<mensaje> findByemisorAndReceptorOrReceptorAndEmisorOrderByIdentificadorAsc(String un11, String un21, String un12, String un22);
 	
-	List<mensaje> findByidentificadorGreaterThanAndEmisorAndReceptorOrderByIdentificadorAsc(int identificador, String emisor, String receptor);
+	List<mensaje> findByidentificadorGreaterThanAndEmisorAndReceptorOrderByIdentificadorAsc(int identificador, String un11, String un21);
+	
+	@Query(value = "Select * \n"
+			+ "from mensaje\n"
+			+ "where identificador = "
+			+ "(Select max(identificador) as maxid\n"
+			+ "from mensaje\n"
+			+ "where (receptor = :un1 and emisor = :un2)\n"
+			+ " or (receptor = :un2 and emisor = :un1))\n", nativeQuery = true)
+	Optional<mensaje> ultimoMensaje(String un1, String un2);
 }

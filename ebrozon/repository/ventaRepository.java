@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.ebrozon.model.usuario;
 import com.ebrozon.model.venta;
 
 public interface ventaRepository extends CrudRepository<venta, Long>{
@@ -86,4 +85,15 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	List<venta> findByidentificadorInAndIdentificadorGreaterThanOrderByFechainicioAsc(List<Integer> nvs, int idm);
 
 	List<venta> findByidentificadorInAndIdentificadorLessThanOrderByFechainicioDesc(List<Integer> nvs, int idm);
+
+	List<venta> findByprecioGreaterThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioAsc(double p, double p2, int idm);
+
+	List<venta> findByprecioLessThanOrPrecioEqualsAndIdentificadorGreaterThanOrderByPrecioDesc(double p, double p2, int idm);
+
+	List<venta> findByidentificadorGreaterThanOrderByFechainicioAsc(int idm);
+
+	List<venta> findByidentificadorLessThanOrderByFechainicioDesc(int idm);
+	
+	@Query(value="Select identificador from venta where usuario = :un and activa = 1", nativeQuery = true)
+	List<Integer> numerosVentasUsuario(String un);
 }

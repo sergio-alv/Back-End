@@ -1,6 +1,5 @@
 package com.ebrozon.repository;
  
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,4 +33,10 @@ public interface ofertaRepository extends CrudRepository<oferta, Long>{
 	@Transactional
 	@Query(value = "update oferta set producto = :prod where nventa = :nv", nativeQuery = true)
 	void actualizarProductoOfertas(int nv, String prod);
+
+	List<oferta> findByusuarioAndAceptadaOrderByFechaDesc(String usuario, int i);
+
+	List<oferta> findByproductoAndAceptadaOrderByFechaDesc(String producto, int i);
+
+	List<oferta> findBynventaInAndAceptadaOrderByFechaDesc(List<Integer> nvs, int i);
 }

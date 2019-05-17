@@ -36,12 +36,11 @@ public interface etiquetaRepository extends CrudRepository<etiqueta, Long>{
 			+ " 2 <= (select count(*) from etiquetaventa ev2 where ev2.etiqueta in :et and ev1.nventa = ev2.nventa)", nativeQuery = true)
 	List<Integer> ventasConEtiquetasMinDos(String[] et);
 	
-	@Query(value = "select aux.venta\n" + 
-			"from (Select nvc.nv as venta, count(*) as c\n" + 
+	@Query(value = "Select nvc.nv as venta\n" + 
 			" from (Select nventa as nv\n" + 
 			" from etiquetaventa\n" + 
 			" where etiqueta in :et) as nvc\n" + 
 			" group by nvc.nv\n" + 
-			" order by c desc) as aux\n", nativeQuery = true)
+			" order by count(*) desc\n", nativeQuery = true)
 	List<Integer> ventasConEtiquetasOrdenadasPorCoincidencias(String[] et);
 }
