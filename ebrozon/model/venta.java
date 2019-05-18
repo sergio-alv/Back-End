@@ -22,7 +22,6 @@ public class venta implements Serializable{
 	@Column(name = "identificador")
 	protected int identificador;
 	
-	
 	@Column(name = "usuario")
 	@Size(min = 3, max = 30, message="El nombre tiene que tener entre 3 y 30 caracteres")
 	@Pattern(regexp = "[A-z,0-9,_,-]+", message="El nombre solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -")

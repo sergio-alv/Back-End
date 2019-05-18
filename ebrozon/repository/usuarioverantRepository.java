@@ -11,6 +11,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.ebrozon.model.usuarioverant;
 
-public interface usuarioverantRepository extends CrudRepository<usuarioverant, Long>{
+public interface usuarioverantRepository extends CrudRepository<usuarioverant, Long> {
 	
 }
