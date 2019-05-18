@@ -119,6 +119,9 @@ public class usuarioController {
 	        if ((ci != null) && (!ci.trim().equals(""))){
 	        	user.setCiudad(ci);
 	        }
+			else{
+				user.setCiudad(pr);
+			}
 	        
 	        if ((pr != null) && (!pr.trim().equals(""))){ 
 	        	user.setProvincia(pr);
@@ -190,13 +193,13 @@ public class usuarioController {
 	        if (tel != null){ 
 	        	user.setTelefono(tel);
 	        }
-	        if (tel == -1){ 
+	        if (tel != null && tel == -1){ 
 	        	user.setTelefono(0);
 	        }
 	        if (cp != null){ 
 	        	user.setCodigopostal(cp);
 	        }
-	        if (cp == -1){ 
+	        if (cp != null && cp == -1){ 
 	        	user.setCodigopostal(0);
 	        }
 	        if ((ci != null) && (!ci.trim().equals(""))){ 
@@ -208,6 +211,15 @@ public class usuarioController {
 	        	}
 	        	user.setCiudad(ci);
 	        }
+			else{
+				if ((pr != null) && (!pr.trim().equals(""))) {
+					String e = venter.actualizarCiudadVentasUsuario(un, pr);
+		        	if(!e.equals("{O:Ok}")) {
+		        		return "{E:Error al actualizar la ciudad.}";
+		        	}
+		        	user.setCiudad(pr);
+				}
+			}
 	        
 	        if ((pr != null) && (!pr.trim().equals(""))){ 
 	        	if(!pr.equals(user.getProvincia())) {

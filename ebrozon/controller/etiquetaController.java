@@ -52,8 +52,14 @@ public class etiquetaController {
 		return "{O:Ok}";
 	}
 	
-	public void asignarEtiqueta(int nv, String et) {
-		repository.etiquetaApareceEnVenta(nv, et);
+	public String asignarEtiqueta(int nv, String et) {
+		try {
+			repository.etiquetaApareceEnVenta(nv, et);
+			return "{O:Ok}";
+		}
+		catch(Exception e) {
+			return "{E:Ya existía esa relación.}";
+		}
 	}
 	
 	//Recupera la información de una etiqueta dado el nombre

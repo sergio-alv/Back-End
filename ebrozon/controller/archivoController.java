@@ -90,7 +90,7 @@ public class archivoController {
 	public String loadArchivoTemp(@RequestParam("id") int id) {
 		try {
 			return repository.findByidentificador(id).get().getDatos();
-		}catch(Exception e){return "caca";}
+		}catch(Exception e){return "{O:Ok}";}
 		}
 	
 	@CrossOrigin
@@ -101,7 +101,7 @@ public class archivoController {
 			if(!aux.isPresent()) {return "{E:No existe el usuario}";}
 			int id = aux.get().getArchivo();
 			return repository.findByidentificador(id).get().getDatos();
-		}catch(Exception e){return "caca";}
+		}catch(Exception e){return "{O:Ok}";}
 		}
 	
 	@CrossOrigin

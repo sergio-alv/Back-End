@@ -380,7 +380,7 @@ public class ventaController {
 		if(ets!= null) {
 			etiquetas = new Parseador(ets,new Stopwords()).parsear();
 		}
-		if(met.equals("Coincidencias") && ets == null) {
+		if(met.equals("Coincidencias") && (etiquetas == null || etiquetas.isEmpty())) {
 			return null;
 		}
 		else if(met.equals("Coincidencias")){
@@ -500,6 +500,10 @@ public class ventaController {
 				listaBuena.add(lista.get(i));
 				++count;
 			}
+		}
+		
+		for(int i = 0; i < listaBuena.size();++i) {
+			listaBuena.get(i).setArchivos(repository.listaArchivos(listaBuena.get(i).getIdentificador()));
 		}
 		
 		return listaBuena;
