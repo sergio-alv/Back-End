@@ -17,7 +17,17 @@ public interface mensajeRepository  extends CrudRepository<mensaje, Long>{
 	@Query("Select max(identificador) from mensaje")
 	Optional<Integer> lastId();
 	
-	@Query("Select emisor from mensaje where receptor = :un group by emisor order by max(identificador) desc")
+	@Query(value = "Select aux.un\r\n" + 
+			"from ((Select emisor as un, max(identificador) as mid\r\n" + 
+			"		from mensaje \r\n" + 
+			"		where receptor = :un\r\n" + 
+			"		group by emisor)\r\n" + 
+			"		union\r\n" + 
+			"		(Select receptor as un, max(identificador) as mid\r\n" + 
+			"		from mensaje \r\n" + 
+			"		where emisor = :un\r\n" + 
+			"		group by receptor)) as aux\r\n" + 
+			"order by aux.mid desc", nativeQuery = true)
 	List<String> usuariosChateados(String un);
 	
 	List<mensaje> findByemisorAndReceptorOrReceptorAndEmisorOrderByIdentificadorAsc(String un11, String un21, String un12, String un22);
