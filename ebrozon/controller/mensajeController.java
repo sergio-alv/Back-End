@@ -49,13 +49,9 @@ public class mensajeController {
 	@RequestMapping("/listarChats")
 	List<mensaje> listarChats(@RequestParam("un") String un){
 		List<String> aux = repository.usuariosChateados(un);
-		List<usuario> list = new ArrayList<usuario>();
-		for(int i = 0; i < aux.size(); ++i) {
-			list.add(userer.recuperarUsuario(aux.get(i)).get());
-		}
 		List<mensaje> chats = new ArrayList<mensaje>();
-		for(int i = 0; i < list.size(); ++i) {
-			chats.add(repository.ultimoMensaje(un, list.get(i).getNombreusuario()).get());
+		for(int i = 0; i < aux.size(); ++i) {
+			chats.add(repository.ultimoMensaje(un, aux.get(i)).get());
 		}
 		return chats;
 	}
