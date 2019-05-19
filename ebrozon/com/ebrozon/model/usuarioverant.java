@@ -1,7 +1,7 @@
 package com.ebrozon.model;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -77,5 +77,8 @@ public class usuarioverant implements Serializable {
 		this.longitud = u.getLongitud();
 		this.archivo = u.getArchivo();
 		this.activo = u.getActivo();
+		this.fecha = new Date();
 	}
+	
+	public usuarioverant() {}
 }

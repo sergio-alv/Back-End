@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 
 import com.ebrozon.model.usuario;
+import com.ebrozon.model.usuarioverant;
 import com.ebrozon.repository.usuarioRepository;
 
 @RestController
@@ -40,6 +41,9 @@ public class usuarioController {
 	
 	@Autowired
 	ventaController venter;
+	
+	@Autowired
+	usuarioverantController userveranter;
 	
 	private void sendmail(String us, String ver, String cor) throws AddressException, MessagingException, IOException {
 		   Properties props = new Properties();
@@ -179,6 +183,7 @@ public class usuarioController {
 		}
 		
 		usuario user = repository.findBynombreusuario(un).get();
+		userveranter.guardar(user);
 		
 		try {
 			

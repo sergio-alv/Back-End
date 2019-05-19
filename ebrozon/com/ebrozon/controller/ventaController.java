@@ -58,6 +58,9 @@ public class ventaController {
 	@Autowired
     etiquetaController etiqueter;
 	
+	@Autowired
+	ventaverantController ventaveranter;
+	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
 	@CrossOrigin
@@ -161,6 +164,7 @@ public class ventaController {
 		int idIm = 1;
 		boolean archivoGuardado = false;
 		venta vent = ventaux.get();
+		ventaveranter.guardar(vent);
 		try {
 			vent.setProducto(prod);
 			repository_o.actualizarProductoOfertas(id,prod);

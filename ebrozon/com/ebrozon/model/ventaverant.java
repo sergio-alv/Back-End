@@ -1,7 +1,7 @@
 package com.ebrozon.model;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,5 +51,8 @@ public class ventaverant implements Serializable {
 		this.precio = v.getPrecio();
 		this.tienearchivo = v.getTienearchivo();
 		this.activa = v.getActiva();
+		this.fechamod = new Date();
 	}
+	
+	public ventaverant() {}
 }
