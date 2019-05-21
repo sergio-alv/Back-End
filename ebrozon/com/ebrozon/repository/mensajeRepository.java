@@ -34,7 +34,7 @@ public interface mensajeRepository  extends CrudRepository<mensaje, Long>{
 	
 	List<mensaje> findByemisorAndReceptorOrReceptorAndEmisorOrderByIdentificadorAsc(String un11, String un21, String un12, String un22);
 	
-	List<mensaje> findByidentificadorGreaterThanAndEmisorAndReceptorOrderByIdentificadorAsc(int identificador, String un11, String un21);
+	List<mensaje> findByidentificadorGreaterThanAndEmisorAndReceptorOrIdentificadorGreaterThanAndEmisorAndReceptorOrderByIdentificadorAsc(int id1, String un11, String un21,int id2, String un12, String un22);
 	
 	@Query(value = "Select * \n"
 			+ "from mensaje\n"
