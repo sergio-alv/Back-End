@@ -70,6 +70,9 @@ public class venta implements Serializable{
 	@Column(name = "provincia")
 	protected String provincia;
 	
+	@Column(name = "categoria")
+	protected String categoria;
+	
 	@Transient
 	protected usuario user;
 	
@@ -229,6 +232,14 @@ public class venta implements Serializable{
 
 	public void setArchivos(List<Integer> archivos) {
 		this.archivos = archivos;
+	}
+
+	public String getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(String categoria) {
+		this.categoria = categoria;
 	}
 	
 }
