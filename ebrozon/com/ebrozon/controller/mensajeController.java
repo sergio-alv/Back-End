@@ -68,7 +68,7 @@ public class mensajeController {
 	@Produces("application/json")
 	@RequestMapping("/recibirMensaje")
 	List<mensaje> recibirMensaje(@RequestParam("lm") int lm, @RequestParam("em") String em, @RequestParam("re") String re){
-		List<mensaje> list = repository.findByidentificadorGreaterThanAndEmisorAndReceptorOrderByIdentificadorAsc(lm, em,re);
+		List<mensaje> list = repository.findByidentificadorGreaterThanAndEmisorAndReceptorOrIdentificadorGreaterThanAndEmisorAndReceptorOrderByIdentificadorAsc(lm, em,re,lm, re, em);
 		return list;
 	}
 }

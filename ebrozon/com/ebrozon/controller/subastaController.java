@@ -58,7 +58,8 @@ public class subastaController {
 	public String publicarSubasta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
 			@RequestParam("pre") double pre, @RequestParam("end") long end,  @RequestParam("pin") double pin, 
 			@RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
-			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4) {
+			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4,
+			@RequestParam("cat") String cat) {
 		Optional<usuario> usaux = repository_u.findBynombreusuario(un);
 		if(!usaux.isPresent()) {
 			return "{E:No existe el usuario.}";
@@ -71,9 +72,11 @@ public class subastaController {
 		try {
 			if(usaux.get().getCiudad() != null && !usaux.get().getCiudad().contentEquals("")) {
 				sub = new subasta(un,prod, desc, pre, 1, 1, new String(usaux.get().getCiudad()),new Date(end),pin,pin);
+				sub.setCategoria(cat);
 			}
 			else {
 				sub = new subasta(un,prod, desc, pre, 1, 1, new String(usaux.get().getProvincia()),new Date(end),pin,pin);
+				sub.setCategoria(cat);
 			}
 			sub.setProvincia(new String(usaux.get().getProvincia()));
 			
@@ -82,7 +85,7 @@ public class subastaController {
 				id = idAux.get()+1;
 			}
 			sub.setIdentificador(id);
-			if(arc1 != null) {
+			if(arc1 != null && !arc1.equals("")) {
 				sub.setTienearchivo(1);
 				usaux = null;
 				repository.save(sub);
@@ -117,6 +120,12 @@ public class subastaController {
 				
 				//--------
 				
+				List<Integer> e = repository.listaArchivos(id);
+				if(e.isEmpty()) {
+					repository.deleteByidentificador(id);
+					return "{E:Problema al subir las imágenes, no se ha subido la venta.}";
+				}
+				
 				return "{O:Ok}";
 			}
 			else {
@@ -149,7 +158,8 @@ public class subastaController {
 	public String actualizarSubasta(@RequestParam("id") int id, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
 			@RequestParam("pre") double pre, @RequestParam("end") long end,  @RequestParam("pin") double pin, 
 			@RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
-			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4) {
+			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4,
+			@RequestParam("cat") String cat) {
 		
 		if(repository.numeroPujasRecibidas(id) >0) {
 			return "{E:No se puede actualizar una subasta cuando esta ha recibido ya una puja.}";
@@ -170,7 +180,8 @@ public class subastaController {
 			sub.setFechafin(new Date(end));
 			sub.setPrecioinicial(pin);
 			sub.setPujaactual(pin);
-			if(arc1 != null) {
+			sub.setCategoria(cat);
+			if(arc1 != null && !arc1.equals("")) {
 				sub.setTienearchivo(1);
 				repository.save(sub);
 				idIm = archiver.uploadArchivoTemp(arc1);
@@ -200,6 +211,12 @@ public class subastaController {
 				for(int i = 0; i < etiquetas.size();i++) {
 					etiqueter.guardarEtiqueta((String) etiquetas.get(i), sub.getUsuario());
 					etiqueter.asignarEtiqueta(id, (String) etiquetas.get(i));
+				}
+				
+				List<Integer> e = repository.listaArchivos(id);
+				if(e.isEmpty()) {
+					repository.deleteByidentificador(id);
+					return "{E:Problema al subir las imágenes, no se ha subido la venta.}";
 				}
 				
 				return "{O:Ok}";

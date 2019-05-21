@@ -3,6 +3,7 @@ package com.ebrozon.controller;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
 
 import javax.mail.Message;
@@ -28,7 +29,6 @@ import java.io.IOException;
 import java.security.MessageDigest;
 
 import com.ebrozon.model.usuario;
-import com.ebrozon.model.usuarioverant;
 import com.ebrozon.repository.usuarioRepository;
 
 @RestController
@@ -41,9 +41,6 @@ public class usuarioController {
 	
 	@Autowired
 	ventaController venter;
-	
-	@Autowired
-	usuarioverantController userveranter;
 	
 	private void sendmail(String us, String ver, String cor) throws AddressException, MessagingException, IOException {
 		   Properties props = new Properties();
@@ -183,7 +180,6 @@ public class usuarioController {
 		}
 		
 		usuario user = repository.findBynombreusuario(un).get();
-		userveranter.guardar(user);
 		
 		try {
 			
@@ -455,5 +451,88 @@ public class usuarioController {
 	String actualizarEstrellasUsuario(String un, double estrellas) {
 		repository.actualizarEstrellas(un, estrellas);
 		return "{O:Ok}";
+	}
+	
+	String randomPass() {
+		String cars = "b0320djq2j3gnn3as435widhb08872q3bcj232hfliw83blasetailonhgha3";
+		Random r = new Random();
+		int rI = 0;
+		String pass = "";
+		for(int i = 0; i < 16; ++i) {
+			rI = r.nextInt((99999))%cars.length();
+			pass += cars.charAt(rI);
+		}
+		return pass;
+	}
+	
+	private void sendmail2(String us, String pass, String cor) throws AddressException, MessagingException, IOException {
+		   Properties props = new Properties();
+		   props.put("mail.smtp.auth", "true");
+		   props.put("mail.smtp.starttls.enable", "true");
+		   props.put("mail.smtp.host", "smtp.gmail.com");
+		   props.put("mail.smtp.port", "587");
+		   
+		   Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+		      protected PasswordAuthentication getPasswordAuthentication() {
+		         return new PasswordAuthentication("karny.sac@gmail.com", "199819981998s");
+		      }
+		   });
+		   Message msg = new MimeMessage(session);
+		   msg.setFrom(new InternetAddress("karny.sac@gmail.com", false));
+
+		   msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(cor));
+		   msg.setSubject("Recuperación de contraseña en Ebrozon");
+		   String mensaje = "Usted, " + us + ", ha solicitado recuperar su contraseña.\n"
+				   			+ "En este momento se le ha cambiado a contraseña a la siguiente:\n\n"
+				   			+ pass
+				   			+ "\nPara completar el proceso de recuperación vaya a su perfil y cambie su contraseña."
+				   			+ "\nGracias y saludos";
+		   msg.setContent(mensaje, "text/html; charset=utf-8");
+		   msg.setSentDate(new Date());
+		   Transport.send(msg);   
+		}
+	
+	@CrossOrigin
+	@RequestMapping("/recuperarContrasena")
+	public String cambiarContrasenaRec(@RequestParam("un") String un) {
+		Optional<usuario> aux = repository.findBynombreusuario(un);
+		String newpass;
+		String oldpass;
+		if(aux.isPresent()) {
+			if(aux.get().getActivo() == 0) {
+				return "{E:La cuenta está deshabilitada.}";
+			}
+			MessageDigest md;
+	    	StringBuffer sb = new StringBuffer();
+		    try {
+		    	newpass = randomPass();
+			   	md = MessageDigest.getInstance("MD5");
+			   	md.update(newpass.trim().getBytes());
+				byte[] digest = md.digest();
+				sb = new StringBuffer();
+				for (byte b : digest) {
+					sb.append(String.format("%02x", b & 0xff));
+				}
+		    }
+		    catch(Exception e) {
+		    	return "{E:Ha habido un problema durante el cambio de contraseña. Se mantendrá la anterior.}";
+		    }
+		    usuario us = aux.get();
+		    oldpass = us.getContrasena();
+		    us.setContrasena(sb.toString());
+		    repository.save(us);
+		    try {
+		    	//sendmail2(us.getNombreusuario(),newpass,us.getCorreo());
+		    }
+		    catch(Exception e) {
+		    	us.setContrasena(oldpass);
+		    	repository.save(us);
+		    	return "{E:Ha habido un problema durante el cambio de contraseña. Se mantendrá la anterior.}";
+		    }
+		    return "{O:Ok}";
+		}
+		else {
+			return "{E:El nombre usuario no existe.}";
+		}
 	}
 }

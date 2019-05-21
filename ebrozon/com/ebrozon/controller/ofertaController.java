@@ -53,7 +53,7 @@ public class ofertaController {
 					if(v.getes_subasta() == 1 && cantidad < v.getPrecio()) {
 						return "{E:Un producto en subasta solo puede recibir ofertas mayores o iguales al precio de compra inmediata.}";
 					}
-					else if(v.getes_subasta() == 1 && cantidad >= v.getPrecio()) {
+					else if(cantidad >= v.getPrecio()) {
 						v.setActiva(0);
 						v.setFechaventa(new Date());
 						v.setComprador(usuario);

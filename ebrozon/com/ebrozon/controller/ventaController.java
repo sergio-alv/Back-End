@@ -58,16 +58,14 @@ public class ventaController {
 	@Autowired
     etiquetaController etiqueter;
 	
-	@Autowired
-	ventaverantController ventaveranter;
-	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
 	@CrossOrigin
 	@RequestMapping("/publicarVenta")
 	public String publicarVenta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
 			@RequestParam("pre") double pre, @RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
-			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4) {
+			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4,
+			@RequestParam("cat") String cat) {
 		Optional<usuario> usaux = repository_u.findBynombreusuario(un);
 		if(!usaux.isPresent()) {
 			return "{E:No existe el usuario.}";
@@ -80,9 +78,11 @@ public class ventaController {
 		try {
 			if(usaux.get().getCiudad() != null && !usaux.get().getCiudad().equals("")) {
 				vent = new venta(un,prod, desc, pre, 1, 1, new String(usaux.get().getCiudad()));
+				vent.setCategoria(cat);
 			}
 			else {
 				vent = new venta(un,prod, desc, pre, 1, 1, new String(usaux.get().getProvincia()));
+				vent.setCategoria(cat);
 			}
 			vent.setProvincia(new String(usaux.get().getProvincia()));
 			Optional<Integer> idAux = repository.lastId();
@@ -90,7 +90,7 @@ public class ventaController {
 				id = idAux.get()+1;
 			}
 			vent.setIdentificador(id);
-			if(arc1 != null) {
+			if(arc1 != null && !arc1.equals("")) {
 				vent.setTienearchivo(1);
 				usaux = null;
 				repository.save(vent);
@@ -125,6 +125,12 @@ public class ventaController {
 				
 				//--------
 				
+				List<Integer> e = repository.listaArchivos(id);
+				if(e.isEmpty()) {
+					repository.deleteByidentificador(id);
+					return "{E:Problema al subir las imágenes, no se ha subido la venta.}";
+				}
+				
 				return "{O:Ok}";
 			}
 			else {
@@ -156,7 +162,8 @@ public class ventaController {
 	@RequestMapping("/actualizarVenta")
 	public String actualizarVenta(@RequestParam("id") int id, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
 			@RequestParam("pre") double pre, @RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
-			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4) {
+			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4,
+			@RequestParam("cat") String cat) {
 		Optional<venta> ventaux = repository.findByidentificador(id);
 		if(!ventaux.isPresent()) {
 			return "{E:Error inesperado.}";
@@ -164,13 +171,13 @@ public class ventaController {
 		int idIm = 1;
 		boolean archivoGuardado = false;
 		venta vent = ventaux.get();
-		ventaveranter.guardar(vent);
 		try {
 			vent.setProducto(prod);
 			repository_o.actualizarProductoOfertas(id,prod);
 			vent.setDescripcion(desc);
 			vent.setPrecio(pre);
-			if(arc1 != null) {
+			vent.setCategoria(cat);
+			if(arc1 != null && !arc1.equals("")) {
 				vent.setTienearchivo(1);
 				repository.save(vent);
 				idIm = archiver.uploadArchivoTemp(arc1);
@@ -201,7 +208,11 @@ public class ventaController {
 					etiqueter.guardarEtiqueta((String) etiquetas.get(i), vent.getUsuario());
 					etiqueter.asignarEtiqueta(id, (String) etiquetas.get(i));
 				}
-				
+				List<Integer> e = repository.listaArchivos(id);
+				if(e.isEmpty()) {
+					repository.deleteByidentificador(id);
+					return "{E:Problema al subir las imágenes, no se ha subido la venta.}";
+				}
 				return "{O:Ok}";
 			}
 			else {
@@ -377,7 +388,8 @@ public class ventaController {
 	List<venta> listarProductosEtiquetas(@RequestParam(value = "ets", required=false) String ets, @RequestParam("met") String met,
 			@RequestParam(value = "min", required=false) Double min,@RequestParam(value = "max", required=false) Double max,
 			@RequestParam(value = "pr", required=false) String pr, @RequestParam(value = "ci", required=false) String ci,
-			@RequestParam(value = "id", required=false) Integer id, @RequestParam(value = "tp", required=false) Integer tp){
+			@RequestParam(value = "id", required=false) Integer id, @RequestParam(value = "tp", required=false) Integer tp,
+			@RequestParam(value = "cat", required=false) String cat){
 		List<venta> lista = new ArrayList<venta>();
 		List<venta> listaBuena = new ArrayList<venta>();
 		Vector etiquetas = null;
@@ -500,7 +512,8 @@ public class ventaController {
 			if(aux.getActiva() == 1 && aux.getPrecio() >= pmin && aux.getPrecio() <= pmax &&
 					(pr == null || (pr != null && aux.getProvincia().equals(pr))) &&
 					(ci == null || (ci != null && aux.getCiudad().equals(ci))) &&
-					(tp == null || (tp != null && aux.getes_subasta() == tp))) {
+					(tp == null || (tp != null && aux.getes_subasta() == tp)) &&
+					(cat == null || (cat != null && aux.getCategoria().equals(cat)))) {
 				listaBuena.add(lista.get(i));
 				++count;
 			}
