@@ -42,6 +42,9 @@ public class usuarioController {
 	@Autowired
 	ventaController venter;
 	
+	@Autowired
+	usuarioverantController usuarioveranter;
+	
 	private void sendmail(String us, String ver, String cor) throws AddressException, MessagingException, IOException {
 		   Properties props = new Properties();
 		   props.put("mail.smtp.auth", "true");
@@ -180,6 +183,7 @@ public class usuarioController {
 		}
 		
 		usuario user = repository.findBynombreusuario(un).get();
+		usuarioveranter.guardar(user);
 		
 		try {
 			
