@@ -51,4 +51,8 @@ public interface ofertaRepository extends CrudRepository<oferta, Long>{
 			+ "and (select fechapago from venta\n"
 			+ "		where identificador = nventa) is null\n", nativeQuery = true)
 	List<oferta> ofertasRecibidasAceptadasPendientes(List<Integer> nvs);
+	
+	@Query(value = "Select * from oferta\n"
+			+ "where aceptada = 0 and nventa in :nvs\n", nativeQuery = true)
+	List<oferta> ofertasRecibidas(List<Integer> nvs);
 }
