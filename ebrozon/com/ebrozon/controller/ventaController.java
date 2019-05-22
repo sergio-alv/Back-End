@@ -182,6 +182,7 @@ public class ventaController {
 			vent.setPrecio(pre);
 			vent.setCategoria(cat);
 			if(arc1 != null && !arc1.equals("")) {
+				repository.borrarArchivosVenta(vent.getIdentificador());
 				vent.setTienearchivo(1);
 				repository.save(vent);
 				idIm = archiver.uploadArchivoTemp(arc1);

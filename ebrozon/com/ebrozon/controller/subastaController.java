@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ebrozon.model.subasta;
 import com.ebrozon.model.usuario;
+import com.ebrozon.model.venta;
 import com.ebrozon.repository.ofertaRepository;
 import com.ebrozon.repository.subastaRepository;
 import com.ebrozon.repository.usuarioRepository;
+import com.ebrozon.repository.ventaRepository;
 
 import parser.Parseador;
 import parser.Stopwords;
@@ -35,6 +37,9 @@ public class subastaController {
 	
 	@Autowired
     subastaRepository repository;
+	
+	@Autowired
+    ventaRepository repository_v;
 	
 	@Autowired
     archivoController archiver;
@@ -50,6 +55,9 @@ public class subastaController {
 
 	@Autowired
 	ofertaRepository repository_o;
+	
+	@Autowired
+	ventaverantController ventaveranter;
 	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
@@ -172,6 +180,7 @@ public class subastaController {
 		int idIm = 1;
 		boolean archivoGuardado = false;
 		subasta sub = subaux.get();
+		ventaveranter.guardar((venta)sub);
 		try {
 			sub.setProducto(prod);
 			repository_o.actualizarProductoOfertas(id,prod);
@@ -182,6 +191,7 @@ public class subastaController {
 			sub.setPujaactual(pin);
 			sub.setCategoria(cat);
 			if(arc1 != null && !arc1.equals("")) {
+				repository_v.borrarArchivosVenta(sub.getIdentificador());
 				sub.setTienearchivo(1);
 				repository.save(sub);
 				idIm = archiver.uploadArchivoTemp(arc1);

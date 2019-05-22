@@ -107,6 +107,14 @@ public class ofertaController {
 		return repository.ofertasRecibidasAceptadasPendientes(nvs);
 	}
 	
+	@CrossOrigin
+	@Produces("application/json")
+	@RequestMapping("/listarOfertasRecibidas")
+	public List<oferta> listarOfertasRecibidas(@RequestParam("un") String usuario) {
+		List<Integer> nvs = repository_v.numerosVentasUsuario(usuario);
+		return repository.ofertasRecibidas(nvs);
+	}
+	
 	// Lista todas las ofertas sobre un producto recibiendo como parámetros obligatorios el nombre del producto.
 	@CrossOrigin
 	@Produces("application/json")

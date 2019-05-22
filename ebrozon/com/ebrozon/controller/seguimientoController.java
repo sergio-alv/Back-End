@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,6 +81,18 @@ public class seguimientoController {
 	@RequestMapping("/listarSeguimientosUsuario")
 	public List<seguimiento> listarSeguimientosUsuario(@RequestParam("un") String usuario) {
 		return repository.findByusuarioOrderByFechaDesc(usuario);
+	}
+	
+	@CrossOrigin
+	@Produces("application/json")
+	@RequestMapping("/listarVentasSeguidasUsuario")
+	public List<venta> listarVentasSeguidasUsuario(@RequestParam("un") String usuario) {
+		List<seguimiento> aux = repository.findByusuarioOrderByFechaDesc(usuario);
+		List<venta> list = new ArrayList<venta>();
+		for(int i = 0; i < aux.size(); ++i) {
+			list.add(repository_v.findByidentificador(aux.get(i).getNventa()).get());
+		}
+		return list;
 	}
 	
 	// Elimina el seguimiento recibiendo como parametros obligatorios el nombre del usuario que la realizo, el numero de venta, la fecha y la cantidad.
