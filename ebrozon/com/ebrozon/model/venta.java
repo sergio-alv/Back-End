@@ -74,9 +74,6 @@ public class venta implements Serializable{
 	protected String categoria;
 	
 	@Transient
-	protected usuario user;
-	
-	@Transient
 	protected List<Integer> archivos;
 
 	public venta(
@@ -192,14 +189,6 @@ public class venta implements Serializable{
 
 	public void setes_subasta(int es_subasta) {
 		this.es_subasta = es_subasta;
-	}
-	
-	public usuario getUser() {
-		return this.user;
-	}
-
-	public void setUser(usuario us) {
-		this.user = us;
 	}
 
 	public int getIdentificador() {

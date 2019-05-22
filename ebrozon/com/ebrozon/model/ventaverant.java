@@ -43,6 +43,9 @@ public class ventaverant implements Serializable {
 	@Column(name = "activa")
 	private int activa;
 	
+	@Column(name = "categoria")
+	private String categoria;
+	
 	public ventaverant(venta v) {
 		super();
 		this.nventa = v.getIdentificador();
@@ -52,6 +55,7 @@ public class ventaverant implements Serializable {
 		this.tienearchivo = v.getTienearchivo();
 		this.activa = v.getActiva();
 		this.fechamod = new Date();
+		this.categoria = v.getCategoria();
 	}
 	
 	public ventaverant() {}
