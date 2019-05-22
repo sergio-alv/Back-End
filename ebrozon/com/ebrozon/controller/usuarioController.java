@@ -314,6 +314,7 @@ public class usuarioController {
 		    	}
 		    	usuario us = aux.get();
 		    	us.setContrasena(sb.toString());
+			repository.save(us);
 		    	return "{O:Ok}";
 		    }
 		    else {
