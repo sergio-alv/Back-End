@@ -1,4 +1,4 @@
-package com.ebrozon.controller;
+ package com.ebrozon.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -281,7 +281,7 @@ public class ventaController {
 	@RequestMapping("/listarProductosUsuario")
 	@Produces("application/json")
 	List<venta> listarProductosUsuario(@RequestParam("un") String un, @RequestParam("id") int id){
-		List<venta> lista = repository.findFirst25ByusuarioAndIdentificadorGreaterThanOrderByFechainicioDesc(un,id);
+		List<venta> lista = repository.findFirst25ByusuarioAndIdentificadorLessThanOrderByFechainicioDesc(un,id);
 		for(int i = 0; i < lista.size();++i) {
 			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
 		}

@@ -86,11 +86,15 @@ public class seguimientoController {
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarVentasSeguidasUsuario")
-	public List<venta> listarVentasSeguidasUsuario(@RequestParam("un") String usuario) {
+	public List<venta> listarVentasSeguidasUsuario(@RequestParam("un") String usuario, @RequestParam("id") int id) {
 		List<seguimiento> aux = repository.findByusuarioOrderByFechaDesc(usuario);
 		List<venta> list = new ArrayList<venta>();
-		for(int i = 0; i < aux.size(); ++i) {
-			list.add(repository_v.findByidentificador(aux.get(i).getNventa()).get());
+		int count = 0;
+		for(int i = 0; count < 25 && i < aux.size(); ++i) {
+			if(aux.get(i).getNventa() < id) {
+				list.add(repository_v.findByidentificador(aux.get(i).getNventa()).get());
+				++count;
+			}
 		}
 		return list;
 	}
@@ -104,6 +108,19 @@ public class seguimientoController {
 		}
 		else {
 			Optional<seguimiento> s_aux = repository.findByidentificador(id);
+			repository.delete(s_aux.get());
+			return "{O:Ok}";
+		}
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/dejarSeguirProducto")
+	public String dejarSeguirProducto(@RequestParam("un") String un, @RequestParam("nv") int nv) {
+		if (!repository.existsByusuarioAndNventa(un,nv)) {
+			return "{E:No existe tal seguimiento}";
+		}
+		else {
+			Optional<seguimiento> s_aux = repository.findByusuarioAndNventa(un,nv);
 			repository.delete(s_aux.get());
 			return "{O:Ok}";
 		}
