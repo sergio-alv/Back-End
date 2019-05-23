@@ -63,7 +63,7 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 
 	List<venta> findFirst25ByusuarioAndIdentificadorOrderByFechainicioDesc(String un, int id);
 
-	List<venta> findFirst25ByusuarioAndIdentificadorGreaterThanOrderByFechainicioDesc(String un, int id);
+	List<venta> findFirst25ByusuarioAndIdentificadorLessThanOrderByFechainicioDesc(String un, int id);
 
 	List<venta> findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(String pr, int i,
 			int id);

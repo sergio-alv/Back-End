@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.ebrozon.model.seguimiento;
 
 public interface seguimientoRepository extends CrudRepository<seguimiento, Long>{
-	boolean existsByusuarioAndNventa(String usuario, int nventa);
+	boolean existsByusuarioAndNventa(String usuario, String nv);
     
     	boolean existsByidentificador(int id);
     
@@ -31,4 +31,8 @@ public interface seguimientoRepository extends CrudRepository<seguimiento, Long>
 			"	from venta v) as aux\r\n" + 
 			"order by c desc, identificador desc", nativeQuery = true)
 	List<Integer> ventasPorSeguimientos();
+
+	Optional<seguimiento> findByusuarioAndNventa(String un, int nv);
+
+	boolean existsByusuarioAndNventa(String usuario, int nventa);
 }
