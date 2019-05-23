@@ -26,10 +26,9 @@ public interface seguimientoRepository extends CrudRepository<seguimiento, Long>
 	@Query("Select max(identificador) from seguimiento")
 	Optional<Integer> lastId();
 	
-	@Query(value = "Select nvc.nv as venta\r\n" + 
-			"	from (Select nventa as nv\r\n" + 
-			"			from seguimiento) as nvc \r\n" + 
-			"	group by nvc.nv \r\n" + 
-			"	order by count(*) desc", nativeQuery = true)
+	@Query(value = "Select aux.identificador\r\n" + 
+			"from (Select identificador, (select count(*) from seguimiento where nventa = v.identificador) as c\r\n" + 
+			"	from venta v) as aux\r\n" + 
+			"order by c desc, identificador desc", nativeQuery = true)
 	List<Integer> ventasPorSeguimientos();
 }
