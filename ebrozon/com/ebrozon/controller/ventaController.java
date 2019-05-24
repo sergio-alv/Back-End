@@ -281,7 +281,18 @@ public class ventaController {
 	@RequestMapping("/listarProductosUsuario")
 	@Produces("application/json")
 	List<venta> listarProductosUsuario(@RequestParam("un") String un, @RequestParam("id") int id){
-		List<venta> lista = repository.findFirst25ByusuarioAndIdentificadorLessThanOrderByFechainicioDesc(un,id);
+		List<venta> lista = repository.findFirst25ByusuarioAndIdentificadorLessThanAndActivaOrderByFechainicioDesc(un,id,1);
+		for(int i = 0; i < lista.size();++i) {
+			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
+		}
+		return lista;
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/listarComprasUsuario")
+	@Produces("application/json")
+	List<venta> listarComprasUsuario(@RequestParam("un") String un, @RequestParam("id") int id){
+		List<venta> lista = repository.findFirst25BycompradorAndIdentificadorLessThanOrderByFechainicioDesc(un,id);
 		for(int i = 0; i < lista.size();++i) {
 			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
 		}

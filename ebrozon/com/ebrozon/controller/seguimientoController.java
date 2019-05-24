@@ -90,11 +90,25 @@ public class seguimientoController {
 		List<seguimiento> aux = repository.findByusuarioOrderByFechaDesc(usuario);
 		List<venta> list = new ArrayList<venta>();
 		int count = 0;
+		Optional<seguimiento> m = repository.findByusuarioAndNventa(usuario,id);
+		int max = id;
+		if(id != 99999 && !m.isPresent()){
+			return null;
+		}
+		if(m.isPresent()){
+			max = m.get().getIdentificador();
+		}
 		for(int i = 0; count < 25 && i < aux.size(); ++i) {
-			if(aux.get(i).getNventa() < id) {
-				list.add(repository_v.findByidentificador(aux.get(i).getNventa()).get());
-				++count;
+			if(aux.get(i).getIdentificador() < max) {
+				venta v = repository_v.findByidentificador(aux.get(i).getNventa()).get();
+				if(v.getActiva() == 1) {
+					list.add(v);
+					++count;
+				}
 			}
+		}
+		for(int i = 0; i < list.size();++i) {
+			list.get(i).setArchivos(repository_v.listaArchivos(list.get(i).getIdentificador()));
 		}
 		return list;
 	}
