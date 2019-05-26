@@ -96,4 +96,8 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	
 	@Query(value="Select identificador from venta where usuario = :un and activa = 1", nativeQuery = true)
 	List<Integer> numerosVentasUsuario(String un);
+
+	List<venta> findFirst25ByusuarioAndIdentificadorLessThanAndActivaOrderByFechainicioDesc(String un, int id, int i);
+
+	List<venta> findFirst25BycompradorAndIdentificadorLessThanOrderByFechainicioDesc(String un, int id);
 }
