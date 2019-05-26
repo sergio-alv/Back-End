@@ -74,7 +74,19 @@ public class archivoController {
 				//saveFile(file, fileName);
 				archivo f = new archivo(Integer.toString(id), 0);
 				f.setIdentificador(id);
-				f.setDatos(file);
+				
+				String fileaux = "";
+				if(file.substring(0, 4).equals("data")) {
+					fileaux = file.substring(11);
+					if(fileaux.substring(0, 3).equals("png")) {
+						fileaux = fileaux.substring(11);
+					}
+					else {
+						fileaux = fileaux.substring(12);
+					}
+				}
+				
+				f.setDatos(fileaux);
 				repository.save(f);
 				return id;//repository.findByurl(upload_folder + fileName).get().getIdentificador();
 			}
