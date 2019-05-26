@@ -55,4 +55,10 @@ public interface ofertaRepository extends CrudRepository<oferta, Long>{
 	@Query(value = "Select * from oferta\n"
 			+ "where aceptada = 0 and nventa in :nvs\n", nativeQuery = true)
 	List<oferta> ofertasRecibidas(List<Integer> nvs);
+	
+	@Query(value = "update oferta set aceptada = 2 where nventa = :nv", nativeQuery = true)
+	void confirmarPagoVenta(int nv);
+	
+	@Query(value = "update oferta set aceptada = -1 where nventa = :nv", nativeQuery = true)
+	void cancelarPagoVenta(int nv);
 }
