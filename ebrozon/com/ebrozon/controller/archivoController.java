@@ -75,8 +75,8 @@ public class archivoController {
 				archivo f = new archivo(Integer.toString(id), 0);
 				f.setIdentificador(id);
 				
-				String fileaux = "";
-				if(file.substring(0, 4).equals("data")) {
+				String fileaux = file;
+				if(fileaux.substring(0, 4).equals("data")) {
 					fileaux = file.substring(11);
 					if(fileaux.substring(0, 3).equals("png")) {
 						fileaux = fileaux.substring(11);
