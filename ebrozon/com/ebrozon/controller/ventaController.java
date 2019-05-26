@@ -381,6 +381,7 @@ public class ventaController {
 		}
 		aux.get().setFechapago(new Date());
 		repository.save(aux.get());
+		repository_o.confirmarPagoVenta(id);
 		return "{O:Ok}";
 	}
 	
@@ -395,6 +396,7 @@ public class ventaController {
 		aux.get().setActiva(1);
 		aux.get().setComprador(null);
 		repository.save(aux.get());
+		repository_o.cancelarPagoVenta(id);
 		return "{O:Ok}";
 	}
 	

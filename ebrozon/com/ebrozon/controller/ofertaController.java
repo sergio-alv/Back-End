@@ -35,7 +35,7 @@ public class ofertaController {
 	@CrossOrigin
 	@RequestMapping("/hacerOferta")
 	public String hacerOferta(@RequestParam("un") String usuario, @RequestParam("nv") int nventa, @RequestParam("can") float cantidad) {
-		if (!repository.existsByusuarioAndNventa(usuario,nventa)) {
+		if (!repository.existsByusuarioAndNventa(usuario,nventa) || repository_v.findByidentificador(nventa).get().getPrecio() <= cantidad) {
 			if (!repository_v.existsByidentificador(nventa) || !repository_u.existsBynombreusuario(usuario)) {
 				return "{E:No existe la venta o el usuario.}";
 			}
@@ -59,7 +59,21 @@ public class ofertaController {
 						v.setComprador(usuario);
 						v.setPreciofinal(v.getPrecio());
 						repository_v.save(v);
-						return "{O:Ok}";
+						
+						List<oferta> l = listarOfertasVenta(o.getNventa());
+						for (int i=0; i<l.size(); ++i) {
+							if (l.get(i).getAceptada() == (short) 0) {
+								try {
+									l.get(i).setAceptada((short) -1);
+									repository.save(l.get(i));
+								}
+								catch (Exception e) {
+									return e.getMessage();
+								}
+							}
+						}
+						
+						o.setAceptada(1);
 					}
 					repository.save(o);
 				}
