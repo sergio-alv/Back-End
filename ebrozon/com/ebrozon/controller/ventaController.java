@@ -395,6 +395,8 @@ public class ventaController {
 		aux.get().setFechaventa(null);
 		aux.get().setActiva(1);
 		aux.get().setComprador(null);
+		aux.get().setFechapago(null);
+		aux.get().setPreciofinal(0);
 		repository.save(aux.get());
 		repository_o.cancelarPagoVenta(id);
 		return "{O:Ok}";

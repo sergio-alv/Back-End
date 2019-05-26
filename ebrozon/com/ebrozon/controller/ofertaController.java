@@ -85,6 +85,7 @@ public class ofertaController {
 		else {
 			oferta aux = repository.findByusuarioAndNventa(usuario, nventa).get();
 			aux.setCantidad(cantidad);
+			aux.setAceptada(0);
 			repository.save(aux);
 		}
 		return "{O:Ok}";
