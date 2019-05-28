@@ -16,7 +16,11 @@ import com.ebrozon.model.mensaje;
 import com.ebrozon.model.usuario;
 import com.ebrozon.repository.mensajeRepository;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
+@Api(value="Message Management System", description="Operations pertaining to message in Message Managament System ")
 public class mensajeController {
 	
 	@Autowired
@@ -25,6 +29,7 @@ public class mensajeController {
 	@Autowired
     usuarioController userer;
 	
+	@ApiOperation(value = "Send a message to a user", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/mandarMensaje")
 	String mandarMensaje(@RequestParam("em") String em, @RequestParam("re") String re, @RequestParam("con") String con) {
@@ -44,6 +49,7 @@ public class mensajeController {
 		return "{O:Ok}";
 	}
 	
+	@ApiOperation(value = "List all chats of a user", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarChats")
@@ -56,6 +62,7 @@ public class mensajeController {
 		return chats;
 	}
 	
+	@ApiOperation(value = "Bring all messages of a chat from the database", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/cargarChat")
@@ -64,6 +71,7 @@ public class mensajeController {
 		return list;
 	}
 	
+	@ApiOperation(value = "Recieve a message", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/recibirMensaje")

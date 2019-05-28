@@ -7,8 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Table(name = "opinion")
+@ApiModel(description = "All details about an opinion. ")
 public class opinion {
 	public opinion(int identificador, String emisor, String receptor, String contenido, double estrellas) {
 		super();
@@ -21,25 +25,33 @@ public class opinion {
 		this.tienearchivo = 0;
 	}
 	public opinion() {}
-	@Id
+	
+	 @Id
+	 @ApiModelProperty(notes = "Opinion's identifier")
 	 @Column(name = "identificador")
 	 private int identificador;
 	 
+	 @ApiModelProperty(notes = "Opinion's transmitter")
 	 @Column(name = "emisor")
 	 private String emisor;
 	 
+	 @ApiModelProperty(notes = "Opinion's reciever")
 	 @Column(name = "receptor")
 	 private String receptor;
 	 
+	 @ApiModelProperty(notes = "Opinion's date")
 	 @Column(name = "fecha")
 	 protected Date fecha;
 	 
+	 @ApiModelProperty(notes = "Opinion's content")
 	 @Column(name = "contenido")
 	 private String contenido;
 	 
+	 @ApiModelProperty(notes = "Opinion's valuation")
 	 @Column(name="estrellas")
 	 private double estrellas;
 	 
+	 @ApiModelProperty(notes = "If a opinion has an archive")
 	 @Column(name="tienearchivo")
 	 private int tienearchivo;
 

@@ -31,7 +31,11 @@ import java.security.MessageDigest;
 import com.ebrozon.model.usuario;
 import com.ebrozon.repository.usuarioRepository;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
+@Api(value="User Management System", description="Operations pertaining to user in User Managament System ")
 public class usuarioController {
 	@Autowired
     usuarioRepository repository;
@@ -66,7 +70,7 @@ public class usuarioController {
 				   			+ "Para completar el registro, por favor haga click sobre el siguiente enlace:<br/><br/>"
 				   			+ "http://localhost:8080/aceptarRegistro?un=" + us + "&ver=" + ver
 				   			+ "<br/><br/>Si usted no sabe nada acerca de este registro, para cancelar el registro"
-				   			+ "haga click sobre el siguiente enlace<br/><br/>"
+				   			+ " haga click sobre el siguiente enlace:<br/><br/>"
 				   			+ "http://localhost:8080/rechazarRegistro?un=" + us + "&ver=" + ver
 				   			+ "<br/><br/>Gracias y saludos";
 		   msg.setContent(mensaje, "text/html; charset=utf-8");
@@ -78,12 +82,13 @@ public class usuarioController {
 	//la contraseña, el nombre y los apellidos, y siendo opcionales el teléfono, el código postal
 	//la ciudad, la provincia, latitud y longitud, y la imagen de perfil.
 	//localhost:8080/registrar?un=karny2&pass=caca&cor=cececw@gmail.com&na=saul&lna=alarcon
+	@ApiOperation(value = "Register a user", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/registrar")
     public String registrar(@RequestParam("un") String un, @RequestParam("cor") String cor, @RequestParam("pass") String pass,
     						@RequestParam(value = "tel", required=false) Integer tel, @RequestParam("na") String na, @RequestParam("lna") String lna,
     						@RequestParam(value = "cp", required=false) Integer cp, @RequestParam(value = "ci", required=false) String ci, @RequestParam(value = "pr", required=false) String pr,
-    						@RequestParam(value = "lat", required=false) String lat, @RequestParam(value = "lon", required=false) String lon, @RequestParam(value = "im", required=false) MultipartFile im
+    						@RequestParam(value = "lat", required=false) Float lat, @RequestParam(value = "lon", required=false) Float lon, @RequestParam(value = "im", required=false) MultipartFile im
     						){
 		
 		if(repository.existsBynombreusuario(un)) {
@@ -131,9 +136,9 @@ public class usuarioController {
 	        	user.setProvincia(pr);
 	        }
 	        
-	        if ((lat != null) && (!lat.trim().equals("")) && (lon != null) && (!lon.trim().equals(""))){ 
-	        	user.setLatitud(Float.parseFloat(lat));
-	        	user.setLongitud(Float.parseFloat(lon));
+	        if ((lat != null) && (lon != null)){ 
+	        	user.setLatitud(lat);
+	        	user.setLongitud(lon);
 	        }
 	        if (im != null && !im.isEmpty()){ 
 	        	int idIm = archiver.uploadFile(im);
@@ -170,12 +175,13 @@ public class usuarioController {
 	//Actualiza la información de un usuario recibiendo como parámetros obligatorios el nombre de usuario, el correo
 	//la contraseña, el nombre y los apellidos, y siendo opcionales el teléfono, el código postal
 	//la ciudad, la provincia, latitud y longitud, y la imagen de perfil.
+	@ApiOperation(value = "Update a user", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/actualizarUsuario")
     public String actualizarUsuario(@RequestParam("un") String un,
 			@RequestParam(value = "tel", required=false) Integer tel, @RequestParam(value = "na", required=false) String na, @RequestParam(value = "lna", required=false) String lna,
 			@RequestParam(value = "cp", required=false) Integer cp, @RequestParam(value = "ci", required=false) String ci, @RequestParam(value = "pr", required=false) String pr,
-			@RequestParam(value = "lat", required=false) String lat, @RequestParam(value = "lon", required=false) String lon, @RequestParam(value = "im", required=false) String im
+			@RequestParam(value = "lat", required=false) Float lat, @RequestParam(value = "lon", required=false) Float lon, @RequestParam(value = "im", required=false) String im
 			){
 		
 		if(!repository.existsBynombreusuario(un)) {
@@ -243,9 +249,10 @@ public class usuarioController {
 	        	user.setProvincia(pr);
 	        }
 	        
-	        if ((lat != null) && (!lat.trim().equals("")) && (lon != null) && (!lon.trim().equals(""))){ 
-	        	user.setLatitud(Float.parseFloat(lat));
-	        	user.setLongitud(Float.parseFloat(lon));
+	        if ((lat != null) && (lon != null)){ 
+	        	user.setLatitud(lat);
+	        	user.setLongitud(lon);
+	        	venter.actualizarLatLonVentasUsuario(un,lat,lon);
 	        }
 	        if (im != null && !im.isEmpty()){ 
 	        	int idIm = archiver.uploadArchivoTemp(im);
@@ -276,6 +283,7 @@ public class usuarioController {
         return "{O:Ok}";
     }
 	
+	@ApiOperation(value = "Change password", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/cambiarContrasena")
 	public String cambiarContrasena(@RequestParam("un") String un, @RequestParam("oldpass") String oldpass, @RequestParam("newpass") String newpass) {
@@ -329,6 +337,7 @@ public class usuarioController {
 	//Comprueba la información del usuario para logearse, recibiendo como parámetros su
 	//nombre de usuario y su contraseña
 	//http://localhost:8080/logear?un=karny1&pass=caca
+	@ApiOperation(value = "Login", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/logear")
 	public String logear(@RequestParam("un") String un, @RequestParam("pass") String pass) {
@@ -365,6 +374,7 @@ public class usuarioController {
 		}
 	}
 	
+	@ApiOperation(value = "Accept registration", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/aceptarRegistro")
 	public String aceptarRegistro(@RequestParam("un") String un, @RequestParam("ver") String ver) {
@@ -384,6 +394,7 @@ public class usuarioController {
 		}
 	}
 	
+	@ApiOperation(value = "Reject registration", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/rechazarRegistro")
 	public String rechazarRegistro(@RequestParam("un") String un, @RequestParam("ver") String ver) {
@@ -403,6 +414,7 @@ public class usuarioController {
 	}
 	
 	//Recupera la información de un usuario dado su nombre de usuario
+	@ApiOperation(value = "Recover user", response = usuario.class)
 	@CrossOrigin
 	@RequestMapping("/recuperarUsuario")
 	@Produces("application/json")
@@ -410,12 +422,12 @@ public class usuarioController {
 		Optional<usuario> aux = repository.findBynombreusuario(un);
 		if(aux.isPresent()) {
 			aux.get().setUrlArchivo(archiver.loadFileUrl(aux.get().getArchivo()));
-			aux.get().setContrasena("cwecasdvev");
 		}
 		return aux;
 	}
 	
 	//Desactiva la cuenta del usuario identificado por el nombre de usuario dado
+	@ApiOperation(value = "Ban a user", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/banearUsuario")
 	public String banearUsuario(@RequestParam("un") String un) {
@@ -432,6 +444,7 @@ public class usuarioController {
 	}
 	
 	//Activa la cuenta del usuario identificado por el nombre de usuario dado
+	@ApiOperation(value = "Allow a user", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/desbanearUsuario")
 	public String desbanearUsuario(@RequestParam("un") String un) {
@@ -447,6 +460,7 @@ public class usuarioController {
 		}
 	}
 	
+	@ApiOperation(value = "Prove a user existance", response = boolean.class)
 	@CrossOrigin
 	@RequestMapping("/existeUsuario")
 	boolean existeUsuario(@RequestParam("un") String un) {
@@ -497,6 +511,7 @@ public class usuarioController {
 		   Transport.send(msg);   
 		}
 	
+	@ApiOperation(value = "Recover password", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/recuperarContrasena")
 	public String cambiarContrasenaRec(@RequestParam("un") String un) {

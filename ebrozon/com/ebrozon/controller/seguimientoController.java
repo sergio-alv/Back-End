@@ -1,6 +1,10 @@
 package com.ebrozon.controller;
 
 import com.ebrozon.repository.ventaRepository;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import com.ebrozon.repository.seguimientoRepository;
 import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.model.seguimiento;
@@ -25,6 +29,7 @@ import javax.ws.rs.Produces;
 //-Dejar de seguir un producto
 //-Obtener cantidad de seguidos que tiene una venta
 @RestController
+@Api(value="Tracking Management System", description="Operations pertaining to tracking in Tracking Managament System ")
 public class seguimientoController {
 	@Autowired
     seguimientoRepository repository;
@@ -37,6 +42,7 @@ public class seguimientoController {
 	
 	// Crea el seguimiento de un producto recibiendo como parametros obligatorios el nombre del usuario que lo realiza,
 	// el numero de la venta, la fecha y el nombre del producto.
+	@ApiOperation(value = "Track a product", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/seguirProducto")
 	public String seguirProducto(@RequestParam("un") String usuario, @RequestParam("nv") int nventa) {
@@ -68,6 +74,7 @@ public class seguimientoController {
 	}
 	
   	// Lista todas los seguimientos sobre una venta recibiendo como parametros obligatorios el numero de la venta.
+	@ApiOperation(value = "List all tracks of a sale", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarSeguimientosVenta")
@@ -76,6 +83,7 @@ public class seguimientoController {
 	}
 	
 	// Lista todas los seguimientos realizadas por un usuario recibiendo como parametros obligatorios el nombre del usuario.
+	@ApiOperation(value = "List all tracks made by a user", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarSeguimientosUsuario")
@@ -83,6 +91,7 @@ public class seguimientoController {
 		return repository.findByusuarioOrderByFechaDesc(usuario);
 	}
 	
+	@ApiOperation(value = "List all sales tracked by a user", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarVentasSeguidasUsuario")
@@ -114,6 +123,7 @@ public class seguimientoController {
 	}
 	
 	// Elimina el seguimiento recibiendo como parametros obligatorios el nombre del usuario que la realizo, el numero de venta, la fecha y la cantidad.
+	@ApiOperation(value = "Remove a track", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/eliminarSeguimiento")
 	public String eliminarSeguimiento(@RequestParam("id") int id) {
@@ -127,6 +137,7 @@ public class seguimientoController {
 		}
 	}
 	
+	@ApiOperation(value = "Remove the tracking of a user to a sale", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/dejarSeguirProducto")
 	public String dejarSeguirProducto(@RequestParam("un") String un, @RequestParam("nv") int nv) {
@@ -141,6 +152,7 @@ public class seguimientoController {
 	}
   
   	//Obtiene la cantidad de seguidos que tiene una venta recibiendo como parametros el numero de venta
+	@ApiOperation(value = "Number of tracks of a sale", response = int.class)
 	@CrossOrigin
   	@RequestMapping("/cantidadSeguidosVenta")
   	public int cantidadSeguidosVenta(@RequestParam("nv") int nventa){
@@ -148,6 +160,7 @@ public class seguimientoController {
   	}
   
   	//Obtiene la cantidad de seguidos que tiene un usuario recibiendo como parametros el nombre de usuario
+	@ApiOperation(value = "Number of tracks of a user", response = int.class)
 	@CrossOrigin
   	@RequestMapping("/cantidadSeguidosUsuario")
   	public int cantidadSeguidosUsuario(@RequestParam("un") String usuario){

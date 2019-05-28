@@ -21,7 +21,11 @@ import com.ebrozon.model.usuario;
 import com.ebrozon.repository.archivoRepository;
 import com.ebrozon.repository.usuarioRepository;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
+@Api(value="Archive Management System", description="Operations pertaining to archive in Archive Managament System ")
 public class archivoController {
 	
 	@Autowired
@@ -32,6 +36,7 @@ public class archivoController {
 	
 	private String upload_folder = ".//src//main//resources//files//";
 	
+	@ApiOperation(value = "Save an archive in the database", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/uploadFile")
 	public int uploadFile(@RequestParam("file") MultipartFile file) {
@@ -58,6 +63,7 @@ public class archivoController {
 		return -1;
 	}
 	
+	@ApiOperation(value = "Save a temporary archive in the database", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/uploadArchivoTemp")
 	public int uploadArchivoTemp(@RequestParam("file") String file) {
@@ -97,14 +103,16 @@ public class archivoController {
 		return -1;
 	}
 	
+	@ApiOperation(value = "Bring a temporary archive from the database", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/loadArchivoTemp")
 	public String loadArchivoTemp(@RequestParam("id") int id) {
 		try {
 			return repository.findByidentificador(id).get().getDatos();
 		}catch(Exception e){return "{O:Ok}";}
-		}
+	}
 	
+	@ApiOperation(value = "Bring a user archive from the database", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/loadArchivoUsuario")
 	public String loadArchivoUsuario(@RequestParam("un") String un) {
@@ -114,8 +122,9 @@ public class archivoController {
 			int id = aux.get().getArchivo();
 			return repository.findByidentificador(id).get().getDatos();
 		}catch(Exception e){return "{O:Ok}";}
-		}
+	}
 	
+	@ApiOperation(value = "Bring the url form a file in the database", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/loadFileUrl")
 	public String loadFileUrl(@RequestParam("id") int id) {
@@ -126,6 +135,7 @@ public class archivoController {
 		return "{E:Ha habido un problema con el archivo.}";
 	}
 	
+	@ApiOperation(value = "Bring a file from the database", response = File.class)
 	@CrossOrigin
 	@RequestMapping("/loadFile")
 	public File loadFile(@RequestParam("id") int id) {
@@ -139,6 +149,7 @@ public class archivoController {
 		return null;
 	}
 	
+	@ApiOperation(value = "Delete a file in the database", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/deleteFile")
 	public String deleteFile(int id) {

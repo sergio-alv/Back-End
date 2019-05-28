@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ebrozon.repository.ventaRepository;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import com.ebrozon.repository.ofertaRepository;
 import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.model.oferta;
@@ -20,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.Produces;
 
 @RestController
+@Api(value="Offer Management System", description="Operations pertaining to offer in Offer Managament System ")
 public class ofertaController {
 	@Autowired
     ofertaRepository repository;
@@ -32,6 +37,7 @@ public class ofertaController {
 	
 	// Guarda una oferta recibiendo como parámetros obligatorios el nombre del usuario que la realiza,
 	// el número de la venta, la cantidad, la fecha y el nombre del producto.
+	@ApiOperation(value = "Make an offer to a sale", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/hacerOferta")
 	public String hacerOferta(@RequestParam("un") String usuario, @RequestParam("nv") int nventa, @RequestParam("can") float cantidad) {
@@ -60,19 +66,19 @@ public class ofertaController {
 						v.setPreciofinal(v.getPrecio());
 						repository_v.save(v);
 						
-						List<oferta> l = listarOfertasVenta(o.getNventa());
-						for (int i=0; i<l.size(); ++i) {
-							if (l.get(i).getAceptada() == (short) 0) {
-								try {
-									l.get(i).setAceptada((short) -1);
-									repository.save(l.get(i));
-								}
-								catch (Exception e) {
-									return e.getMessage();
-								}
-							}
-						}
-						
+						List<oferta> l = listarOfertasVenta(o.getNventa());		
+						for (int i=0; i<l.size(); ++i) {		
+							if (l.get(i).getAceptada() == (short) 0) {		
+								try {		
+									l.get(i).setAceptada((short) -1);		
+									repository.save(l.get(i));		
+								}		
+								catch (Exception e) {		
+									return e.getMessage();		
+								}		
+							}		
+						}		
+								
 						o.setAceptada(1);
 					}
 					repository.save(o);
@@ -92,6 +98,7 @@ public class ofertaController {
 	}
 	
 	// Lista todas las ofertas recibidas sobre una venta recibiendo como parámetros obligatorios el número de la venta.
+	@ApiOperation(value = "List all offers recieved on a sale", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasVenta")
@@ -100,6 +107,7 @@ public class ofertaController {
 	}
 	
 	// Lista todas las ofertas realizadas por un usuario recibiendo como parámetros obligatorios el nombre del usuario.
+	@ApiOperation(value = "List all offers made by a user", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasRealizadas")
@@ -107,6 +115,7 @@ public class ofertaController {
 		return repository.findByusuarioAndAceptadaOrderByFechaDesc(usuario,0);
 	}
 	
+	@ApiOperation(value = "List all offers made, accepted and pending by a user", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasRealizadasAceptadasPendientes")
@@ -114,6 +123,7 @@ public class ofertaController {
 		return repository.ofertasRealizadasAceptadasPendientes(usuario);
 	}
 	
+	@ApiOperation(value = "List all offers recieved, accepted and pending by a user", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasRecibidasAceptadasPendientes")
@@ -122,6 +132,7 @@ public class ofertaController {
 		return repository.ofertasRecibidasAceptadasPendientes(nvs);
 	}
 	
+	@ApiOperation(value = "List all offers recieved by a user", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasRecibidas")
@@ -131,6 +142,7 @@ public class ofertaController {
 	}
 	
 	// Lista todas las ofertas sobre un producto recibiendo como parámetros obligatorios el nombre del producto.
+	@ApiOperation(value = "List all offers of a product", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasProducto")
@@ -139,6 +151,7 @@ public class ofertaController {
 	}
 	
 	// Acepta la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
+	@ApiOperation(value = "Accept an offer", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/aceptarOferta")
 	public String aceptarOferta(@RequestParam("id") int id) {
@@ -184,6 +197,7 @@ public class ofertaController {
 	}
 	
 	// Rechaza la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
+	@ApiOperation(value = "Reject an offer", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/rechazarOferta")
 	public String rechazarOferta(@RequestParam("id") int id) {
@@ -206,6 +220,7 @@ public class ofertaController {
 	}
 	
 	// Elimina la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
+	@ApiOperation(value = "Remove an offer", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/retirarOferta")
 	public String retirarOferta(@RequestParam("id") int id) {

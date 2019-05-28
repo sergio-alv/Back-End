@@ -1,6 +1,7 @@
  package com.ebrozon.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -25,10 +26,13 @@ import com.ebrozon.repository.seguimientoRepository;
 import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.repository.ventaRepository;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import parser.Parseador;
 import parser.Stopwords;
 
 @RestController
+@Api(value="Sale Management System", description="Operations pertaining to sale in Sale Managament System ")
 public class ventaController {
 	
 	@Autowired
@@ -63,6 +67,7 @@ public class ventaController {
 	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
+	@ApiOperation(value = "Publish a sale", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/publicarVenta")
 	public String publicarVenta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
@@ -161,6 +166,7 @@ public class ventaController {
 		}
 	}
 	
+	@ApiOperation(value = "Update a sale", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/actualizarVenta")
 	public String actualizarVenta(@RequestParam("id") int id, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
@@ -244,6 +250,7 @@ public class ventaController {
 		}
 	}
 	
+	@ApiOperation(value = "List main page sales", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarPaginaPrincipal")
 	@Produces("application/json")
@@ -255,6 +262,7 @@ public class ventaController {
 		return lista;
 	}
 	
+	@ApiOperation(value = "List all city sales", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarProductosCiudad")
 	@Produces("application/json")
@@ -266,6 +274,7 @@ public class ventaController {
 		return lista;
 	}
 	
+	@ApiOperation(value = "List all province sales", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarProductosProvincia")
 	@Produces("application/json")
@@ -277,6 +286,7 @@ public class ventaController {
 		return lista;
 	}
 	
+	@ApiOperation(value = "List all user sales", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarProductosUsuario")
 	@Produces("application/json")
@@ -288,6 +298,7 @@ public class ventaController {
 		return lista;
 	}
 	
+	@ApiOperation(value = "List all purchases of a user", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarComprasUsuario")
 	@Produces("application/json")
@@ -299,6 +310,7 @@ public class ventaController {
 		return lista;
 	}
 	
+	@ApiOperation(value = "Recover a sale", response = venta.class)
 	@CrossOrigin
 	@RequestMapping("/recuperarProducto")
 	@Produces("application/json")
@@ -330,6 +342,17 @@ public class ventaController {
 		return "{O:Ok}";
 	}
 	
+	String actualizarLatLonVentasUsuario(String un,float lat, float lon) {
+		try {
+			repository.updateLatLonVentasUsuario(un, lat,lon);
+		}
+		catch(Exception e) {
+			return "{E:Error inesperado.}";
+		}
+		return "{O:Ok}";
+	}
+	
+	@ApiOperation(value = "Deactivate a sale", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/desactivarVenta")
 	String desactivarVenta(@RequestParam("id") int id) {
@@ -345,6 +368,7 @@ public class ventaController {
 		}
 	}
 	
+	@ApiOperation(value = "Activate a sale", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/activarVenta")
 	String activarVenta(@RequestParam("id") int id) {
@@ -360,18 +384,21 @@ public class ventaController {
 		}
 	}
 	
+	@ApiOperation(value = "Number of sales of a user", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/numeroVentasUsuario")
 	int numeroVentasUsuario(@RequestParam("un") String un) {
 		return repository.numeroVentasRealizadas(un);
 	}
 	
+	@ApiOperation(value = "Number of purchases of a user", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/numeroComprasUsuario")
 	int numeroComprarUsuario(@RequestParam("un") String un) {
 		return repository.numeroComprasRealizadas(un);
 	}
 	
+	@ApiOperation(value = "Confirm the payment of a sale", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/confirmarPagoVenta")
 	String confirmarPagoVenta(@RequestParam("id") int id) {
@@ -385,6 +412,7 @@ public class ventaController {
 		return "{O:Ok}";
 	}
 	
+	@ApiOperation(value = "Cancel the payment of a sale", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/cancelarPagoVenta")
 	String cancelarPagoVenta(@RequestParam("id") int id) {
@@ -395,13 +423,29 @@ public class ventaController {
 		aux.get().setFechaventa(null);
 		aux.get().setActiva(1);
 		aux.get().setComprador(null);
-		aux.get().setFechapago(null);
+		aux.get().setFechapago(null);		
 		aux.get().setPreciofinal(0);
 		repository.save(aux.get());
 		repository_o.cancelarPagoVenta(id);
 		return "{O:Ok}";
 	}
 	
+	public static double distanciaCoord(double lat1, double lng1, double lat2, double lng2) {  
+        //double radioTierra = 3958.75;//en millas  
+        double radioTierra = 6371;//en kilómetros  
+        double dLat = Math.toRadians(lat2 - lat1);  
+        double dLng = Math.toRadians(lng2 - lng1);  
+        double sindLat = Math.sin(dLat / 2);  
+        double sindLng = Math.sin(dLng / 2);  
+        double va1 = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)  
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));  
+        double va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1));  
+        double distancia = radioTierra * va2;  
+   
+        return distancia;  
+    } 
+	
+	@ApiOperation(value = "List sales",notes="met = Fecha des, Fecha asc, Precio des, Precio asc, Coincidencias, Valoraciones, Popularidad, Distancia", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarProductos")
 	@Produces("application/json")
@@ -409,7 +453,9 @@ public class ventaController {
 			@RequestParam(value = "min", required=false) Double min,@RequestParam(value = "max", required=false) Double max,
 			@RequestParam(value = "pr", required=false) String pr, @RequestParam(value = "ci", required=false) String ci,
 			@RequestParam(value = "id", required=false) Integer id, @RequestParam(value = "tp", required=false) Integer tp,
-			@RequestParam(value = "cat", required=false) String cat){
+			@RequestParam(value = "cat", required=false) String cat,
+			@RequestParam(value = "lat", required=false) Float lat,@RequestParam(value = "lon", required=false) Float lon,
+			@RequestParam(value = "mind", required=false) Float mind,@RequestParam(value = "maxd", required=false) Float maxd){
 		List<venta> lista = new ArrayList<venta>();
 		List<venta> listaBuena = new ArrayList<venta>();
 		Vector etiquetas = null;
@@ -503,7 +549,7 @@ public class ventaController {
 				lista = repository.findByidentificadorGreaterThanOrderByFechainicioAsc(idm);
 			}
 		}
-		else if(met.equals("Fecha des")){
+		else if(met.equals("Fecha des") || met.equals("Distancia")){
 			int idm = 99999999;
 			if(id != null) {idm = id;}
 			if(ets != null) {
@@ -516,6 +562,21 @@ public class ventaController {
 		}
 		else {
 			return lista;
+		}
+		
+		for(int i = 0; i < lista.size();++i) {
+			if(lista.get(i).getLatitud() != null && lista.get(i).getLongitud() != null &&
+				lista.get(i).getLatitud() != -9999 && lista.get(i).getLongitud() != -9999
+				&& lat != null && lon != null) {
+				lista.get(i).setDistancia((float) distanciaCoord(lista.get(i).getLatitud(), lista.get(i).getLongitud(),lat,lon));
+			}
+			else {
+				lista.get(i).setDistancia(999999);
+			}
+		}
+		
+		if(met.equals("Distancia")) {
+			Collections.sort(lista);
 		}
 		
 		double pmin = 0;
@@ -533,7 +594,10 @@ public class ventaController {
 					(pr == null || (pr != null && aux.getProvincia().equals(pr))) &&
 					(ci == null || (ci != null && aux.getCiudad().equals(ci))) &&
 					(tp == null || (tp != null && aux.getes_subasta() == tp)) &&
-					(cat == null || (cat != null && aux.getCategoria().equals(cat)))) {
+					(cat == null || (cat != null && aux.getCategoria().equals(cat))) &&
+					(maxd == null || (maxd != null && aux.getDistancia() <= maxd)) &&
+					(mind == null || (mind != null && aux.getDistancia() >= mind))
+					) {
 				listaBuena.add(lista.get(i));
 				++count;
 			}

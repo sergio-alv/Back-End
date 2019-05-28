@@ -16,7 +16,10 @@ import com.ebrozon.model.usuario;
 import com.ebrozon.model.usuarioverant;
 import com.ebrozon.repository.usuarioverantRepository;
 
+import io.swagger.annotations.Api;
+
 @RestController
+@Api(value="Historical user information Management System", description="Operations pertaining to historical user information in Historical user information Managament System ")
 public class usuarioverantController {
 	@Autowired
     usuarioverantRepository repository;

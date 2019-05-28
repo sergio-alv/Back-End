@@ -7,7 +7,10 @@ import com.ebrozon.model.venta;
 import com.ebrozon.model.ventaverant;
 import com.ebrozon.repository.ventaverantRepository;
 
+import io.swagger.annotations.Api;
+
 @RestController
+@Api(value="Historical sales information Management System", description="Operations pertaining to historical sales information in Historical sales information Managament System ")
 public class ventaverantController {
 	@Autowired
     ventaverantRepository repository;

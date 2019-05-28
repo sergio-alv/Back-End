@@ -18,7 +18,11 @@ import com.ebrozon.model.etiqueta;
 import com.ebrozon.repository.etiquetaRepository;
 import com.ebrozon.repository.usuarioRepository;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
+@Api(value="Tag Management System", description="Operations pertaining to tag in Tag Managament System ")
 public class etiquetaController {
 	@Autowired
     etiquetaRepository repository;
@@ -29,6 +33,7 @@ public class etiquetaController {
 	//Guarda una etiqueta recibiendo como parámetros obligatorios el nombre de la etiqueta, la fecha
 	//de creación y el nombre del creador.
 	//http://localhost:8080/guardar?un=karny2&pass=caca&cor=cececw@gmail.com&na=saul&lna=alarcon
+	@ApiOperation(value = "Save a tag in the database", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/guardarEtiqueta")
 	public String guardarEtiqueta(@RequestParam("et") String tn, @RequestParam("un") String crt) {
@@ -63,6 +68,7 @@ public class etiquetaController {
 	}
 	
 	//Recupera la información de una etiqueta dado el nombre
+	@ApiOperation(value = "Bring a tag from the database", response = etiqueta.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/recuperarEtiqueta")
@@ -79,6 +85,7 @@ public class etiquetaController {
 	
 	//Actualiza la información de la etiqueta recibiendo como parámetros obligatorios
 	//la nueva fecha de creación y el nombre del nuevo creador
+	@ApiOperation(value = "Update a tag in the database", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/actualizarEtiqueta")
 	public String actualizarEtiqueta(@RequestParam("tn") String tn, @RequestParam("cd") Date cd, @RequestParam("crt") String crt) {

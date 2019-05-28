@@ -100,4 +100,9 @@ public interface ventaRepository extends CrudRepository<venta, Long>{
 	List<venta> findFirst25ByusuarioAndIdentificadorLessThanAndActivaOrderByFechainicioDesc(String un, int id, int i);
 
 	List<venta> findFirst25BycompradorAndIdentificadorLessThanOrderByFechainicioDesc(String un, int id);
+
+	@Modifying
+	@Transactional
+	@Query(value = "update venta set latitud = :lat, longitud = :lon where usuario = :un", nativeQuery = true)
+	void updateLatLonVentasUsuario(String un, float lat, float lon);
 }

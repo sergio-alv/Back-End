@@ -27,12 +27,15 @@ import com.ebrozon.repository.subastaRepository;
 import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.repository.ventaRepository;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import parser.Parseador;
 import parser.Stopwords;
 
 @RestController
 @Configuration
 @EnableScheduling
+@Api(value="Auction Management System", description="Operations pertaining to auction in Auction Managament System ")
 public class subastaController {
 	
 	@Autowired
@@ -61,6 +64,7 @@ public class subastaController {
 	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
+	@ApiOperation(value = "Publish an auction", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/publicarSubasta")
 	public String publicarSubasta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
@@ -161,6 +165,7 @@ public class subastaController {
 		}
 	}
 	
+	@ApiOperation(value = "Update an auction", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/actualizarSubasta")
 	public String actualizarSubasta(@RequestParam("id") int id, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
@@ -255,6 +260,7 @@ public class subastaController {
 		}
 	}
 	
+	@ApiOperation(value = "List all auctions of a city", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarSubastasCiudad")
 	@Produces("application/json")
@@ -266,6 +272,7 @@ public class subastaController {
 		return lista;
 	}
 	
+	@ApiOperation(value = "List all auctions of a province", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarSubastasProvincia")
 	@Produces("application/json")
@@ -277,6 +284,7 @@ public class subastaController {
 		return lista;
 	}
 	
+	@ApiOperation(value = "List all auctions of a user", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarSubastasUsuario")
 	@Produces("application/json")
@@ -288,6 +296,7 @@ public class subastaController {
 		return lista;
 	}
 	
+	@ApiOperation(value = "Recover an auction", response = subasta.class)
 	@CrossOrigin
 	@RequestMapping("/recuperarSubasta")
 	@Produces("application/json")
@@ -299,6 +308,7 @@ public class subastaController {
 		return aux;
 	}
 	
+	@ApiOperation(value = "List all earned and pending auctions of a user", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarSubastasGanadasPendientes")
 	@Produces("application/json")
@@ -306,6 +316,7 @@ public class subastaController {
 		return repository.findBycompradorAndActivaAndFechapagoIsNull(un, 0);
 	}
 	
+	@ApiOperation(value = "List all finished and pending auctions of a user", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarSubastasTerminadasPendientes")
 	@Produces("application/json")
@@ -313,6 +324,7 @@ public class subastaController {
 		return repository.findByusuarioAndActivaAndFechapagoIsNull(un, 0);
 	}
 	
+	@ApiOperation(value = "Place a bid", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/realizarPuja")
 	String realizarPuja(@RequestParam("un") String un, @RequestParam("id") int id, @RequestParam("ct") Double ct) {

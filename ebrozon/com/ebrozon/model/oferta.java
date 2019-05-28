@@ -11,36 +11,47 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Table(name = "oferta")
+@ApiModel(description = "All details about an offer. ")
 public class oferta implements Serializable{
 	
 	protected static final long serialVersionUID = 1L;
 	
 	@Id
+	@ApiModelProperty(notes = "Offer's identifier")
 	@Column(name = "identificador")
 	private int identificador;
 	
+	@ApiModelProperty(notes = "Offer's creator")
 	@Column(name = "usuario")
 	@Size(min = 3, max = 30, message="El nombre del usuario tiene que tener entre 3 y 30 caracteres")
 	@Pattern(regexp = "[A-z,0-9,_,-]+", message="El nombre del usuario solo puede tener letras mayúsculas o minúsculas sin acentuar, números, y los caracteres _ y -")
 	private String usuario;
 	
+	@ApiModelProperty(notes = "Sale of the offer")
 	@Column(name = "nventa")
 	private int nventa;
 	
+	@ApiModelProperty(notes = "Offer's date")
 	@Column(name = "fecha")
 	@NotNull
 	private Date fecha;
 	
+	@ApiModelProperty(notes = "Offer's quantity")
 	@Column(name = "cantidad")
 	@NotNull
 	private float cantidad;
 	
+	@ApiModelProperty(notes = "Offer accepted")
 	@Column(name = "aceptada")
 	@NotNull
 	private int aceptada;
 	
+	@ApiModelProperty(notes = "Product of the offer")
 	@Column(name = "producto")
 	@NotNull
 	private String producto;

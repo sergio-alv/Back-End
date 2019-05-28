@@ -5,8 +5,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Table(name = "archivo")
+@ApiModel(description = "All details about an archive. ")
 public class archivo {
 	public archivo() {}
 	 public archivo(String url, int borrada) {
@@ -16,15 +20,19 @@ public class archivo {
 	}
 
 	 @Id
+	 @ApiModelProperty(notes = "Archive's identifier")
 	 @Column(name = "identificador")
 	 private int identificador;
 	 
+	 @ApiModelProperty(notes = "Archive's url")
 	 @Column(name = "url")
 	 private String url;
 	 
+	 @ApiModelProperty(notes = "Archive deleted from the database")
 	 @Column(name = "borrada")
 	 private int borrada;
 	 
+	 @ApiModelProperty(notes = "Data from the archive")
 	 @Column(name="datos")
 	 private String datos;
 

@@ -12,21 +12,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.ebrozon.model.venta;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Table(name = "subasta")
 @PrimaryKeyJoinColumn(name = "nventa")
 //@IdClass(venta.class)
 @XmlRootElement
+@ApiModel(description = "All details about an auction. ")
 public class subasta extends venta{
 
 	protected static final long serialVersionUID = 1L;
 	
 	private Date fechafin;
 	
+	@ApiModelProperty(notes = "Auction's initial price")
 	@Column(name = "precioinicial")
 	@Min(0)
 	private double precioinicial;
 	
+	@ApiModelProperty(notes = "Auction's actual price")
 	@Column(name = "pujaactual")
 	@Min(0)
 	private double pujaactual;

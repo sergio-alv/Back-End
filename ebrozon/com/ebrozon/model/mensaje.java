@@ -7,8 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Table(name = "mensaje")
+@ApiModel(description = "All details about a message. ")
 public class mensaje {
 	
 	 public mensaje(int identificador, String emisor, String receptor, String contenido) {
@@ -28,19 +32,24 @@ public class mensaje {
 			this.fecha = new Date();
 		}
 
-	@Id
+	 @Id
+	 @ApiModelProperty(notes = "Message's identifier")
 	 @Column(name = "identificador")
 	 private int identificador;
 	 
+	 @ApiModelProperty(notes = "Message's transmitter")
 	 @Column(name = "emisor")
 	 private String emisor;
 	 
+	 @ApiModelProperty(notes = "Message's reciever")
 	 @Column(name = "receptor")
 	 private String receptor;
 	 
+	 @ApiModelProperty(notes = "Message's date")
 	 @Column(name = "fecha")
 	 protected Date fecha;
 	 
+	 @ApiModelProperty(notes = "Message's content")
 	 @Column(name = "contenido")
 	 private String contenido;
 	 

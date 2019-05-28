@@ -16,7 +16,11 @@ import com.ebrozon.repository.opinionRepository;
 import com.ebrozon.repository.reportRepository;
 import com.ebrozon.repository.ventaRepository;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
+@Api(value="Report Management System", description="Operations pertaining to report in Report Managament System ")
 public class reportController {
 	
 	@Autowired
@@ -31,6 +35,7 @@ public class reportController {
 	@Autowired
 	opinionRepository opiner;
 	
+	@ApiOperation(value = "Send a report", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/mandarReport")
 	String mandarReport(@RequestParam("em") String em, @RequestParam("re") String re, @RequestParam("con") String con,
@@ -60,6 +65,7 @@ public class reportController {
 		return "{O:Ok}";
 	}
 	
+	@ApiOperation(value = "List all reports recieved", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarReportesRecibidos")
@@ -68,6 +74,7 @@ public class reportController {
 		return list;
 	}
 	
+	@ApiOperation(value = "List all reports made", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarReportesHechos")
@@ -76,6 +83,7 @@ public class reportController {
 		return list;
 	}
 	
+	@ApiOperation(value = "Number of reports recieved", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/numeroReportesRecibidos")
 	int numeroReportesRecibidos(@RequestParam("un") String un) {

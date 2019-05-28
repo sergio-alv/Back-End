@@ -10,26 +10,35 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Table(name = "seguimiento")
+@ApiModel(description = "All details about a track. ")
 public class seguimiento {
 	
 	@Id
+	@ApiModelProperty(notes = "Track's identifier")
 	@Column(name = "identificador")
 	private int identificador;
 	
+	@ApiModelProperty(notes = "User of the track")
 	@Column(name = "usuario")
 	@Size(min = 3, max = 30, message="El nombre del usuario tiene que tener entre 3 y 30 caracteres")
 	@Pattern(regexp = "[A-z,0-9,_,-]+", message="El nombre del usuario solo puede tener letras mayusculas o minusculas sin acentuar, numeros, y los caracteres _ y -")
 	private String usuario;
 	
+	@ApiModelProperty(notes = "Sale of the track")
 	@Column(name = "nventa")
 	private int nventa;
 	
+	@ApiModelProperty(notes = "Track's date")
 	@Column(name = "fecha")
 	@NotNull
 	private Date fecha;
 	
+	@ApiModelProperty(notes = "Track's product")
 	@Column(name = "producto")
 	private String producto;
 	

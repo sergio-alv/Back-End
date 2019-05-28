@@ -14,7 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ebrozon.model.opinion;
 import com.ebrozon.repository.opinionRepository;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
+@Api(value="Opinion Management System", description="Operations pertaining to opinion in Opinion Managament System ")
 public class opinionController {
 	
 	@Autowired
@@ -23,6 +27,7 @@ public class opinionController {
 	@Autowired
     usuarioController userer;
 	
+	@ApiOperation(value = "Send an opinion", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/mandarOpinion")
 	String mandarOpinion(@RequestParam("em") String em, @RequestParam("re") String re, @RequestParam("con") String con, @RequestParam("es") Double es) {
@@ -44,6 +49,7 @@ public class opinionController {
 		return "{O:Ok}";
 	}
 	
+	@ApiOperation(value = "List all opinions recieved", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOpinionesRecibidas")
@@ -52,6 +58,7 @@ public class opinionController {
 		return list;
 	}
 	
+	@ApiOperation(value = "List all opinions made by a user", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOpinionesHechas")
@@ -60,12 +67,14 @@ public class opinionController {
 		return list;
 	}
 	
+	@ApiOperation(value = "Number of opinions recieved", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/numeroOpinionesRecibidas")
 	int numeroOpinionesRecibidas(@RequestParam("un") String un) {
 		return repository.numeroOpinionesRecibidas(un);
 	}
 	
+	@ApiOperation(value = "Number of opinions made", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/numeroOpinionesRealizadas")
 	int numeroOpinionesRealizadas(@RequestParam("un") String un) {
