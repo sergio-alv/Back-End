@@ -56,6 +56,11 @@ public class oferta implements Serializable{
 	@NotNull
 	private String producto;
 	
+	@ApiModelProperty(notes = "Seller of the offer")
+	@Column(name = "vendedor")
+	@NotNull
+	private String vendedor;
+	
 	public oferta() {}
 	
 	public oferta(
@@ -124,5 +129,13 @@ public class oferta implements Serializable{
 	
 	public void setProducto(String producto) {
 		this.producto = producto;
+	}
+
+	public String getVendedor() {
+		return vendedor;
+	}
+
+	public void setVendedor(String vendedor) {
+		this.vendedor = vendedor;
 	}
 }
