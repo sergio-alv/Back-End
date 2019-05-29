@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Produces;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ebrozon.model.oferta;
 import com.ebrozon.model.subasta;
 import com.ebrozon.model.usuario;
 import com.ebrozon.model.venta;
@@ -363,6 +365,9 @@ public class subastaController {
 				if(aux.isPresent()) {
 					list.get(i).setComprador(aux.get());
 					list.get(i).setPreciofinal(list.get(i).getPujaactual());
+					oferta o = new oferta(aux.get(),list.get(i).getIdentificador(),(float)list.get(i).getPujaactual(),(@NotNull short) 1,list.get(i).getProducto());
+					o.setVendedor(list.get(i).getUsuario());
+					repository_o.save(o);
 				}
 				repository.save(list.get(i));
 			}

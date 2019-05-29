@@ -35,6 +35,9 @@ public class ofertaController {
 	@Autowired
 	ventaRepository repository_v;
 	
+	@Autowired
+	ventaController venter;
+	
 	// Guarda una oferta recibiendo como parámetros obligatorios el nombre del usuario que la realiza,
 	// el número de la venta, la cantidad, la fecha y el nombre del producto.
 	@ApiOperation(value = "Make an offer to a sale", response = String.class)
@@ -51,6 +54,7 @@ public class ofertaController {
 				try {
 					venta v = repository_v.findByidentificador(nventa).get();
 					o = new oferta(usuario,nventa,cantidad,(@NotNull short) 0,v.getProducto());
+					o.setVendedor(v.getUsuario());
 					Optional<Integer> idAux = repository.lastId();
 					if(idAux.isPresent()) {
 						id = idAux.get()+1;
@@ -229,6 +233,9 @@ public class ofertaController {
 		}
 		else {
 			Optional<oferta> o_aux = repository.findByIdentificador(id);
+			if(o_aux.get().getAceptada() == 1) {
+				venter.cancelarPagoVenta(o_aux.get().getIdentificador());
+			}
 			repository.delete(o_aux.get());
 			return "{O:Ok}";
 		}
