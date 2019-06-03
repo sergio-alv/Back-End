@@ -23,6 +23,9 @@ import com.ebrozon.repository.usuarioRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @Api(value="Archive Management System", description="Operations pertaining to archive in Archive Managament System ")
@@ -39,7 +42,7 @@ public class archivoController {
 	@ApiOperation(value = "Save an archive in the database", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/uploadFile")
-	public int uploadFile(@RequestParam("file") MultipartFile file) {
+	public int uploadFile(@ApiParam(value = "file to upload", required = true) @RequestParam("file") MultipartFile file) {
 		if(!file.isEmpty()) {
 			try {
 				int id = 1;
@@ -66,7 +69,7 @@ public class archivoController {
 	@ApiOperation(value = "Save a temporary archive in the database", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/uploadArchivoTemp")
-	public int uploadArchivoTemp(@RequestParam("file") String file) {
+	public int uploadArchivoTemp(@ApiParam(value = "file to upload", required = true) @RequestParam("file") String file) {
 		if(!file.isEmpty()) {
 			try {
 				int id = 1;
@@ -106,7 +109,7 @@ public class archivoController {
 	@ApiOperation(value = "Bring a temporary archive from the database", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/loadArchivoTemp")
-	public String loadArchivoTemp(@RequestParam("id") int id) {
+	public String loadArchivoTemp(@ApiParam(value = "id of the tmp archive", required = true) @RequestParam("id") int id) {
 		try {
 			return repository.findByidentificador(id).get().getDatos();
 		}catch(Exception e){return "{O:Ok}";}
@@ -115,7 +118,7 @@ public class archivoController {
 	@ApiOperation(value = "Bring a user archive from the database", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/loadArchivoUsuario")
-	public String loadArchivoUsuario(@RequestParam("un") String un) {
+	public String loadArchivoUsuario(@ApiParam(value = "username", required = true) @RequestParam("un") String un) {
 		try {
 			Optional<usuario> aux = repository_u.findBynombreusuario(un);
 			if(!aux.isPresent()) {return "{E:No existe el usuario}";}
@@ -127,7 +130,7 @@ public class archivoController {
 	@ApiOperation(value = "Bring the url form a file in the database", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/loadFileUrl")
-	public String loadFileUrl(@RequestParam("id") int id) {
+	public String loadFileUrl(@ApiParam(value = "id of the file", required = true) @RequestParam("id") int id) {
 		Optional<archivo> aux = repository.findByidentificador(id);
 		if(aux.isPresent()) {
 			return aux.get().getUrl();
@@ -138,7 +141,7 @@ public class archivoController {
 	@ApiOperation(value = "Bring a file from the database", response = File.class)
 	@CrossOrigin
 	@RequestMapping("/loadFile")
-	public File loadFile(@RequestParam("id") int id) {
+	public File loadFile(@ApiParam(value = "id of the file", required = true) @RequestParam("id") int id) {
 		Optional<archivo> aux = repository.findByidentificador(id);
 		if(aux.isPresent()) {
 			try {
@@ -152,7 +155,7 @@ public class archivoController {
 	@ApiOperation(value = "Delete a file in the database", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/deleteFile")
-	public String deleteFile(int id) {
+	public String deleteFile(@ApiParam(value = "id of the file", required = true) int id) {
 		Optional<archivo> aux = repository.findByidentificador(id);
 		try {
 			archivo arc = aux.get();
