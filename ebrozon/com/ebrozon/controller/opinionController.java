@@ -16,6 +16,7 @@ import com.ebrozon.repository.opinionRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value="Opinion Management System", description="Operations pertaining to opinion in Opinion Managament System ")
@@ -27,10 +28,13 @@ public class opinionController {
 	@Autowired
     usuarioController userer;
 	
-	@ApiOperation(value = "Send an opinion", response = String.class)
+	@ApiOperation(value = "Send an opinion, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/mandarOpinion")
-	String mandarOpinion(@RequestParam("em") String em, @RequestParam("re") String re, @RequestParam("con") String con, @RequestParam("es") Double es) {
+	String mandarOpinion(@ApiParam(value = "opinion's emitter (username)", required = false) @RequestParam("em") String em,
+			@ApiParam(value = "opinion's reciever (username)", required = false) @RequestParam("re") String re, 
+			@ApiParam(value = "content", required = false)@RequestParam("con") String con,
+			@ApiParam(value = "stars", required = false) @RequestParam("es") Double es) {
 		if(!userer.existeUsuario(em)) {return "{E:No existe el usuario emisor}";}
 		if(!userer.existeUsuario(re)) {return "{E:No existe el usuario receptor}";}
 		int id = 1;
@@ -49,35 +53,35 @@ public class opinionController {
 		return "{O:Ok}";
 	}
 	
-	@ApiOperation(value = "List all opinions recieved", response = List.class)
+	@ApiOperation(value = "List all opinions recieved, returns list of opinions", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOpinionesRecibidas")
-	List<opinion> listarOpinionesRecibidas(@RequestParam("un") String un){
+	List<opinion> listarOpinionesRecibidas(@ApiParam(value = "username", required = false) @RequestParam("un") String un){
 		List<opinion> list = repository.findByreceptorOrderByIdentificadorDesc(un);
 		return list;
 	}
 	
-	@ApiOperation(value = "List all opinions made by a user", response = List.class)
+	@ApiOperation(value = "List all opinions made by a user, returns list of opinions", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOpinionesHechas")
-	List<opinion> listarOpinionesHechas(@RequestParam("un") String un){
+	List<opinion> listarOpinionesHechas(@ApiParam(value = "username", required = false) @RequestParam("un") String un){
 		List<opinion> list = repository.findByemisorOrderByIdentificadorDesc(un);
 		return list;
 	}
 	
-	@ApiOperation(value = "Number of opinions recieved", response = int.class)
+	@ApiOperation(value = "Number of opinions recieved, returns number of opinions", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/numeroOpinionesRecibidas")
-	int numeroOpinionesRecibidas(@RequestParam("un") String un) {
+	int numeroOpinionesRecibidas(@ApiParam(value = "username", required = false) @RequestParam("un") String un) {
 		return repository.numeroOpinionesRecibidas(un);
 	}
 	
-	@ApiOperation(value = "Number of opinions made", response = int.class)
+	@ApiOperation(value = "Number of opinions made, returns number of opinions", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/numeroOpinionesRealizadas")
-	int numeroOpinionesRealizadas(@RequestParam("un") String un) {
+	int numeroOpinionesRealizadas(@ApiParam(value = "username", required = false) @RequestParam("un") String un) {
 		return repository.numeroOpinionesRealizadas(un);
 	}
 }

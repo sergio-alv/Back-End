@@ -18,6 +18,7 @@ import com.ebrozon.repository.ventaRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value="Report Management System", description="Operations pertaining to report in Report Managament System ")
@@ -35,11 +36,14 @@ public class reportController {
 	@Autowired
 	opinionRepository opiner;
 	
-	@ApiOperation(value = "Send a report", response = String.class)
+	@ApiOperation(value = "Send a report, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/mandarReport")
-	String mandarReport(@RequestParam("em") String em, @RequestParam("re") String re, @RequestParam("con") String con,
-			@RequestParam(value = "nv", required=false) Integer nv, @RequestParam("mov") String mov) {
+	String mandarReport(@ApiParam(value = "report's emitter", required = false) @RequestParam("em") String em, 
+			@ApiParam(value = "report's reciever", required = false) @RequestParam("re") String re, 
+			@ApiParam(value = "content", required = false) @RequestParam("con") String con,
+			@ApiParam(value = "sale's id", required = false) @RequestParam(value = "nv", required=false) Integer nv, 
+			@ApiParam(value = "reason", required = false) @RequestParam("mov") String mov) {
 		if(!userer.existeUsuario(em)) {return "{E:No existe el usuario emisor}";}
 		if(!userer.existeUsuario(re)) {return "{E:No existe el usuario receptor}";}
 		if(nv != null && !venter.existsByidentificador(nv)) {return "{E:No existe la venta}";}
@@ -65,28 +69,28 @@ public class reportController {
 		return "{O:Ok}";
 	}
 	
-	@ApiOperation(value = "List all reports recieved", response = List.class)
+	@ApiOperation(value = "List all reports recieved, returns list of reports", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarReportesRecibidos")
-	List<report> listarReportesRecibidos(@RequestParam("un") String un){
+	List<report> listarReportesRecibidos(@ApiParam(value = "username", required = false) @RequestParam("un") String un){
 		List<report> list = repository.findByreceptorOrderByIdentificadorDesc(un);
 		return list;
 	}
 	
-	@ApiOperation(value = "List all reports made", response = List.class)
+	@ApiOperation(value = "List all reports made, returns list of reports", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarReportesHechos")
-	List<report> listarReportesHechos(@RequestParam("un") String un){
+	List<report> listarReportesHechos(@ApiParam(value = "username", required = false) @RequestParam("un") String un){
 		List<report> list = repository.findByemisorOrderByIdentificadorDesc(un);
 		return list;
 	}
 	
-	@ApiOperation(value = "Number of reports recieved", response = int.class)
+	@ApiOperation(value = "Number of reports recieved, returns number of reports", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/numeroReportesRecibidos")
-	int numeroReportesRecibidos(@RequestParam("un") String un) {
+	int numeroReportesRecibidos(@ApiParam(value = "username", required = false) @RequestParam("un") String un) {
 		return repository.numeroReportesRecibidos(un);
 	}
 	

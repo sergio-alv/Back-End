@@ -10,6 +10,7 @@ import com.ebrozon.repository.ventaRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import com.ebrozon.repository.ofertaRepository;
 import com.ebrozon.repository.usuarioRepository;
@@ -40,10 +41,12 @@ public class ofertaController {
 	
 	// Guarda una oferta recibiendo como parámetros obligatorios el nombre del usuario que la realiza,
 	// el número de la venta, la cantidad, la fecha y el nombre del producto.
-	@ApiOperation(value = "Make an offer to a sale", response = String.class)
+	@ApiOperation(value = "Make an offer to a sale, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/hacerOferta")
-	public String hacerOferta(@RequestParam("un") String usuario, @RequestParam("nv") int nventa, @RequestParam("can") float cantidad) {
+	public String hacerOferta(@ApiParam(value = "username", required = false) @RequestParam("un") String usuario, 
+			@ApiParam(value = "sale's id", required = false) @RequestParam("nv") int nventa, 
+			@ApiParam(value = "quantity", required = false) @RequestParam("can") float cantidad) {
 		if (!repository.existsByusuarioAndNventa(usuario,nventa) || repository_v.findByidentificador(nventa).get().getPrecio() <= cantidad) {
 			if (!repository_v.existsByidentificador(nventa) || !repository_u.existsBynombreusuario(usuario)) {
 				return "{E:No existe la venta o el usuario.}";
@@ -102,63 +105,63 @@ public class ofertaController {
 	}
 	
 	// Lista todas las ofertas recibidas sobre una venta recibiendo como parámetros obligatorios el número de la venta.
-	@ApiOperation(value = "List all offers recieved on a sale", response = List.class)
+	@ApiOperation(value = "List all offers recieved on a sale, returns list of offers", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasVenta")
-	public List<oferta> listarOfertasVenta(@RequestParam("nv") int nventa) {
+	public List<oferta> listarOfertasVenta(@ApiParam(value = "sale's id", required = false) @RequestParam("nv") int nventa) {
 		return repository.findBynventaOrderByFechaDesc(nventa);
 	}
 	
 	// Lista todas las ofertas realizadas por un usuario recibiendo como parámetros obligatorios el nombre del usuario.
-	@ApiOperation(value = "List all offers made by a user", response = List.class)
+	@ApiOperation(value = "List all offers made by a user, returns list of offers", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasRealizadas")
-	public List<oferta> listarOfertasRealizadas(@RequestParam("un") String usuario) {
+	public List<oferta> listarOfertasRealizadas(@ApiParam(value = "username", required = false) @RequestParam("un") String usuario) {
 		return repository.findByusuarioAndAceptadaOrderByFechaDesc(usuario,0);
 	}
 	
-	@ApiOperation(value = "List all offers made, accepted and pending by a user", response = List.class)
+	@ApiOperation(value = "List all offers made, accepted and pending by a user, returns list of offers", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasRealizadasAceptadasPendientes")
-	public List<oferta> listarOfertasRealizadasAceptadasPendientes(@RequestParam("un") String usuario) {
+	public List<oferta> listarOfertasRealizadasAceptadasPendientes(@ApiParam(value = "username", required = false) @RequestParam("un") String usuario) {
 		return repository.ofertasRealizadasAceptadasPendientes(usuario);
 	}
 	
-	@ApiOperation(value = "List all offers recieved, accepted and pending by a user", response = List.class)
+	@ApiOperation(value = "List all offers recieved, accepted and pending by a user, returns list of offers", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasRecibidasAceptadasPendientes")
-	public List<oferta> listarOfertasRecibidasAceptadasPendientes(@RequestParam("un") String usuario) {
+	public List<oferta> listarOfertasRecibidasAceptadasPendientes(@ApiParam(value = "username", required = false) @RequestParam("un") String usuario) {
 		List<Integer> nvs = repository_v.numerosVentasUsuario(usuario);
 		return repository.ofertasRecibidasAceptadasPendientes(nvs);
 	}
 	
-	@ApiOperation(value = "List all offers recieved by a user", response = List.class)
+	@ApiOperation(value = "List all offers recieved by a user, returns list of offers", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasRecibidas")
-	public List<oferta> listarOfertasRecibidas(@RequestParam("un") String usuario) {
+	public List<oferta> listarOfertasRecibidas(@ApiParam(value = "username", required = false) @RequestParam("un") String usuario) {
 		List<Integer> nvs = repository_v.numerosVentasUsuario(usuario);
 		return repository.ofertasRecibidas(nvs);
 	}
 	
 	// Lista todas las ofertas sobre un producto recibiendo como parámetros obligatorios el nombre del producto.
-	@ApiOperation(value = "List all offers of a product", response = List.class)
+	@ApiOperation(value = "List all offers of a product, returns list of offers", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarOfertasProducto")
-	public List<oferta> listarOfertasProducto(String producto) {
+	public List<oferta> listarOfertasProducto(@ApiParam(value = "product", required = false) String producto) {
 		return repository.findByproductoAndAceptadaOrderByFechaDesc(producto,0);
 	}
 	
 	// Acepta la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
-	@ApiOperation(value = "Accept an offer", response = String.class)
+	@ApiOperation(value = "Accept an offer, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/aceptarOferta")
-	public String aceptarOferta(@RequestParam("id") int id) {
+	public String aceptarOferta(@ApiParam(value = "offer's id", required = false) @RequestParam("id") int id) {
 		if (!repository.existsByIdentificador(id)) {
 			return "{E:No existe tal oferta}";
 		}
@@ -201,10 +204,10 @@ public class ofertaController {
 	}
 	
 	// Rechaza la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
-	@ApiOperation(value = "Reject an offer", response = String.class)
+	@ApiOperation(value = "Reject an offer, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/rechazarOferta")
-	public String rechazarOferta(@RequestParam("id") int id) {
+	public String rechazarOferta(@ApiParam(value = "offer's id", required = false) @RequestParam("id") int id) {
 		if (!repository.existsByIdentificador(id)) {
 			return "{E:No existe tal oferta}";
 		}
@@ -224,10 +227,10 @@ public class ofertaController {
 	}
 	
 	// Elimina la oferta recibiendo como parámetros obligatorios el nombre del usuario que la realizó, el número de venta, la fecha y la cantidad.
-	@ApiOperation(value = "Remove an offer", response = String.class)
+	@ApiOperation(value = "Remove an offer, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/retirarOferta")
-	public String retirarOferta(@RequestParam("id") int id) {
+	public String retirarOferta(@ApiParam(value = "offer's id", required = false) @RequestParam("id") int id) {
 		if (!repository.existsByIdentificador(id)) {
 			return "{E:No existe tal oferta}";
 		}

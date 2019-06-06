@@ -39,10 +39,10 @@ public class archivoController {
 	
 	private String upload_folder = ".//src//main//resources//files//";
 	
-	@ApiOperation(value = "Save an archive in the database", response = int.class)
+	@ApiOperation(value = "Save an archive in the database, returns id >= 0 if ok or -1 if not ok", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/uploadFile")
-	public int uploadFile(@ApiParam(value = "file to upload", required = true) @RequestParam("file") MultipartFile file) {
+	public int uploadFile(@ApiParam(value = "file to upload", required = false) @RequestParam("file") MultipartFile file) {
 		if(!file.isEmpty()) {
 			try {
 				int id = 1;
@@ -66,10 +66,10 @@ public class archivoController {
 		return -1;
 	}
 	
-	@ApiOperation(value = "Save a temporary archive in the database", response = int.class)
+	@ApiOperation(value = "Save a temporary archive in the database, returns id >= 0 if ok or -1 if not ok", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/uploadArchivoTemp")
-	public int uploadArchivoTemp(@ApiParam(value = "file to upload", required = true) @RequestParam("file") String file) {
+	public int uploadArchivoTemp(@ApiParam(value = "file to upload", required = false) @RequestParam("file") String file) {
 		if(!file.isEmpty()) {
 			try {
 				int id = 1;
@@ -106,19 +106,19 @@ public class archivoController {
 		return -1;
 	}
 	
-	@ApiOperation(value = "Bring a temporary archive from the database", response = String.class)
+	@ApiOperation(value = "Bring a temporary archive from the database, returns tmp archive", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/loadArchivoTemp")
-	public String loadArchivoTemp(@ApiParam(value = "id of the tmp archive", required = true) @RequestParam("id") int id) {
+	public String loadArchivoTemp(@ApiParam(value = "id of the tmp archive", required = false) @RequestParam("id") int id) {
 		try {
 			return repository.findByidentificador(id).get().getDatos();
 		}catch(Exception e){return "{O:Ok}";}
 	}
 	
-	@ApiOperation(value = "Bring a user archive from the database", response = String.class)
+	@ApiOperation(value = "Bring a user archive from the database, returns user archive", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/loadArchivoUsuario")
-	public String loadArchivoUsuario(@ApiParam(value = "username", required = true) @RequestParam("un") String un) {
+	public String loadArchivoUsuario(@ApiParam(value = "username", required = false) @RequestParam("un") String un) {
 		try {
 			Optional<usuario> aux = repository_u.findBynombreusuario(un);
 			if(!aux.isPresent()) {return "{E:No existe el usuario}";}
@@ -127,10 +127,10 @@ public class archivoController {
 		}catch(Exception e){return "{O:Ok}";}
 	}
 	
-	@ApiOperation(value = "Bring the url form a file in the database", response = String.class)
+	@ApiOperation(value = "Bring the url form a file in the database, returns file's url", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/loadFileUrl")
-	public String loadFileUrl(@ApiParam(value = "id of the file", required = true) @RequestParam("id") int id) {
+	public String loadFileUrl(@ApiParam(value = "id of the file", required = false) @RequestParam("id") int id) {
 		Optional<archivo> aux = repository.findByidentificador(id);
 		if(aux.isPresent()) {
 			return aux.get().getUrl();
@@ -138,10 +138,10 @@ public class archivoController {
 		return "{E:Ha habido un problema con el archivo.}";
 	}
 	
-	@ApiOperation(value = "Bring a file from the database", response = File.class)
+	@ApiOperation(value = "Bring a file from the database, returns file", response = File.class)
 	@CrossOrigin
 	@RequestMapping("/loadFile")
-	public File loadFile(@ApiParam(value = "id of the file", required = true) @RequestParam("id") int id) {
+	public File loadFile(@ApiParam(value = "id of the file", required = false) @RequestParam("id") int id) {
 		Optional<archivo> aux = repository.findByidentificador(id);
 		if(aux.isPresent()) {
 			try {
@@ -152,10 +152,10 @@ public class archivoController {
 		return null;
 	}
 	
-	@ApiOperation(value = "Delete a file in the database", response = String.class)
+	@ApiOperation(value = "Delete a file in the database, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/deleteFile")
-	public String deleteFile(@ApiParam(value = "id of the file", required = true) int id) {
+	public String deleteFile(@ApiParam(value = "id of the file", required = false) int id) {
 		Optional<archivo> aux = repository.findByidentificador(id);
 		try {
 			archivo arc = aux.get();

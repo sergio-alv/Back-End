@@ -20,6 +20,7 @@ import com.ebrozon.repository.usuarioRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value="Tag Management System", description="Operations pertaining to tag in Tag Managament System ")
@@ -33,10 +34,11 @@ public class etiquetaController {
 	//Guarda una etiqueta recibiendo como parámetros obligatorios el nombre de la etiqueta, la fecha
 	//de creación y el nombre del creador.
 	//http://localhost:8080/guardar?un=karny2&pass=caca&cor=cececw@gmail.com&na=saul&lna=alarcon
-	@ApiOperation(value = "Save a tag in the database", response = String.class)
+	@ApiOperation(value = "Save a tag in the database, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/guardarEtiqueta")
-	public String guardarEtiqueta(@RequestParam("et") String tn, @RequestParam("un") String crt) {
+	public String guardarEtiqueta(@ApiParam(value = "tag's name", required = false) @RequestParam("et") String tn,
+			@ApiParam(value = "tag's creator (username)", required = false) @RequestParam("un") String crt) {
 		if (repository.existsBynombre(tn)) {
 			return "{O:Ok}";
 		}
@@ -68,11 +70,11 @@ public class etiquetaController {
 	}
 	
 	//Recupera la información de una etiqueta dado el nombre
-	@ApiOperation(value = "Bring a tag from the database", response = etiqueta.class)
+	@ApiOperation(value = "Bring a tag from the database, returns etiqueta if ok or null if not ok", response = etiqueta.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/recuperarEtiqueta")
-	public etiqueta recuperarEtiqueta(@RequestParam("et") String tn) {
+	public etiqueta recuperarEtiqueta(@ApiParam(value = "tag's name", required = false) @RequestParam("et") String tn) {
 		Optional<etiqueta> aux = repository.findBynombre(tn);
 		if (aux.isPresent()) {
 			etiqueta t = aux.get();
@@ -85,16 +87,18 @@ public class etiquetaController {
 	
 	//Actualiza la información de la etiqueta recibiendo como parámetros obligatorios
 	//la nueva fecha de creación y el nombre del nuevo creador
-	@ApiOperation(value = "Update a tag in the database", response = String.class)
+	@ApiOperation(value = "Update a tag in the database, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/actualizarEtiqueta")
-	public String actualizarEtiqueta(@RequestParam("tn") String tn, @RequestParam("cd") Date cd, @RequestParam("crt") String crt) {
+	public String actualizarEtiqueta(@ApiParam(value = "tag's name", required = false) @RequestParam("tn") String tn,
+			@ApiParam(value = "tag's creation date", required = false) @RequestParam("cd") Date cd,
+			@ApiParam(value = "tag's creator (username)", required = false) @RequestParam("crt") String crt) {
 		if (!repository.existsBynombre(tn)) {
-			return "La etiqueta no existe";
+			return "{E:La etiqueta no existe}";
 		}
 		
 		if (!repository_u.existsBynombreusuario(crt)) {
-			return "El creador de la etiqueta no existe";
+			return "{E:El creador de la etiqueta no existe}";
 		}
 		
 		etiqueta t = repository.findBynombre(tn).get();
@@ -109,7 +113,7 @@ public class etiquetaController {
 		
 		repository.save(t);
 		
-		return "Ok";
+		return "{O:Ok}";
 	}
 	
 	public void borrarEtiquetasVenta(int nv) {

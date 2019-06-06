@@ -28,6 +28,7 @@ import com.ebrozon.repository.ventaRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import parser.Parseador;
 import parser.Stopwords;
 
@@ -67,13 +68,18 @@ public class ventaController {
 	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
-	@ApiOperation(value = "Publish a sale", response = String.class)
+	@ApiOperation(value = "Publish a sale, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/publicarVenta")
-	public String publicarVenta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
-			@RequestParam("pre") double pre, @RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
-			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4,
-			@RequestParam("cat") String cat) {
+	public String publicarVenta(@ApiParam(value = "username", required = false) @RequestParam("un") String un, 
+			@ApiParam(value = "product", required = false) @RequestParam("prod") String prod, 
+			@ApiParam(value = "description", required = false) @RequestParam("desc") String desc,
+			@ApiParam(value = "price", required = false) @RequestParam("pre") double pre, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc1") String arc1, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc2", required=false) String arc2, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc3", required=false) String arc3,
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc4", required=false) String arc4,
+			@ApiParam(value = "category", required = false) @RequestParam("cat") String cat) {
 		Optional<usuario> usaux = repository_u.findBynombreusuario(un);
 		if(!usaux.isPresent()) {
 			return "{E:No existe el usuario.}";
@@ -166,13 +172,18 @@ public class ventaController {
 		}
 	}
 	
-	@ApiOperation(value = "Update a sale", response = String.class)
+	@ApiOperation(value = "Update a sale, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/actualizarVenta")
-	public String actualizarVenta(@RequestParam("id") int id, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
-			@RequestParam("pre") double pre, @RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
-			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4,
-			@RequestParam("cat") String cat) {
+	public String actualizarVenta(@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id,
+			@ApiParam(value = "product", required = false) @RequestParam("prod") String prod, 
+			@ApiParam(value = "description", required = false) @RequestParam("desc") String desc,
+			@ApiParam(value = "price", required = false) @RequestParam("pre") double pre, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc1") String arc1, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc2", required=false) String arc2, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc3", required=false) String arc3, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc4", required=false) String arc4,
+			@ApiParam(value = "category", required = false) @RequestParam("cat") String cat) {
 		Optional<venta> ventaux = repository.findByidentificador(id);
 		if(!ventaux.isPresent()) {
 			return "{E:Error inesperado.}";
@@ -250,11 +261,11 @@ public class ventaController {
 		}
 	}
 	
-	@ApiOperation(value = "List main page sales", response = List.class)
+	@ApiOperation(value = "List main page sales, returns list of sales", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarPaginaPrincipal")
 	@Produces("application/json")
-	List<venta> listarPaginaPrincipal(@RequestParam("id") int id){
+	List<venta> listarPaginaPrincipal(@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id){
 		List<venta> lista = repository.findFirst25ByactivaAndIdentificadorGreaterThanOrderByFechainicioDesc(1,id);
 		for(int i = 0; i < lista.size();++i) {
 			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
@@ -262,11 +273,12 @@ public class ventaController {
 		return lista;
 	}
 	
-	@ApiOperation(value = "List all city sales", response = List.class)
+	@ApiOperation(value = "List all city sales, returns list of sales", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarProductosCiudad")
 	@Produces("application/json")
-	List<venta> listarProductosCiudad(@RequestParam("ci") String ci, @RequestParam("id") int id){
+	List<venta> listarProductosCiudad(@ApiParam(value = "city", required = false) @RequestParam("ci") String ci,
+			@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id){
 		List<venta> lista = repository.findFirst25ByciudadAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(ci,1,id);
 		for(int i = 0; i < lista.size();++i) {
 			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
@@ -274,11 +286,12 @@ public class ventaController {
 		return lista;
 	}
 	
-	@ApiOperation(value = "List all province sales", response = List.class)
+	@ApiOperation(value = "List all province sales, returns list of sales", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarProductosProvincia")
 	@Produces("application/json")
-	List<venta> listarProductosProvincia(@RequestParam("pr") String pr, @RequestParam("id") int id){
+	List<venta> listarProductosProvincia(@ApiParam(value = "province", required = false) @RequestParam("pr") String pr, 
+			@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id){
 		List<venta> lista = repository.findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(pr,1,id);
 		for(int i = 0; i < lista.size();++i) {
 			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
@@ -286,11 +299,12 @@ public class ventaController {
 		return lista;
 	}
 	
-	@ApiOperation(value = "List all user sales", response = List.class)
+	@ApiOperation(value = "List all user sales, returns list of sales", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarProductosUsuario")
 	@Produces("application/json")
-	List<venta> listarProductosUsuario(@RequestParam("un") String un, @RequestParam("id") int id){
+	List<venta> listarProductosUsuario(@ApiParam(value = "username", required = false) @RequestParam("un") String un, 
+			@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id){
 		List<venta> lista = repository.findFirst25ByusuarioAndIdentificadorLessThanAndActivaOrderByFechainicioDesc(un,id,1);
 		for(int i = 0; i < lista.size();++i) {
 			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
@@ -298,11 +312,12 @@ public class ventaController {
 		return lista;
 	}
 	
-	@ApiOperation(value = "List all purchases of a user", response = List.class)
+	@ApiOperation(value = "List all purchases of a user, returns list of sales", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarComprasUsuario")
 	@Produces("application/json")
-	List<venta> listarComprasUsuario(@RequestParam("un") String un, @RequestParam("id") int id){
+	List<venta> listarComprasUsuario(@ApiParam(value = "username", required = false) @RequestParam("un") String un,
+			@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id){
 		List<venta> lista = repository.findFirst25BycompradorAndIdentificadorLessThanOrderByFechainicioDesc(un,id);
 		for(int i = 0; i < lista.size();++i) {
 			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
@@ -310,11 +325,11 @@ public class ventaController {
 		return lista;
 	}
 	
-	@ApiOperation(value = "Recover a sale", response = venta.class)
+	@ApiOperation(value = "Recover a sale, returns sale", response = venta.class)
 	@CrossOrigin
 	@RequestMapping("/recuperarProducto")
 	@Produces("application/json")
-	Optional<venta> recuperarProducto(@RequestParam("id") int id){
+	Optional<venta> recuperarProducto(@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id){
 		Optional<venta> aux  = repository.findByidentificador(id);
 		if(aux.isPresent()) {
 			aux.get().setArchivos(repository.listaArchivos(id));
@@ -352,10 +367,10 @@ public class ventaController {
 		return "{O:Ok}";
 	}
 	
-	@ApiOperation(value = "Deactivate a sale", response = String.class)
+	@ApiOperation(value = "Deactivate a sale, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/desactivarVenta")
-	String desactivarVenta(@RequestParam("id") int id) {
+	String desactivarVenta(@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id) {
 		Optional<venta> aux = repository.findByidentificador(id);
 		if(aux.isPresent()) {
 			venta vent = aux.get();
@@ -368,10 +383,10 @@ public class ventaController {
 		}
 	}
 	
-	@ApiOperation(value = "Activate a sale", response = String.class)
+	@ApiOperation(value = "Activate a sale, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/activarVenta")
-	String activarVenta(@RequestParam("id") int id) {
+	String activarVenta(@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id) {
 		Optional<venta> aux = repository.findByidentificador(id);
 		if(aux.isPresent()) {
 			venta vent = aux.get();
@@ -384,24 +399,24 @@ public class ventaController {
 		}
 	}
 	
-	@ApiOperation(value = "Number of sales of a user", response = int.class)
+	@ApiOperation(value = "Number of sales of a user, returns number of sales", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/numeroVentasUsuario")
-	int numeroVentasUsuario(@RequestParam("un") String un) {
+	int numeroVentasUsuario(@ApiParam(value = "username", required = false) @RequestParam("un") String un) {
 		return repository.numeroVentasRealizadas(un);
 	}
 	
-	@ApiOperation(value = "Number of purchases of a user", response = int.class)
+	@ApiOperation(value = "Number of purchases of a user, returns number of purchases", response = int.class)
 	@CrossOrigin
 	@RequestMapping("/numeroComprasUsuario")
-	int numeroComprarUsuario(@RequestParam("un") String un) {
+	int numeroComprarUsuario(@ApiParam(value = "username", required = false) @RequestParam("un") String un) {
 		return repository.numeroComprasRealizadas(un);
 	}
 	
-	@ApiOperation(value = "Confirm the payment of a sale", response = String.class)
+	@ApiOperation(value = "Confirm the payment of a sale, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/confirmarPagoVenta")
-	String confirmarPagoVenta(@RequestParam("id") int id) {
+	String confirmarPagoVenta(@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id) {
 		Optional<venta> aux = repository.findByidentificador(id);
 		if(!aux.isPresent()) {
 			return "{E:La venta no existe}";
@@ -412,10 +427,10 @@ public class ventaController {
 		return "{O:Ok}";
 	}
 	
-	@ApiOperation(value = "Cancel the payment of a sale", response = String.class)
+	@ApiOperation(value = "Cancel the payment of a sale, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/cancelarPagoVenta")
-	String cancelarPagoVenta(@RequestParam("id") int id) {
+	String cancelarPagoVenta(@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id) {
 		Optional<venta> aux = repository.findByidentificador(id);
 		if(!aux.isPresent()) {
 			return "{E:La venta no existe}";
@@ -445,17 +460,23 @@ public class ventaController {
         return distancia;  
     } 
 	
-	@ApiOperation(value = "List sales",notes="met = Fecha des, Fecha asc, Precio des, Precio asc, Coincidencias, Valoraciones, Popularidad, Distancia", response = List.class)
+	@ApiOperation(value = "List sales, returns list of sales",notes="met = Fecha des, Fecha asc, Precio des, Precio asc, Coincidencias, Valoraciones, Popularidad, Distancia", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarProductos")
 	@Produces("application/json")
-	List<venta> listarProductosEtiquetas(@RequestParam(value = "ets", required=false) String ets, @RequestParam("met") String met,
-			@RequestParam(value = "min", required=false) Double min,@RequestParam(value = "max", required=false) Double max,
-			@RequestParam(value = "pr", required=false) String pr, @RequestParam(value = "ci", required=false) String ci,
-			@RequestParam(value = "id", required=false) Integer id, @RequestParam(value = "tp", required=false) Integer tp,
-			@RequestParam(value = "cat", required=false) String cat,
-			@RequestParam(value = "lat", required=false) Float lat,@RequestParam(value = "lon", required=false) Float lon,
-			@RequestParam(value = "mind", required=false) Float mind,@RequestParam(value = "maxd", required=false) Float maxd){
+	List<venta> listarProductosEtiquetas(@ApiParam(value = "", required = false) @RequestParam(value = "ets", required=false) String ets,
+			@ApiParam(value = "search type", required = false) @RequestParam("met") String met,
+			@ApiParam(value = "min price", required = false) @RequestParam(value = "min", required=false) Double min,
+			@ApiParam(value = "max price", required = false) @RequestParam(value = "max", required=false) Double max,
+			@ApiParam(value = "province", required = false)@RequestParam(value = "pr", required=false) String pr, 
+			@ApiParam(value = "city", required = false) @RequestParam(value = "ci", required=false) String ci,
+			@ApiParam(value = "sale's id", required = false) @RequestParam(value = "id", required=false) Integer id, 
+			@ApiParam(value = "", required = false) @RequestParam(value = "tp", required=false) Integer tp,
+			@ApiParam(value = "category", required = false) @RequestParam(value = "cat", required=false) String cat,
+			@ApiParam(value = "latitude", required = false) @RequestParam(value = "lat", required=false) Float lat,
+			@ApiParam(value = "longitude", required = false) @RequestParam(value = "lon", required=false) Float lon,
+			@ApiParam(value = "", required = false) @RequestParam(value = "mind", required=false) Float mind,
+			@ApiParam(value = "", required = false) @RequestParam(value = "maxd", required=false) Float maxd){
 		List<venta> lista = new ArrayList<venta>();
 		List<venta> listaBuena = new ArrayList<venta>();
 		Vector etiquetas = null;

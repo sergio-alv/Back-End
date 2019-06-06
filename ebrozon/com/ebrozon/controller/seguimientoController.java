@@ -4,6 +4,7 @@ import com.ebrozon.repository.ventaRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import com.ebrozon.repository.seguimientoRepository;
 import com.ebrozon.repository.usuarioRepository;
@@ -42,10 +43,11 @@ public class seguimientoController {
 	
 	// Crea el seguimiento de un producto recibiendo como parametros obligatorios el nombre del usuario que lo realiza,
 	// el numero de la venta, la fecha y el nombre del producto.
-	@ApiOperation(value = "Track a product", response = String.class)
+	@ApiOperation(value = "Track a product, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/seguirProducto")
-	public String seguirProducto(@RequestParam("un") String usuario, @RequestParam("nv") int nventa) {
+	public String seguirProducto(@ApiParam(value = "username", required = false) @RequestParam("un") String usuario, 
+			@ApiParam(value = "sale's id", required = false) @RequestParam("nv") int nventa) {
     		if (!repository.existsByusuarioAndNventa(usuario,nventa)) {
 				if (!repository_v.existsByidentificador(nventa) || !repository_u.existsBynombreusuario(usuario)) {
 					return "{E:No existe la venta o el usuario.}";
@@ -74,28 +76,29 @@ public class seguimientoController {
 	}
 	
   	// Lista todas los seguimientos sobre una venta recibiendo como parametros obligatorios el numero de la venta.
-	@ApiOperation(value = "List all tracks of a sale", response = List.class)
+	@ApiOperation(value = "List all tracks of a sale, returns list of tracks", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarSeguimientosVenta")
-	public List<seguimiento> listarSeguimientosVenta(@RequestParam("nv") int nventa) {
+	public List<seguimiento> listarSeguimientosVenta(@ApiParam(value = "sale's id", required = false) @RequestParam("nv") int nventa) {
 		return repository.findBynventaOrderByFechaDesc(nventa);
 	}
 	
 	// Lista todas los seguimientos realizadas por un usuario recibiendo como parametros obligatorios el nombre del usuario.
-	@ApiOperation(value = "List all tracks made by a user", response = List.class)
+	@ApiOperation(value = "List all tracks made by a user, returns list of tracks", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarSeguimientosUsuario")
-	public List<seguimiento> listarSeguimientosUsuario(@RequestParam("un") String usuario) {
+	public List<seguimiento> listarSeguimientosUsuario(@ApiParam(value = "username", required = false) @RequestParam("un") String usuario) {
 		return repository.findByusuarioOrderByFechaDesc(usuario);
 	}
 	
-	@ApiOperation(value = "List all sales tracked by a user", response = List.class)
+	@ApiOperation(value = "List all sales tracked by a user, returns list of tracks", response = List.class)
 	@CrossOrigin
 	@Produces("application/json")
 	@RequestMapping("/listarVentasSeguidasUsuario")
-	public List<venta> listarVentasSeguidasUsuario(@RequestParam("un") String usuario, @RequestParam("id") int id) {
+	public List<venta> listarVentasSeguidasUsuario(@ApiParam(value = "username", required = false) @RequestParam("un") String usuario, 
+			@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id) {
 		List<seguimiento> aux = repository.findByusuarioOrderByFechaDesc(usuario);
 		List<venta> list = new ArrayList<venta>();
 		int count = 0;
@@ -123,10 +126,10 @@ public class seguimientoController {
 	}
 	
 	// Elimina el seguimiento recibiendo como parametros obligatorios el nombre del usuario que la realizo, el numero de venta, la fecha y la cantidad.
-	@ApiOperation(value = "Remove a track", response = String.class)
+	@ApiOperation(value = "Remove a track, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/eliminarSeguimiento")
-	public String eliminarSeguimiento(@RequestParam("id") int id) {
+	public String eliminarSeguimiento(@ApiParam(value = "track's id", required = false) @RequestParam("id") int id) {
 		if (!repository.existsByidentificador(id)) {
 			return "{E:No existe tal seguimiento}";
 		}
@@ -137,10 +140,11 @@ public class seguimientoController {
 		}
 	}
 	
-	@ApiOperation(value = "Remove the tracking of a user to a sale", response = String.class)
+	@ApiOperation(value = "Remove the tracking of a user to a sale, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/dejarSeguirProducto")
-	public String dejarSeguirProducto(@RequestParam("un") String un, @RequestParam("nv") int nv) {
+	public String dejarSeguirProducto(@ApiParam(value = "username", required = false) @RequestParam("un") String un, 
+			@ApiParam(value = "sale's id", required = false) @RequestParam("nv") int nv) {
 		if (!repository.existsByusuarioAndNventa(un,nv)) {
 			return "{E:No existe tal seguimiento}";
 		}
@@ -152,18 +156,18 @@ public class seguimientoController {
 	}
   
   	//Obtiene la cantidad de seguidos que tiene una venta recibiendo como parametros el numero de venta
-	@ApiOperation(value = "Number of tracks of a sale", response = int.class)
+	@ApiOperation(value = "Number of tracks of a sale, returns number of tracks", response = int.class)
 	@CrossOrigin
   	@RequestMapping("/cantidadSeguidosVenta")
-  	public int cantidadSeguidosVenta(@RequestParam("nv") int nventa){
+  	public int cantidadSeguidosVenta(@ApiParam(value = "sale's id", required = false) @RequestParam("nv") int nventa){
     		return listarSeguimientosVenta(nventa).size();  
   	}
   
   	//Obtiene la cantidad de seguidos que tiene un usuario recibiendo como parametros el nombre de usuario
-	@ApiOperation(value = "Number of tracks of a user", response = int.class)
+	@ApiOperation(value = "Number of tracks of a user, returns number of tracks", response = int.class)
 	@CrossOrigin
   	@RequestMapping("/cantidadSeguidosUsuario")
-  	public int cantidadSeguidosUsuario(@RequestParam("un") String usuario){
+  	public int cantidadSeguidosUsuario(@ApiParam(value = "username", required = false) @RequestParam("un") String usuario){
     		return listarSeguimientosUsuario(usuario).size();  
   	}
 }

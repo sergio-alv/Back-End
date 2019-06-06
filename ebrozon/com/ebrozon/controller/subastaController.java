@@ -31,6 +31,7 @@ import com.ebrozon.repository.ventaRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import parser.Parseador;
 import parser.Stopwords;
 
@@ -66,14 +67,20 @@ public class subastaController {
 	
 	//Publica una venta recibiendo como parámetros nombre de usuario, título del producto, descripción
 	//y precio, siendo opcionales los archivos
-	@ApiOperation(value = "Publish an auction", response = String.class)
+	@ApiOperation(value = "Publish an auction, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/publicarSubasta")
-	public String publicarSubasta(@RequestParam("un") String un, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
-			@RequestParam("pre") double pre, @RequestParam("end") long end,  @RequestParam("pin") double pin, 
-			@RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
-			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4,
-			@RequestParam("cat") String cat) {
+	public String publicarSubasta(@ApiParam(value = "username", required = false) @RequestParam("un") String un, 
+			@ApiParam(value = "product", required = false) @RequestParam("prod") String prod, 
+			@ApiParam(value = "description", required = false) @RequestParam("desc") String desc,
+			@ApiParam(value = "price", required = false) @RequestParam("pre") double pre, 
+			@ApiParam(value = "end date", required = false) @RequestParam("end") long end,  
+			@ApiParam(value = "initial price", required = false) @RequestParam("pin") double pin, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc1") String arc1, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc2", required=false) String arc2,
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc3", required=false) String arc3, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc4", required=false) String arc4,
+			@ApiParam(value = "category", required = false) @RequestParam("cat") String cat) {
 		Optional<usuario> usaux = repository_u.findBynombreusuario(un);
 		if(!usaux.isPresent()) {
 			return "{E:No existe el usuario.}";
@@ -167,14 +174,20 @@ public class subastaController {
 		}
 	}
 	
-	@ApiOperation(value = "Update an auction", response = String.class)
+	@ApiOperation(value = "Update an auction, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/actualizarSubasta")
-	public String actualizarSubasta(@RequestParam("id") int id, @RequestParam("prod") String prod, @RequestParam("desc") String desc,
-			@RequestParam("pre") double pre, @RequestParam("end") long end,  @RequestParam("pin") double pin, 
-			@RequestParam(value = "arc1") String arc1, @RequestParam(value = "arc2", required=false) String arc2
-			, @RequestParam(value = "arc3", required=false) String arc3, @RequestParam(value = "arc4", required=false) String arc4,
-			@RequestParam("cat") String cat) {
+	public String actualizarSubasta(@ApiParam(value = "auction's id", required = false) @RequestParam("id") int id, 
+			@ApiParam(value = "product", required = false) @RequestParam("prod") String prod,
+			@ApiParam(value = "description", required = false) @RequestParam("desc") String desc,
+			@ApiParam(value = "price", required = false) @RequestParam("pre") double pre, 
+			@ApiParam(value = "end date", required = false) @RequestParam("end") long end,  
+			@ApiParam(value = "initial price", required = false) @RequestParam("pin") double pin, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc1") String arc1, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc2", required=false) String arc2, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc3", required=false) String arc3, 
+			@ApiParam(value = "image", required = false) @RequestParam(value = "arc4", required=false) String arc4,
+			@ApiParam(value = "category", required = false) @RequestParam("cat") String cat) {
 		
 		if(repository.numeroPujasRecibidas(id) >0) {
 			return "{E:No se puede actualizar una subasta cuando esta ha recibido ya una puja.}";
@@ -262,11 +275,12 @@ public class subastaController {
 		}
 	}
 	
-	@ApiOperation(value = "List all auctions of a city", response = List.class)
+	@ApiOperation(value = "List all auctions of a city, returns list of auctions", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarSubastasCiudad")
 	@Produces("application/json")
-	List<subasta> listarSubastasCiudad(@RequestParam("ci") String ci, @RequestParam("id") int id){
+	List<subasta> listarSubastasCiudad(@ApiParam(value = "city", required = false) @RequestParam("ci") String ci, 
+			@ApiParam(value = "auction's id", required = false) @RequestParam("id") int id){
 		List<subasta> lista = repository.findFirst25ByciudadAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(ci,1,id);
 		for(int i = 0; i < lista.size();++i) {
 			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
@@ -274,11 +288,12 @@ public class subastaController {
 		return lista;
 	}
 	
-	@ApiOperation(value = "List all auctions of a province", response = List.class)
+	@ApiOperation(value = "List all auctions of a province, returns list of auctions", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarSubastasProvincia")
 	@Produces("application/json")
-	List<subasta> listarSubastasProvincia(@RequestParam("pr") String pr, @RequestParam("id") int id){
+	List<subasta> listarSubastasProvincia(@ApiParam(value = "province", required = false) @RequestParam("pr") String pr, 
+			@ApiParam(value = "auction's id", required = false) @RequestParam("id") int id){
 		List<subasta> lista = repository.findFirst25ByprovinciaAndActivaAndIdentificadorGreaterThanOrderByFechainicioDesc(pr,1,id);
 		for(int i = 0; i < lista.size();++i) {
 			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
@@ -286,11 +301,12 @@ public class subastaController {
 		return lista;
 	}
 	
-	@ApiOperation(value = "List all auctions of a user", response = List.class)
+	@ApiOperation(value = "List all auctions of a user, returns list of auctions", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarSubastasUsuario")
 	@Produces("application/json")
-	List<subasta> listarSubastasUsuario(@RequestParam("un") String un, @RequestParam("id") int id){
+	List<subasta> listarSubastasUsuario(@ApiParam(value = "username", required = false) @RequestParam("un") String un, 
+			@ApiParam(value = "auction's id", required = false) @RequestParam("id") int id){
 		List<subasta> lista  = repository.findByusuarioOrderByFechainicioDesc(un);
 		for(int i = 0; i < lista.size();++i) {
 			lista.get(i).setArchivos(repository.listaArchivos(lista.get(i).getIdentificador()));
@@ -298,11 +314,11 @@ public class subastaController {
 		return lista;
 	}
 	
-	@ApiOperation(value = "Recover an auction", response = subasta.class)
+	@ApiOperation(value = "Recover an auction, returns auction", response = subasta.class)
 	@CrossOrigin
 	@RequestMapping("/recuperarSubasta")
 	@Produces("application/json")
-	Optional<subasta> recuperarSubasta(@RequestParam("id") int id){
+	Optional<subasta> recuperarSubasta(@ApiParam(value = "auction's id", required = false) @RequestParam("id") int id){
 		Optional<subasta> aux = repository.findByidentificador(id);
 		if(aux.isPresent()) {
 			aux.get().setArchivos(repository.listaArchivos(id));
@@ -310,26 +326,28 @@ public class subastaController {
 		return aux;
 	}
 	
-	@ApiOperation(value = "List all earned and pending auctions of a user", response = List.class)
+	@ApiOperation(value = "List all earned and pending auctions of a user, returns list of auctions", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarSubastasGanadasPendientes")
 	@Produces("application/json")
-	List<subasta> listarSubastasGanadasPendientes(@RequestParam("un") String un){
+	List<subasta> listarSubastasGanadasPendientes(@ApiParam(value = "username", required = false) @RequestParam("un") String un){
 		return repository.findBycompradorAndActivaAndFechapagoIsNull(un, 0);
 	}
 	
-	@ApiOperation(value = "List all finished and pending auctions of a user", response = List.class)
+	@ApiOperation(value = "List all finished and pending auctions of a user, returns list of auctions", response = List.class)
 	@CrossOrigin
 	@RequestMapping("/listarSubastasTerminadasPendientes")
 	@Produces("application/json")
-	List<subasta> listarSubastasTerminadasPendientes(@RequestParam("un") String un){
+	List<subasta> listarSubastasTerminadasPendientes(@ApiParam(value = "username", required = false) @RequestParam("un") String un){
 		return repository.findByusuarioAndActivaAndFechapagoIsNull(un, 0);
 	}
 	
-	@ApiOperation(value = "Place a bid", response = String.class)
+	@ApiOperation(value = "Place a bid, returns {O:Ok} if ok or error message if not ok", response = String.class)
 	@CrossOrigin
 	@RequestMapping("/realizarPuja")
-	String realizarPuja(@RequestParam("un") String un, @RequestParam("id") int id, @RequestParam("ct") Double ct) {
+	String realizarPuja(@ApiParam(value = "username", required = false) @RequestParam("un") String un, 
+			@ApiParam(value = "auction's id", required = false) @RequestParam("id") int id, 
+			@ApiParam(value = "quantity", required = false) @RequestParam("ct") Double ct) {
 		Optional<usuario> usaux = userer.recuperarUsuario(un);
 		if(!usaux.isPresent()) {
 			return "{E:No existe el usuario.}";
