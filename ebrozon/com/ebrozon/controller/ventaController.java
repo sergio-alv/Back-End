@@ -25,6 +25,7 @@ import com.ebrozon.repository.opinionRepository;
 import com.ebrozon.repository.seguimientoRepository;
 import com.ebrozon.repository.usuarioRepository;
 import com.ebrozon.repository.ventaRepository;
+import com.ebrozon.repository.subastaRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,6 +51,9 @@ public class ventaController {
 	
 	@Autowired
     subastaController subaster;
+	
+	@Autowired
+    subastaRepository repository_sub;
 	
 	@Autowired
 	ofertaRepository repository_o;
@@ -373,6 +377,9 @@ public class ventaController {
 	String desactivarVenta(@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id) {
 		Optional<venta> aux = repository.findByidentificador(id);
 		if(aux.isPresent()) {
+			if(aux.isPresent().getes_subasta() == 1 && repository_sub.numeroPujasRecibidas(id) >0) {
+				return "{E:No se puede borrar una subasta cuando esta ha recibido ya una puja.}";
+			}
 			venta vent = aux.get();
 			vent.setActiva(0);
 			repository.save(vent);
@@ -471,12 +478,12 @@ public class ventaController {
 			@ApiParam(value = "province", required = false)@RequestParam(value = "pr", required=false) String pr, 
 			@ApiParam(value = "city", required = false) @RequestParam(value = "ci", required=false) String ci,
 			@ApiParam(value = "sale's id", required = false) @RequestParam(value = "id", required=false) Integer id, 
-			@ApiParam(value = "", required = false) @RequestParam(value = "tp", required=false) Integer tp,
+			@ApiParam(value = "sale's type", required = false) @RequestParam(value = "tp", required=false) Integer tp,
 			@ApiParam(value = "category", required = false) @RequestParam(value = "cat", required=false) String cat,
 			@ApiParam(value = "latitude", required = false) @RequestParam(value = "lat", required=false) Float lat,
 			@ApiParam(value = "longitude", required = false) @RequestParam(value = "lon", required=false) Float lon,
-			@ApiParam(value = "", required = false) @RequestParam(value = "mind", required=false) Float mind,
-			@ApiParam(value = "", required = false) @RequestParam(value = "maxd", required=false) Float maxd){
+			@ApiParam(value = "minimal distance", required = false) @RequestParam(value = "mind", required=false) Float mind,
+			@ApiParam(value = "maximum distance", required = false) @RequestParam(value = "maxd", required=false) Float maxd){
 		List<venta> lista = new ArrayList<venta>();
 		List<venta> listaBuena = new ArrayList<venta>();
 		Vector etiquetas = null;

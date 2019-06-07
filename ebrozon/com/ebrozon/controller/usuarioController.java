@@ -54,25 +54,25 @@ public class usuarioController {
 		   Properties props = new Properties();
 		   props.put("mail.smtp.auth", "true");
 		   props.put("mail.smtp.starttls.enable", "true");
-		   props.put("mail.smtp.host", "smtp.gmail.com");
+		   props.put("mail.smtp.host", "smtp.sendgrid.net");
 		   props.put("mail.smtp.port", "587");
 		   
 		   Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 		      protected PasswordAuthentication getPasswordAuthentication() {
-		         return new PasswordAuthentication("karny.sac@gmail.com", "199819981998s");
+		         return new PasswordAuthentication("app129790258@heroku.com", "ygg5o74m5219");
 		      }
 		   });
 		   Message msg = new MimeMessage(session);
-		   msg.setFrom(new InternetAddress("karny.sac@gmail.com", false));
+		   msg.setFrom(new InternetAddress("app129790258@heroku.com", false));
 
 		   msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(cor));
 		   msg.setSubject("Registro en Ebrozon");
 		   String mensaje = "Muchas gracias por registrarse en Ebrozon, le damos la bienvenida " + us + ".<br/>"
 				   			+ "Para completar el registro, por favor haga click sobre el siguiente enlace:<br/><br/>"
-				   			+ "http://localhost:8080/aceptarRegistro?un=" + us + "&ver=" + ver
+				   			+ "http://protected-caverns-60859.herokuapp.com/aceptarRegistro?un=" + us + "&ver=" + ver
 				   			+ "<br/><br/>Si usted no sabe nada acerca de este registro, para cancelar el registro"
 				   			+ " haga click sobre el siguiente enlace:<br/><br/>"
-				   			+ "http://localhost:8080/rechazarRegistro?un=" + us + "&ver=" + ver
+				   			+ "http://protected-caverns-60859.herokuapp.com/rechazarRegistro?un=" + us + "&ver=" + ver
 				   			+ "<br/><br/>Gracias y saludos";
 		   msg.setContent(mensaje, "text/html; charset=utf-8");
 		   msg.setSentDate(new Date());
@@ -156,8 +156,8 @@ public class usuarioController {
 	        	user.setArchivo(1);
 	        }
 	        
-	        user.setActivo(1);
-	        //sendmail(user.getNombreusuario(),user.getContrasena(), user.getCorreo());
+	        user.setActivo(0);
+	        sendmail(user.getNombreusuario(),user.getContrasena(), user.getCorreo());
 	        repository.save(user);
 		}
 		catch(Exception e) {
@@ -560,7 +560,7 @@ public class usuarioController {
 		    us.setContrasena(sb.toString());
 		    repository.save(us);
 		    try {
-		    	//sendmail2(us.getNombreusuario(),newpass,us.getCorreo());
+		    	sendmail2(us.getNombreusuario(),newpass,us.getCorreo());
 		    }
 		    catch(Exception e) {
 		    	us.setContrasena(oldpass);
