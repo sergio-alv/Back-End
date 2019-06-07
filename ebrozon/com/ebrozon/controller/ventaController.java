@@ -471,7 +471,7 @@ public class ventaController {
 	@CrossOrigin
 	@RequestMapping("/listarProductos")
 	@Produces("application/json")
-	List<venta> listarProductosEtiquetas(@ApiParam(value = "", required = false) @RequestParam(value = "ets", required=false) String ets,
+	List<venta> listarProductosEtiquetas(@ApiParam(value = "keywords", required = false) @RequestParam(value = "ets", required=false) String ets,
 			@ApiParam(value = "search type", required = false) @RequestParam("met") String met,
 			@ApiParam(value = "min price", required = false) @RequestParam(value = "min", required=false) Double min,
 			@ApiParam(value = "max price", required = false) @RequestParam(value = "max", required=false) Double max,
