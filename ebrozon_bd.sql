@@ -143,6 +143,7 @@ CREATE TABLE `hibernate_sequence` (
 --
 
 CREATE TABLE `mensaje` (
+	`identificador` int(11) NOT NULL,
   `emisor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `receptor` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
   `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -424,9 +425,7 @@ ALTER TABLE `etiquetaventaverant`
 --
 -- Indices de la tabla `mensaje`
 --
-ALTER TABLE `mensaje`
-  ADD PRIMARY KEY (`emisor`,`receptor`,`fecha`),
-  ADD KEY `mensaje_ibfk_2` (`receptor`);
+ALTER TABLE `mensaje` ADD PRIMARY KEY(`identificador`);
 
 --
 -- Indices de la tabla `motivo`
