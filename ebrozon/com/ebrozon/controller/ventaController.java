@@ -377,7 +377,7 @@ public class ventaController {
 	String desactivarVenta(@ApiParam(value = "sale's id", required = false) @RequestParam("id") int id) {
 		Optional<venta> aux = repository.findByidentificador(id);
 		if(aux.isPresent()) {
-			if(aux.isPresent().getes_subasta() == 1 && repository_sub.numeroPujasRecibidas(id) >0) {
+			if(aux.get().getes_subasta() == 1 && repository_sub.numeroPujasRecibidas(id) >0) {
 				return "{E:No se puede borrar una subasta cuando esta ha recibido ya una puja.}";
 			}
 			venta vent = aux.get();
