@@ -2,6 +2,7 @@
 CREATE TABLE  "archivo" (
    "identificador"   int PRIMARY KEY, 
    "url"   varchar(200) NOT NULL, 
+   "datos"   text NOT NULL, 
    "borrada"    smallint NOT NULL DEFAULT '0' 
 )   ;
 
@@ -70,8 +71,7 @@ CREATE TABLE  "archivoventaverant" (
 CREATE TABLE  "etiqueta" (
    "nombre"   varchar(30) PRIMARY KEY, 
    "fechacreacion"   timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP, 
-   "creador"   varchar(30) NOT NULL, 
-   "nombreusuario"   varchar(30) DEFAULT NULL 
+   "creador"   varchar(30) NOT NULL
 )   ;
 
 -- --------------------------------------------------------
@@ -108,11 +108,11 @@ CREATE TABLE  "etiquetaventaverant" (
 --
 
 CREATE TABLE  "mensaje" (
+   "identificador" int primary key,
    "emisor"   varchar(30) NOT NULL, 
    "receptor"   varchar(30) NOT NULL, 
    "fecha"   timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP, 
-   "contenido"   text NOT NULL ,
-   PRIMARY KEY("emisor","receptor","fecha")
+   "contenido"   text NOT NULL
 )   ;
 
 -- --------------------------------------------------------
@@ -134,12 +134,13 @@ CREATE TABLE  "motivo" (
 --
 
 CREATE TABLE  "oferta" (
+	"identificador" int PRIMARY KEY,
    "usuario"   varchar(30) NOT NULL, 
    "nventa" int NOT NULL, 
-   "fecha"   int NOT NULL, 
+   "fecha"   timestamp without time zone DEFAULT NULL, 
    "cantidad"   int NOT NULL DEFAULT '0', 
-   "aceptada"    smallint NOT NULL DEFAULT '0',
-   PRIMARY KEY("usuario","nventa","fecha")
+   "aceptada"    int NOT NULL DEFAULT '0',
+   "vendedor"   varchar(30) NOT NULL
 )   ;
 
 -- --------------------------------------------------------
@@ -149,13 +150,13 @@ CREATE TABLE  "oferta" (
 --
 
 CREATE TABLE  "opinion" (
+   "identificador" int primary key,
    "emisor"   varchar(30) NOT NULL, 
    "receptor"   varchar(30) NOT NULL, 
    "fecha"   timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP, 
-   "contenido"   int NOT NULL, 
+   "contenido"   text NOT NULL, 
    "estrellas"   int NOT NULL DEFAULT '1', 
-   "tienearchivo"   int NOT NULL DEFAULT '0' ,
-   PRIMARY KEY("emisor","receptor","fecha")
+   "tienearchivo"   int NOT NULL DEFAULT '0'
 )   ;
 
 -- --------------------------------------------------------
@@ -167,7 +168,7 @@ CREATE TABLE  "opinion" (
 CREATE TABLE  "puja" (
    "usuario"   varchar(30) NOT NULL, 
    "nventa" int NOT NULL, 
-   "fecha"   timestamp without time zone NOT NULL, 
+   "fecha"   timestamp without time zone DEFAULT NOW(), 
    "cantidad"   double precision NOT NULL ,
    PRIMARY KEY("usuario","nventa","fecha")
 )   ;
@@ -192,14 +193,14 @@ CREATE TABLE  "registrologins" (
 --
 
 CREATE TABLE  "report" (
+	"identificador" int PRIMARY KEY,
    "emisor"   varchar(30) NOT NULL, 
    "receptor"   varchar(30) NOT NULL, 
    "fecha"   timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP, 
    "contenido"   text NOT NULL, 
    "nventa" int NOT NULL, 
-   "motivo"   int NOT NULL, 
-   "tienearchivo"    smallint NOT NULL DEFAULT '0' ,
-   PRIMARY KEY("emisor","receptor","fecha")
+   "motivo"   text NOT NULL, 
+   "tienearchivo"    smallint NOT NULL DEFAULT '0'
 )   ;
 
 -- --------------------------------------------------------
@@ -209,10 +210,10 @@ CREATE TABLE  "report" (
 --
 
 CREATE TABLE  "seguimiento" (
+	"identificador" int PRIMARY KEY,
    "usuario"   varchar(30) NOT NULL, 
    "nventa" int NOT NULL, 
-   "fecha"   timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-   PRIMARY KEY("usuario","nventa")
+   "fecha"   timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 )   ;
 
 -- --------------------------------------------------------
@@ -247,7 +248,8 @@ CREATE TABLE  "usuario" (
    "latitud"   double precision DEFAULT NULL, 
    "longitud"   double precision DEFAULT NULL, 
    "archivo"   int NOT NULL DEFAULT '0', 
-   "activo"    smallint NOT NULL DEFAULT '1' 
+   "activo"    smallint NOT NULL DEFAULT '1',
+   "estrellas" double precision not null
 )   ;
 
 
@@ -293,7 +295,7 @@ CREATE TABLE  "venta" (
    "ciudad"   varchar(70) DEFAULT NULL,
    "preciofinal"   double precision DEFAULT NULL, 
    "comprador"   varchar(30) DEFAULT NULL, 
-   "fechapago"   int DEFAULT NULL, 
+   "fechapago"   timestamp without time zone DEFAULT NULL, 
    "tienearchivo"    smallint NOT NULL DEFAULT '0', 
    "activa"   int NOT NULL DEFAULT '1', 
    "essubasta"    smallint NOT NULL DEFAULT '0', 
